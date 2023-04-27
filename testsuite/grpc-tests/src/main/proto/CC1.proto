@@ -1,0 +1,283 @@
+syntax = "proto3";
+package dev.resteasy.grpc.example;
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+option java_package = "dev.resteasy.grpc.example";
+option java_outer_classname = "CC1_proto";
+
+service CC1Service {
+// q/found gEmpty gString GET sync
+  rpc found (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/ready gEmpty gString GET sync
+  rpc ready (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/boolean gBoolean gBoolean POST sync
+  rpc getBoolean (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Boolean gBoolean gBoolean POST sync
+  rpc getBooleanWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/byte gByte gByte POST sync
+  rpc getByte (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Byte gByte gByte POST sync
+  rpc getByteWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/short gShort gShort POST sync
+  rpc getShort (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Short gShort gShort POST sync
+  rpc getShortWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/int gInteger gInteger POST sync
+  rpc getInt (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Integer gInteger gInteger POST sync
+  rpc getInteger (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/long gLong gLong POST sync
+  rpc getLong (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Long gLong gLong POST sync
+  rpc getLongWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/float gFloat gFloat POST sync
+  rpc getFloat (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Float gFloat gFloat POST sync
+  rpc getFloatWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/double gDouble gDouble POST sync
+  rpc getDouble (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Double gDouble gDouble POST sync
+  rpc getDoubleWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/char gCharacter gCharacter POST sync
+  rpc getChar (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Character gCharacter gCharacter POST sync
+  rpc getCharacter (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/string gString gString POST sync
+  rpc getString (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/constructor gEmpty dev_resteasy_grpc_example___CC9 GET sync
+  rpc constructor (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/response gEmpty google.protobuf.Any GET sync
+  rpc getResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/async/cs gEmpty gString GET completionStage
+  rpc getResponseCompletionStage (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/cc7 gEmpty dev_resteasy_grpc_example___CC7 GET sync
+  rpc getCC7 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/produces gEmpty gString GET sync
+  rpc produces (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/consumes gEmpty gString GET sync
+  rpc consumes (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/path/{p1}/param/{p2} gEmpty gString GET sync
+  rpc pathParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/query gEmpty gString GET sync
+  rpc queryParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/matrix/more gEmpty gString GET sync
+  rpc matrixParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/cookieParams gEmpty gString GET sync
+  rpc cookieParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/headerParams gEmpty gString GET sync
+  rpc headerParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/params/{p1}/list/{p1} gEmpty gString GET sync
+  rpc paramsList (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/params/{p1}/set/{p1} gEmpty gString GET sync
+  rpc paramsSet (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/params/{p1}/sortedset/{p1} gEmpty gString GET sync
+  rpc paramsSortedSet (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/suspend gEmpty google.protobuf.Any GET suspended
+  rpc suspend (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/contextPath gEmpty gString GET sync
+  rpc contextPath (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/inheritance dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2 POST sync
+  rpc inheritance (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/reference dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4 POST sync
+  rpc referenceField (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m3 dev_resteasy_grpc_example___CC4 gString POST sync
+  rpc m3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m4 gInteger gBoolean POST sync
+  rpc m4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m5 gEmpty gString GET sync
+  rpc m5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m7 gInteger dev_resteasy_grpc_example___CC6 POST sync
+  rpc m7 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletInfo gEmpty gString POST sync
+  rpc testServletInfo (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/server/cookies gEmpty gString GET sync
+  rpc serverCookies (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/server/headers gEmpty gString GET sync
+  rpc serverHeaders (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletPath gEmpty gString GET sync
+  rpc servletPath (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletParams gString gString POST sync
+  rpc servletParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/jaxrsResponse gEmpty google.protobuf.Any GET sync
+  rpc jaxrsResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletResponse gEmpty google.protobuf.Any GET sync
+  rpc servletResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/inner gEmpty dev_resteasy_grpc_example_CC1_INNER_InnerClass GET sync
+  rpc inner (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/ gEmpty gString GET sync
+  rpc notSubresourceGet (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/ gEmpty gString POST sync
+  rpc notSubresourcePost (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/locator google.protobuf.Any google.protobuf.Any LOCATOR sync
+  rpc locator (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletContext gEmpty gString GET sync
+  rpc servletContext (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletConfig gEmpty gString GET sync
+  rpc servletConfig (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/sse gEmpty org_jboss_resteasy_grpc_runtime_sse___SseEvent GET sse
+  rpc sse (GeneralEntityMessage) returns (stream org_jboss_resteasy_grpc_runtime_sse___SseEvent);
+// p/copy gString gString GET sync
+  rpc copy (GeneralEntityMessage) returns (GeneralReturnMessage);
+}
+
+message org_jboss_resteasy_grpc_runtime_sse___SseEvent {
+  string comment = 1;
+  string id = 2;
+  string name = 3;
+  google.protobuf.Any data = 4;
+  int64 reconnectDelay = 5;
+}
+
+message dev_resteasy_grpc_example___CC9 {
+  bool bo = 6;
+  int32 by = 7;
+  int32 s = 8;
+  int32 i = 9;
+  int64 l = 10;
+  float f = 11;
+  double d = 12;
+  int32 c = 13;
+  dev_resteasy_grpc_example___CC3 cc3 = 14;
+}
+
+message dev_resteasy_grpc_example___CC7 {
+  int32 m = 15;
+  dev_resteasy_grpc_example___CC3 cC3___super = 16;
+}
+
+message dev_resteasy_grpc_example___CC2 {
+  int32 j = 17;
+  dev_resteasy_grpc_example___CC3 cC3___super = 18;
+}
+
+message dev_resteasy_grpc_example___CC4 {
+  string s = 19;
+  dev_resteasy_grpc_example___CC5 cc5 = 20;
+}
+
+message dev_resteasy_grpc_example___CC6 {
+  int32 l = 21;
+  dev_resteasy_grpc_example___CC7 cc7 = 22;
+}
+
+message dev_resteasy_grpc_example_CC1_INNER_InnerClass {
+  int32 i = 23;
+  string s = 24;
+}
+
+message dev_resteasy_grpc_example___CC3 {
+  string s = 25;
+}
+
+message dev_resteasy_grpc_example___CC5 {
+  int32 k = 26;
+}
+
+message gEmpty {}
+message gInteger   {int32  value = 27;}
+message gFloat     {float  value = 28;}
+message gCharacter {string value = 29;}
+message gByte      {int32  value = 30;}
+message gLong      {int64  value = 31;}
+message gString    {string value = 32;}
+message gBoolean   {bool   value = 33;}
+message gDouble    {double value = 34;}
+message gShort     {int32  value = 35;}
+
+message gHeader {
+   repeated string values = 36;
+}
+
+message gCookie {
+   string name = 37;
+   string value = 38;
+   int32  version = 39;
+   string path = 40;
+   string domain = 41;
+}
+
+message gNewCookie {
+   string name = 42;
+   string value = 43;
+   int32  version = 44;
+   string path = 45;
+   string domain = 46;
+   string comment = 47;
+   int32 maxAge = 48;
+   google.protobuf.Timestamp expiry = 49;
+   bool secure = 50;
+   bool httpOnly = 51;
+
+   enum SameSite {
+      NONE   = 0;
+      LAX    = 1;
+      STRICT = 2;
+   }
+
+   SameSite sameSite = 52;
+}
+
+message ServletInfo {
+   string characterEncoding = 53;
+   string clientAddress = 54;
+   string clientHost = 55;
+   int32  clientPort = 56;
+}
+
+message FormValues {
+   repeated string formValues_field = 57;
+}
+
+message FormMap {
+   map<string, FormValues> formMap_field = 58;
+}
+
+message GeneralEntityMessage {
+   ServletInfo servletInfo = 59;
+   string URL = 60;
+   map<string, gHeader> headers = 61;
+   repeated gCookie cookies = 62;
+   string httpMethod = 63;
+   oneof messageType {
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 64;
+      gEmpty gEmpty_field = 65;
+      gByte gByte_field = 66;
+      gString gString_field = 67;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 68;
+      gFloat gFloat_field = 69;
+      gDouble gDouble_field = 70;
+      gBoolean gBoolean_field = 71;
+      gLong gLong_field = 72;
+      gShort gShort_field = 73;
+      gInteger gInteger_field = 74;
+      google.protobuf.Any google_protobuf_Any_field = 75;
+      gCharacter gCharacter_field = 76;
+      FormMap form_field = 77;
+   }
+}
+
+message GeneralReturnMessage {
+   map<string, gHeader> headers = 78;
+   repeated gNewCookie cookies = 79;
+   gInteger status = 80;
+   oneof messageType {
+      org_jboss_resteasy_grpc_runtime_sse___SseEvent org_jboss_resteasy_grpc_runtime_sse___SseEvent_field = 81;
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 82;
+      gString gString_field = 83;
+      gByte gByte_field = 84;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 85;
+      gEmpty gEmpty_field = 86;
+      gFloat gFloat_field = 87;
+      gDouble gDouble_field = 88;
+      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 89;
+      gBoolean gBoolean_field = 90;
+      gLong gLong_field = 91;
+      gShort gShort_field = 92;
+      gInteger gInteger_field = 93;
+      google.protobuf.Any google_protobuf_Any_field = 94;
+      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 95;
+      gCharacter gCharacter_field = 96;
+      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 97;
+      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 98;
+   }
+}

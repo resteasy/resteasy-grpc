@@ -1,0 +1,241 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>dev.resteasy.tools</groupId>
+        <artifactId>resteasy-parent</artifactId>
+        <version>2.0.3.Final</version>
+        <relativePath/>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>RESTEasy: gRPC Parent</name>
+
+    <groupId>dev.resteasy.grpc</groupId>
+    <artifactId>resteasy-grpc-parent</artifactId>
+    <version>1.0.0.Alpha1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <url>https://resteasy.dev</url>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy-grpc/tree/main/</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/jamezp/resteasy-grpc/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>ronsigal</id>
+            <name>Ron Sigal</name>
+            <email>rsigal@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Dependency versions, please keep in alphabetical order -->
+
+        <version.jakarta.enterprise>4.0.1</version.jakarta.enterprise>
+        <version.jakarta.servlet>5.0.0</version.jakarta.servlet>
+        <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
+
+        <version.com.github.javaparser>3.18.0</version.com.github.javaparser>
+        <version.com.google.protobuf>3.22.0</version.com.google.protobuf>
+
+        <version.io.undertow>2.3.5.Final</version.io.undertow>
+
+        <version.org.jboss.logging.jboss-logging>3.5.0.Final</version.org.jboss.logging.jboss-logging>
+        <version.org.jboss.logging.jboss-logging-tools>2.2.1.Final</version.org.jboss.logging.jboss-logging-tools>
+        <version.org.jboss.resteasy>6.2.3.Final</version.org.jboss.resteasy>
+
+        <version.org.wildfly>28.0.0.Final</version.org.wildfly>
+
+        <!-- Test only dependencies -->
+        <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
+
+        <!-- Plugin Versions -->
+        <version.org.jboss.galleon>5.1.0.Final</version.org.jboss.galleon>
+        <version.org.wildfly.galleon-plugins>6.3.3.Final</version.org.wildfly.galleon-plugins>
+
+        <!-- Plugin Versions, please keep in alphabetical order -->
+        <!-- print logs to file by default -->
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+        <!-- maven-enforcer-plugin -->
+        <maven.min.version>3.6.0</maven.min.version>
+        <!-- maven-surefire-plugin -->
+        <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
+
+        <maven.test.skip>false</maven.test.skip>
+        <skipTests>${maven.test.skip}</skipTests>
+        <galleon.skip>${skipTests}</galleon.skip>
+        <skip.format>false</skip.format>
+        <skip.compile>false</skip.compile>
+
+        <!-- Galleon -->
+        <galleon.fork.embedded>true</galleon.fork.embedded>
+        <galleon.log.time>true</galleon.log.time>
+        <galleon.offline>false</galleon.offline>
+    </properties>
+
+    <modules>
+        <module>grpc-bom</module>
+        <module>grpc-test-bom</module>
+        <module>grpc-bridge</module>
+        <module>grpc-bridge-runtime</module>
+        <module>testsuite</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <!-- Format source files -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sort-resource-imports</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>sort</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                            <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>format-check</id>
+            <build>
+                <plugins>
+                    <!-- Validate formatting -->
+                    <plugin>
+                        <groupId>net.revelc.code.formatter</groupId>
+                        <artifactId>formatter-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>validate-format</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>validate</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>validate-format-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>validate</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.revelc.code</groupId>
+                        <artifactId>impsort-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>check-import-sort</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>check-import-sort-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <!-- Required for provisioning WildFly. Not all dependencies currently exist on Maven Central. This is also
+             useful for when we want to test with versions releases that have not yet been synchronized to Maven Central
+             from JBoss Nexus.
+         -->
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+            <layout>default</layout>
+        </repository>
+        <!-- Required for PicketBox, once this is removed from WildFly this can be removed -->
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <id>jboss-enterprise-maven-repository</id>
+            <name>JBoss Enterprise Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+</project>
