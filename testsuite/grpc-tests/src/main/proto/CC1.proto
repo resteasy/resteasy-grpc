@@ -114,13 +114,13 @@ service CC1Service {
   rpc servletContext (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/servletConfig gEmpty gString GET sync
   rpc servletConfig (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/sse gEmpty org_jboss_resteasy_grpc_runtime_sse___SseEvent GET sse
-  rpc sse (GeneralEntityMessage) returns (stream org_jboss_resteasy_grpc_runtime_sse___SseEvent);
+// p/sse gEmpty dev_resteasy_grpc_bridge_runtime_sse___SseEvent GET sse
+  rpc sse (GeneralEntityMessage) returns (stream dev_resteasy_grpc_bridge_runtime_sse___SseEvent);
 // p/copy gString gString GET sync
   rpc copy (GeneralEntityMessage) returns (GeneralReturnMessage);
 }
 
-message org_jboss_resteasy_grpc_runtime_sse___SseEvent {
+message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {
   string comment = 1;
   string id = 2;
   string name = 3;
@@ -261,7 +261,7 @@ message GeneralReturnMessage {
    repeated gNewCookie cookies = 79;
    gInteger status = 80;
    oneof messageType {
-      org_jboss_resteasy_grpc_runtime_sse___SseEvent org_jboss_resteasy_grpc_runtime_sse___SseEvent_field = 81;
+      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 81;
       dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 82;
       gString gString_field = 83;
       gByte gByte_field = 84;

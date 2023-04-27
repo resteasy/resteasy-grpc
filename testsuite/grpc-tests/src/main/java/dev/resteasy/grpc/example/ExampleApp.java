@@ -3,6 +3,6 @@ package dev.resteasy.grpc.example;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
-@ApplicationPath("root")
+@ApplicationPath("/")
 public class ExampleApp extends Application {
 }

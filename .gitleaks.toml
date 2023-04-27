@@ -1,0 +1,6 @@
+[allowlist]
+    description = "Global Allowlist"
+    paths = [
+        '''\/client.*\.(cer|jks|pem|p12)$''',
+        '''\/server.*\.(cer|csr|jks|pem)$'''
+    ]
