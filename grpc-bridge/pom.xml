@@ -39,13 +39,11 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>dev.resteasy.grpc</groupId>
             <artifactId>grpc-bridge-runtime</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -61,11 +59,13 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

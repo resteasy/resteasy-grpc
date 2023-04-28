@@ -11,47 +11,27 @@
     </parent>
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <container.qualifier.plaintext>jbossas-plaintext</container.qualifier.plaintext>
-        <container.qualifier.ssl.oneway>jbossas-ssl-oneway</container.qualifier.ssl.oneway>
-        <container.qualifier.ssl.twoway>jbossas-ssl-twoway</container.qualifier.ssl.twoway>
-        <container.base.dir.plaintext>${project.build.directory}${file.separator}${container.qualifier.plaintext}</container.base.dir.plaintext>
-        <container.base.dir.ssl.oneway>${project.build.directory}${file.separator}${container.qualifier.ssl.oneway}</container.base.dir.ssl.oneway>
-        <container.base.dir.ssl.twoway>${project.build.directory}${file.separator}${container.qualifier.ssl.twoway}</container.base.dir.ssl.twoway>
-        <container.offset.plaintext>0</container.offset.plaintext>
-        <container.offset.ssl.oneway>1000</container.offset.ssl.oneway>
-        <container.offset.ssl.twoway>2000</container.offset.ssl.twoway>
-        <container.management.port.plaintext>9990</container.management.port.plaintext> <!-- keep in sync with port offset -->
-        <container.management.port.ssl.oneway>10990</container.management.port.ssl.oneway> <!-- keep in sync with port offset -->
-        <container.management.port.ssl.twoway>11990</container.management.port.ssl.twoway> <!-- keep in sync with port offset -->
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
         <!-- Provisioning properties -->
+        <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
+
+        <!-- RESTEasy properties -->
         <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
         <resteasy.test.feature.pack.artifactId>galleon-feature-pack</resteasy.test.feature.pack.artifactId>
-        <resteasy.test.feature.pack.version>6.2.3.Final</resteasy.test.feature.pack.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
-        <jboss.server.config.dir>${jboss.home}${file.separator}standalone/configuration</jboss.server.config.dir>
-        <container.qualifier.managed>jbossas-managed</container.qualifier.managed>
-        <container.base.dir.managed>${project.build.directory}${file.separator}${container.qualifier.managed}</container.base.dir.managed>
-        <container.management.port.managed>9990</container.management.port.managed>
-        <!-- Provisioning properties -->
-        <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-        <resteasy.test.feature.pack.artifactId>galleon-preview-feature-pack</resteasy.test.feature.pack.artifactId>
         <resteasy.test.feature.pack.version>${version.org.jboss.resteasy}</resteasy.test.feature.pack.version>
+
+        <!-- Server properties -->
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
-        <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
-        <server.test.feature.pack.version>28.0.0.Final</server.test.feature.pack.version>
+        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+        <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
         <!-- For grpc-bridge test -->
         <wildfly.grpc.test.feature.pack.groupId>org.wildfly.extras.grpc</wildfly.grpc.test.feature.pack.groupId>
         <wildfly.grpc.test.feature.pack.artifactId>wildfly-grpc-feature-pack</wildfly.grpc.test.feature.pack.artifactId>
-        <wildfly.grpc.test.feature.pack.version>0.0.8-SNAPSHOT</wildfly.grpc.test.feature.pack.version>
-
-        <node>127.0.0.1</node>
+        <wildfly.grpc.test.feature.pack.version>0.1.0.Final</wildfly.grpc.test.feature.pack.version>
 
         <!-- For compiling the test project -->
         <root.class>CC1</root.class>
-        <servlet.name>CC1</servlet.name>
-        <extra.classes/>
+        <servlet.name>GrpcServlet</servlet.name>
     </properties>
     <artifactId>grpc-tests</artifactId>
     <name>RESTEasy Main testsuite: gRPC tests</name>
@@ -84,23 +64,6 @@
                                     <goal>provision</goal>
                                 </goals>
                             </execution>
-                            <!-- <execution>
-                                <goals>
-                                    <goal>execute-commands</goal>
-                                </goals>
-                                <phase>process-test-classes</phase>
-                                <configuration>
-                                    <offline>true</offline>
-                                    <scripts>
-                                        <script>${project.build.testOutputDirectory}/configure-elytron.cli</script>
-                                    </scripts>
-                                    <commands>
-                                        <command>embed-server</command>
-                                        <command>/subsystem=grpc:write-attribute(name=key-manager-name, value=&quot;key-manager-afcdd1f8-d1a7-4137-aa13-c45237e32428&quot;)</command>
-                                        <command>stop-embedded-server</command>
-                                    </commands>
-                                </configuration>
-                            </execution> -->
                         </executions>
                     </plugin>
                 </plugins>
@@ -135,11 +98,15 @@
         </profile>
     </profiles>
     <dependencies>
-        <dependency> <!-- necessary for Java 9+ --><!-- TODO (jrp) This I think is only needed for the new @Generated annotation -->
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>annotations-api</artifactId>
-            <version>6.0.53</version>
+        <!-- This is only required because a generator adds the @javax.annotation.Generated on generated source which
+             no longer exists in Java 9+. It was migrated to javax.annotation.processing.Generated.
+          -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
@@ -161,7 +128,6 @@
             <groupId>dev.resteasy.grpc</groupId>
             <artifactId>grpc-bridge-runtime</artifactId>
         </dependency>
-        <!-- TODO (jrp) consider removing this -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
@@ -171,10 +137,6 @@
             <artifactId>protoc-gen-grpc-java</artifactId>
             <version>1.54.1</version>
             <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty-shaded</artifactId>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -190,6 +152,11 @@
         </dependency>
 
         <!-- Test Dependencies -->
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>arquillian-utils</artifactId>
@@ -258,36 +225,12 @@
         </testResources>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <skip>${skipTests}</skip>
+                    <systemPropertyVariables>
+                        <server.config.dir>${jboss.home}/standalone/configuration</server.config.dir>
+                    </systemPropertyVariables>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>initialize-basedirs</id>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                            <target>
-                                <!-- Initialize basedir for tested container by copying
-                                     the original into new place.
-                                     This helps to isolate the multiple running instances.
-                                     One copy per each container in arquillian.xml -->
-                                <!-- SSL oneway -->
-                                <copy file="${project.basedir}/src/test/resources/server.keystore.jks" overwrite="true"
-                                      todir="${jboss.home}/standalone/configuration"/>
-                                <!-- SSL twoway -->
-                                <copy file="${project.basedir}/src/test/resources/server.keystore.jks" overwrite="true"
-                                      todir="${jboss.home}/standalone/configuration"/>
-                                <copy file="${project.basedir}/src/test/resources/server.truststore.jks"
-                                      overwrite="true" todir="${jboss.home}/standalone/configuration"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
@@ -298,19 +241,19 @@
                     <provisioning-dir>${jboss.home}</provisioning-dir>
                     <feature-packs>
                         <feature-pack>
-                            <groupId>org.wildfly</groupId>
-                            <artifactId>wildfly-ee-galleon-pack</artifactId>
-                            <version>${version.org.wildfly}</version>
+                            <groupId>${server.test.feature.pack.groupId}</groupId>
+                            <artifactId>${server.test.feature.pack.artifactId}</artifactId>
+                            <version>${server.test.feature.pack.version}</version>
                         </feature-pack>
                         <feature-pack>
-                            <groupId>org.jboss.resteasy</groupId>
-                            <artifactId>galleon-feature-pack</artifactId>
-                            <version>${version.org.jboss.resteasy}</version>
+                            <groupId>${resteasy.test.feature.pack.groupId}</groupId>
+                            <artifactId>${resteasy.test.feature.pack.artifactId}</artifactId>
+                            <version>${resteasy.test.feature.pack.version}</version>
                             <inherit-configs>false</inherit-configs>
                         </feature-pack>
                         <feature-pack>
-                            <groupId>org.wildfly.extras.grpc</groupId>
-                            <artifactId>wildfly-grpc-feature-pack</artifactId>
+                            <groupId>${wildfly.grpc.test.feature.pack.groupId}</groupId>
+                            <artifactId>${wildfly.grpc.test.feature.pack.artifactId}</artifactId>
                             <version>${wildfly.grpc.test.feature.pack.version}</version>
                         </feature-pack>
                     </feature-packs>

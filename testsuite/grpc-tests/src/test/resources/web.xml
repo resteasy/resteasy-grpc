@@ -18,10 +18,11 @@
   -->
 
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
-    version="5.0">
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+    version="6.0">
+    <default-context-path>/grpc-test</default-context-path>
     <servlet>
-        <servlet-name>CC1</servlet-name>
+        <servlet-name>GrpcServlet</servlet-name>
         <servlet-class>
             dev.resteasy.grpc.bridge.runtime.servlet.GrpcHttpServletDispatcher
         </servlet-class>
@@ -72,7 +73,7 @@
     </context-param>
 
     <servlet-mapping>
-        <servlet-name>CC1</servlet-name>
+        <servlet-name>GrpcServlet</servlet-name>
         <url-pattern>/grpcToJakartaRest/*</url-pattern>
     </servlet-mapping>
 </web-app>

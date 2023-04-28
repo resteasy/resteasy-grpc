@@ -384,7 +384,6 @@ public class ServiceGrpcExtender {
         }
         sb.append("      } catch (Exception e) {" + LS)
                 .append("         responseObserver.onError(e);" + LS)
-                .append("         e.printStackTrace();" + LS)
                 .append("      } finally {" + LS)
                 .append("         responseObserver.onCompleted();" + LS)
                 .append("         if (requestContextController != null) {" + LS)

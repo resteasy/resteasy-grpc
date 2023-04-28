@@ -85,10 +85,6 @@
         <!-- Test only dependencies -->
         <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
 
-        <!-- Plugin Versions -->
-        <version.org.jboss.galleon>5.1.0.Final</version.org.jboss.galleon>
-        <version.org.wildfly.galleon-plugins>6.3.3.Final</version.org.wildfly.galleon-plugins>
-
         <!-- Plugin Versions, please keep in alphabetical order -->
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
@@ -99,14 +95,8 @@
 
         <maven.test.skip>false</maven.test.skip>
         <skipTests>${maven.test.skip}</skipTests>
-        <galleon.skip>${skipTests}</galleon.skip>
         <skip.format>false</skip.format>
         <skip.compile>false</skip.compile>
-
-        <!-- Galleon -->
-        <galleon.fork.embedded>true</galleon.fork.embedded>
-        <galleon.log.time>true</galleon.log.time>
-        <galleon.offline>false</galleon.offline>
     </properties>
 
     <modules>
@@ -160,17 +150,6 @@
                                 <goals>
                                     <goal>validate</goal>
                                 </goals>
-                            </execution>
-                            <execution>
-                                <id>validate-format-resources</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>validate</goal>
-                                </goals>
-                                <configuration>
-                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
