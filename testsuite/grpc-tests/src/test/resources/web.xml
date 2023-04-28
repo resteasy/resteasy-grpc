@@ -27,6 +27,50 @@
         </servlet-class>
     </servlet>
 
+    <!--
+       The intention is that CC1MessageBodyReaderWriter (with the help of CC1_JavabufTranslator)
+       will handle all reading and writing of data objects. Therefore, we
+
+       1. eliminate all builtin providers, and then
+       2. add back builtin providers other than MessageBodyReaders and MessageBodyWriters.
+
+     -->
+    <context-param>
+        <param-name>resteasy.use.builtin.providers</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/grpcToJakartaRest</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>
+            org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider,
+            org.jboss.resteasy.plugins.interceptors.CacheControlFeature,
+            org.jboss.resteasy.plugins.interceptors.ClientContentEncodingAnnotationFeature,
+            org.jboss.resteasy.plugins.interceptors.MessageSanitizerContainerResponseFilter,
+            org.jboss.resteasy.plugins.interceptors.ServerContentEncodingAnnotationFeature,
+            org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider,
+            org.jboss.resteasy.plugins.providers.CompletionStageProvider,
+            org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter,
+            org.jboss.resteasy.plugins.providers.jackson.UnrecognizedPropertyExceptionHandler,
+            org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder,
+            org.jboss.resteasy.plugins.providers.jsonp.JsonpPatchMethodFilter,
+            org.jboss.resteasy.plugins.providers.ReactiveStreamProvider,
+            org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionMapper,
+            org.jboss.resteasy.plugins.validation.ValidatorContextResolver,
+            org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI,
+            org.jboss.resteasy.security.doseta.ClientDigitalSigningHeaderDecoratorFeature,
+            org.jboss.resteasy.security.doseta.ClientDigitalVerificationHeaderDecoratorFeature,
+            org.jboss.resteasy.security.doseta.DigitalSigningInterceptor,
+            org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor,
+            org.jboss.resteasy.security.doseta.ServerDigitalSigningHeaderDecoratorFeature,
+            org.jboss.resteasy.security.doseta.ServerDigitalVerificationHeaderDecoratorFeature
+        </param-value>
+    </context-param>
+
     <servlet-mapping>
         <servlet-name>CC1</servlet-name>
         <url-pattern>/grpcToJakartaRest/*</url-pattern>

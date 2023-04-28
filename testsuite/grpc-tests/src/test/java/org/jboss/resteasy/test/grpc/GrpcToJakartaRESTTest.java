@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,6 +34,7 @@ import org.junit.runner.RunWith;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
@@ -277,7 +279,7 @@ public class GrpcToJakartaRESTTest {
         this.testServletResponse(stub);
         this.testShort(stub);
         this.testShortWrapper(stub);
-        //this.testSSE(stub);
+        this.testSSE(stub);
         this.testString(stub);
         this.testSuspend(stub);
         this.testCopy(stub);
@@ -285,7 +287,7 @@ public class GrpcToJakartaRESTTest {
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
         testIntAsyncStub(asyncStub);
-        //testSseAsyncStub(asyncStub);
+        testSseAsyncStub(asyncStub);
     }
 
     void doFutureTest(CC1ServiceFutureStub futureStub) throws Exception {
@@ -1032,7 +1034,7 @@ public class GrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.servletConfig(gem);
-            Assert.assertEquals("CC1Servlet", response.getGStringField().getValue());
+            Assert.assertEquals("CC1", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
@@ -1042,39 +1044,36 @@ public class GrpcToJakartaRESTTest {
         }
     }
 
-    /*
-     * void testSSE(CC1ServiceBlockingStub stub) throws Exception {
-     * CC1_proto.GeneralEntityMessage.Builder messageBuilder = CC1_proto.GeneralEntityMessage.newBuilder();
-     * messageBuilder.setURL("http://localhost:8080/p/sse");
-     * GeneralEntityMessage gem = messageBuilder.build();
-     * Iterator<dev_resteasy_grpc_bridge_runtime_sse___SseEvent> response;
-     * try {
-     * response = stub.sse(gem);
-     * } catch (StatusRuntimeException e) {
-     * Assert.fail("fail");
-     * return;
-     * }
-     * ArrayList<dev_resteasy_grpc_bridge_runtime_sse___SseEvent> list = new
-     * ArrayList<dev_resteasy_grpc_bridge_runtime_sse___SseEvent>();
-     * while (response.hasNext()) {
-     * dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = response.next();
-     * list.add(sseEvent);
-     * }
-     * Assert.assertEquals(4, list.size());
-     * for (int k = 0; k < 3; k++) {
-     * dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(k);
-     * Assert.assertEquals("name" + (k + 1), sseEvent.getName());
-     * Any any = sseEvent.getData();
-     * gString gString = any.unpack(gString.class);
-     * Assert.assertEquals("event" + (k + 1), gString.getValue());
-     * }
-     * dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(3);
-     * Assert.assertEquals("name4", sseEvent.getName());
-     * Any any = sseEvent.getData();
-     * dev_resteasy_grpc_example___CC5 cc5 = any.unpack(dev_resteasy_grpc_example___CC5.class);
-     * Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
-     * }
-     */
+    void testSSE(CC1ServiceBlockingStub stub) throws Exception {
+        CC1_proto.GeneralEntityMessage.Builder messageBuilder = CC1_proto.GeneralEntityMessage.newBuilder();
+        messageBuilder.setURL("http://localhost:8080/p/sse");
+        GeneralEntityMessage gem = messageBuilder.build();
+        Iterator<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> response;
+        try {
+            response = stub.sse(gem);
+        } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+        }
+        ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> list = new ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent>();
+        while (response.hasNext()) {
+            CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = response.next();
+            list.add(sseEvent);
+        }
+        Assert.assertEquals(4, list.size());
+        for (int k = 0; k < 3; k++) {
+            CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(k);
+            Assert.assertEquals("name" + (k + 1), sseEvent.getName());
+            Any any = sseEvent.getData();
+            gString gString = any.unpack(gString.class);
+            Assert.assertEquals("event" + (k + 1), gString.getValue());
+        }
+        CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(3);
+        Assert.assertEquals("name4", sseEvent.getName());
+        Any any = sseEvent.getData();
+        dev_resteasy_grpc_example___CC5 cc5 = any.unpack(dev_resteasy_grpc_example___CC5.class);
+        Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
+    }
 
     void testInheritance(CC1ServiceBlockingStub stub) throws Exception {
         dev_resteasy_grpc_example___CC3 cc3 = dev_resteasy_grpc_example___CC3.newBuilder().setS("thag").build();
@@ -1540,56 +1539,52 @@ public class GrpcToJakartaRESTTest {
         }
     }
 
-    /*
-     * void testSseAsyncStub(CC1ServiceStub asyncStub) throws Exception {
-     * GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
-     * GeneralEntityMessage gem = builder.build();
-     * CountDownLatch latch = new CountDownLatch(1);
-     * GeneralReturnMessageHolder<dev_resteasy_grpc_bridge_runtime_sse___SseEvent> grmh = new
-     * GeneralReturnMessageHolder<dev_resteasy_grpc_bridge_runtime_sse___SseEvent>();
-     * StreamObserver<dev_resteasy_grpc_bridge_runtime_sse___SseEvent> responseObserver = new
-     * StreamObserver<dev_resteasy_grpc_bridge_runtime_sse___SseEvent>() {
-     *
-     * @Override
-     * public void onNext(dev_resteasy_grpc_bridge_runtime_sse___SseEvent value) {
-     * grmh.addValue(value);
-     * }
-     *
-     * @Override
-     * public void onError(Throwable t) {
-     * latch.countDown();
-     * }
-     *
-     * @Override
-     * public void onCompleted() {
-     * latch.countDown();
-     * }
-     * };
-     * try {
-     * asyncStub.sse(gem, responseObserver);
-     * latch.await();
-     * Assert.assertEquals(4, grmh.size());
-     * Iterator<dev_resteasy_grpc_bridge_runtime_sse___SseEvent> it = grmh.iterator();
-     * for (int i = 0; i < 3; i++) {
-     * dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = it.next();
-     * Assert.assertEquals("name" + (i + 1), sseEvent.getName());
-     * byte[] bytes = sseEvent.getData().toByteArray();
-     * ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-     * Any any = Any.parseFrom(CodedInputStream.newInstance(bais));
-     * gString gString = any.unpack(gString.class);
-     * Assert.assertEquals("event" + (i + 1), gString.getValue());
-     * }
-     * dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = it.next();
-     * Assert.assertEquals("name4", sseEvent.getName());
-     * Any any = sseEvent.getData();
-     * dev_resteasy_grpc_example___CC5 cc5 = any.unpack(dev_resteasy_grpc_example___CC5.class);
-     * Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
-     * } catch (StatusRuntimeException e) {
-     * Assert.fail("fail");
-     * return;
-     * }
-     * }
-     */
+    void testSseAsyncStub(CC1ServiceStub asyncStub) throws Exception {
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.build();
+        CountDownLatch latch = new CountDownLatch(1);
+        GeneralReturnMessageHolder<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> grmh = new GeneralReturnMessageHolder<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent>();
+        StreamObserver<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> responseObserver = new StreamObserver<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent>() {
+
+            @Override
+            public void onNext(CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent value) {
+                grmh.addValue(value);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        };
+        try {
+            asyncStub.sse(gem, responseObserver);
+            latch.await();
+            Assert.assertEquals(4, grmh.size());
+            Iterator<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> it = grmh.iterator();
+            for (int i = 0; i < 3; i++) {
+                CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = it.next();
+                Assert.assertEquals("name" + (i + 1), sseEvent.getName());
+                byte[] bytes = sseEvent.getData().toByteArray();
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                Any any = Any.parseFrom(CodedInputStream.newInstance(bais));
+                gString gString = any.unpack(gString.class);
+                Assert.assertEquals("event" + (i + 1), gString.getValue());
+            }
+            CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = it.next();
+            Assert.assertEquals("name4", sseEvent.getName());
+            Any any = sseEvent.getData();
+            dev_resteasy_grpc_example___CC5 cc5 = any.unpack(dev_resteasy_grpc_example___CC5.class);
+            Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
+        } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+        }
+    }
 
     void testIntFutureStub(CC1ServiceFutureStub futureStub) throws Exception {
         gInteger n = gInteger.newBuilder().setValue(3).build();
