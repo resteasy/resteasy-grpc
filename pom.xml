@@ -13,7 +13,7 @@
 
     <groupId>dev.resteasy.grpc</groupId>
     <artifactId>resteasy-grpc-parent</artifactId>
-    <version>1.0.0.Alpha1</version>
+    <version>1.0.0.Alpha2</version>
     <packaging>pom</packaging>
 
     <url>https://resteasy.dev</url>

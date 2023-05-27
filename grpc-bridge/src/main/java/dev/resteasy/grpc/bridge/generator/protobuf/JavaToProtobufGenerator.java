@@ -433,6 +433,7 @@ public class JavaToProtobufGenerator {
         }
 
         for (String wrapper : PRIMITIVE_WRAPPER_DEFINITIONS.values()) {
+            counter = 1;
             sb.append(LS).append(wrapper.replace("$V$", String.valueOf(counter++)));
         }
         createGeneralEntityMessageType(sb);
@@ -440,8 +441,10 @@ public class JavaToProtobufGenerator {
     }
 
     private static void createGeneralEntityMessageType(StringBuilder sb) {
+        counter = 1;
         sb.append(LS + LS + "message gHeader {" + LS).append("   repeated string values = ").append(counter++)
                 .append(";" + LS + "}");
+        counter = 1;
         sb.append(LS + LS + "message gCookie {" + LS)
                 .append("   string name = ").append(counter++).append(";" + LS)
                 .append("   string value = ").append(counter++).append(";" + LS)
@@ -449,6 +452,7 @@ public class JavaToProtobufGenerator {
                 .append("   string path = ").append(counter++).append(";" + LS)
                 .append("   string domain = ").append(counter++).append(";" + LS)
                 .append("}");
+        counter = 1;
         sb.append(LS + LS + "message gNewCookie {" + LS)
                 .append("   string name = ").append(counter++).append(";" + LS)
                 .append("   string value = ").append(counter++).append(";" + LS)
@@ -467,18 +471,22 @@ public class JavaToProtobufGenerator {
                 .append("   }" + LS + LS)
                 .append("   SameSite sameSite = ").append(counter++).append(";" + LS)
                 .append("}");
+        counter = 1;
         sb.append(LS + LS + "message ServletInfo {" + LS)
                 .append("   string characterEncoding = ").append(counter++).append(";" + LS)
                 .append("   string clientAddress = ").append(counter++).append(";" + LS)
                 .append("   string clientHost = ").append(counter++).append(";" + LS)
                 .append("   int32  clientPort = ").append(counter++).append(";" + LS)
                 .append("}");
+        counter = 1;
         sb.append(LS + LS + "message FormValues {" + LS)
                 .append("   repeated string formValues_field = ").append(counter++).append(";" + LS)
                 .append("}");
+        counter = 1;
         sb.append(LS + LS + "message FormMap {" + LS)
                 .append("   map<string, FormValues> formMap_field = ").append(counter++).append(";" + LS)
                 .append("}");
+        counter = 1;
         sb.append(LS + LS + "message GeneralEntityMessage {" + LS)
                 .append("   ServletInfo servletInfo = ").append(counter++).append(";" + LS)
                 .append("   string URL = ").append(counter++).append(";" + LS)
@@ -500,6 +508,7 @@ public class JavaToProtobufGenerator {
     }
 
     private static void createGeneralReturnMessageType(StringBuilder sb) {
+        counter = 1;
         sb.append(LS + "message GeneralReturnMessage {" + LS)
                 .append("   map<string, gHeader> headers = ").append(counter++).append(";" + LS)
                 .append("   repeated gNewCookie cookies = ").append(counter++).append(";" + LS)
@@ -654,6 +663,7 @@ public class JavaToProtobufGenerator {
                 return;
             }
             visited.add(fqn);
+            counter = 1;
 
             // Begin protobuf message definition.
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
@@ -785,6 +795,7 @@ public class JavaToProtobufGenerator {
                 return;
             }
             visited.add(fqn);
+            counter = 1;
 
             // Begin protobuf message definition.
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
