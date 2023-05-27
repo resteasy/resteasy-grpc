@@ -129,84 +129,84 @@ message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {
 }
 
 message dev_resteasy_grpc_example___CC9 {
-  bool bo = 6;
-  int32 by = 7;
-  int32 s = 8;
-  int32 i = 9;
-  int64 l = 10;
-  float f = 11;
-  double d = 12;
-  int32 c = 13;
-  dev_resteasy_grpc_example___CC3 cc3 = 14;
+  bool bo = 1;
+  int32 by = 2;
+  int32 s = 3;
+  int32 i = 4;
+  int64 l = 5;
+  float f = 6;
+  double d = 7;
+  int32 c = 8;
+  dev_resteasy_grpc_example___CC3 cc3 = 9;
 }
 
 message dev_resteasy_grpc_example___CC7 {
-  int32 m = 15;
-  dev_resteasy_grpc_example___CC3 cC3___super = 16;
+  int32 m = 1;
+  dev_resteasy_grpc_example___CC3 cC3___super = 2;
 }
 
 message dev_resteasy_grpc_example___CC2 {
-  int32 j = 17;
-  dev_resteasy_grpc_example___CC3 cC3___super = 18;
+  int32 j = 1;
+  dev_resteasy_grpc_example___CC3 cC3___super = 2;
 }
 
 message dev_resteasy_grpc_example___CC4 {
-  string s = 19;
-  dev_resteasy_grpc_example___CC5 cc5 = 20;
+  string s = 1;
+  dev_resteasy_grpc_example___CC5 cc5 = 2;
 }
 
 message dev_resteasy_grpc_example___CC6 {
-  int32 l = 21;
-  dev_resteasy_grpc_example___CC7 cc7 = 22;
+  int32 l = 1;
+  dev_resteasy_grpc_example___CC7 cc7 = 2;
 }
 
 message dev_resteasy_grpc_example_CC1_INNER_InnerClass {
-  int32 i = 23;
-  string s = 24;
+  int32 i = 1;
+  string s = 2;
 }
 
 message dev_resteasy_grpc_example___CC3 {
-  string s = 25;
+  string s = 1;
 }
 
 message dev_resteasy_grpc_example___CC5 {
-  int32 k = 26;
+  int32 k = 1;
 }
 
 message gEmpty {}
-message gInteger   {int32  value = 27;}
-message gFloat     {float  value = 28;}
-message gCharacter {string value = 29;}
-message gByte      {int32  value = 30;}
-message gLong      {int64  value = 31;}
-message gString    {string value = 32;}
-message gBoolean   {bool   value = 33;}
-message gDouble    {double value = 34;}
-message gShort     {int32  value = 35;}
+message gInteger   {int32  value = 1;}
+message gFloat     {float  value = 1;}
+message gCharacter {string value = 1;}
+message gByte      {int32  value = 1;}
+message gLong      {int64  value = 1;}
+message gString    {string value = 1;}
+message gBoolean   {bool   value = 1;}
+message gDouble    {double value = 1;}
+message gShort     {int32  value = 1;}
 
 message gHeader {
-   repeated string values = 36;
+   repeated string values = 1;
 }
 
 message gCookie {
-   string name = 37;
-   string value = 38;
-   int32  version = 39;
-   string path = 40;
-   string domain = 41;
+   string name = 1;
+   string value = 2;
+   int32  version = 3;
+   string path = 4;
+   string domain = 5;
 }
 
 message gNewCookie {
-   string name = 42;
-   string value = 43;
-   int32  version = 44;
-   string path = 45;
-   string domain = 46;
-   string comment = 47;
-   int32 maxAge = 48;
-   google.protobuf.Timestamp expiry = 49;
-   bool secure = 50;
-   bool httpOnly = 51;
+   string name = 1;
+   string value = 2;
+   int32  version = 3;
+   string path = 4;
+   string domain = 5;
+   string comment = 6;
+   int32 maxAge = 7;
+   google.protobuf.Timestamp expiry = 8;
+   bool secure = 9;
+   bool httpOnly = 10;
 
    enum SameSite {
       NONE   = 0;
@@ -214,70 +214,70 @@ message gNewCookie {
       STRICT = 2;
    }
 
-   SameSite sameSite = 52;
+   SameSite sameSite = 11;
 }
 
 message ServletInfo {
-   string characterEncoding = 53;
-   string clientAddress = 54;
-   string clientHost = 55;
-   int32  clientPort = 56;
+   string characterEncoding = 1;
+   string clientAddress = 2;
+   string clientHost = 3;
+   int32  clientPort = 4;
 }
 
 message FormValues {
-   repeated string formValues_field = 57;
+   repeated string formValues_field = 1;
 }
 
 message FormMap {
-   map<string, FormValues> formMap_field = 58;
+   map<string, FormValues> formMap_field = 1;
 }
 
 message GeneralEntityMessage {
-   ServletInfo servletInfo = 59;
-   string URL = 60;
-   map<string, gHeader> headers = 61;
-   repeated gCookie cookies = 62;
-   string httpMethod = 63;
+   ServletInfo servletInfo = 1;
+   string URL = 2;
+   map<string, gHeader> headers = 3;
+   repeated gCookie cookies = 4;
+   string httpMethod = 5;
    oneof messageType {
-      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 64;
-      gEmpty gEmpty_field = 65;
-      gByte gByte_field = 66;
-      gString gString_field = 67;
-      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 68;
-      gFloat gFloat_field = 69;
-      gDouble gDouble_field = 70;
-      gBoolean gBoolean_field = 71;
-      gLong gLong_field = 72;
-      gShort gShort_field = 73;
-      gInteger gInteger_field = 74;
-      google.protobuf.Any google_protobuf_Any_field = 75;
-      gCharacter gCharacter_field = 76;
-      FormMap form_field = 77;
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 6;
+      gEmpty gEmpty_field = 7;
+      gByte gByte_field = 8;
+      gString gString_field = 9;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 10;
+      gFloat gFloat_field = 11;
+      gDouble gDouble_field = 12;
+      gBoolean gBoolean_field = 13;
+      gLong gLong_field = 14;
+      gShort gShort_field = 15;
+      gInteger gInteger_field = 16;
+      google.protobuf.Any google_protobuf_Any_field = 17;
+      gCharacter gCharacter_field = 18;
+      FormMap form_field = 19;
    }
 }
 
 message GeneralReturnMessage {
-   map<string, gHeader> headers = 78;
-   repeated gNewCookie cookies = 79;
-   gInteger status = 80;
+   map<string, gHeader> headers = 1;
+   repeated gNewCookie cookies = 2;
+   gInteger status = 3;
    oneof messageType {
-      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 81;
-      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 82;
-      gString gString_field = 83;
-      gByte gByte_field = 84;
-      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 85;
-      gEmpty gEmpty_field = 86;
-      gFloat gFloat_field = 87;
-      gDouble gDouble_field = 88;
-      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 89;
-      gBoolean gBoolean_field = 90;
-      gLong gLong_field = 91;
-      gShort gShort_field = 92;
-      gInteger gInteger_field = 93;
-      google.protobuf.Any google_protobuf_Any_field = 94;
-      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 95;
-      gCharacter gCharacter_field = 96;
-      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 97;
-      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 98;
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 4;
+      gString gString_field = 5;
+      gByte gByte_field = 6;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 7;
+      gEmpty gEmpty_field = 8;
+      gFloat gFloat_field = 9;
+      gDouble gDouble_field = 10;
+      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 11;
+      gBoolean gBoolean_field = 12;
+      gLong gLong_field = 13;
+      gShort gShort_field = 14;
+      gInteger gInteger_field = 15;
+      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 16;
+      google.protobuf.Any google_protobuf_Any_field = 17;
+      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 18;
+      gCharacter gCharacter_field = 19;
+      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 20;
+      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 21;
    }
 }
