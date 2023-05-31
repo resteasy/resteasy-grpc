@@ -176,39 +176,39 @@ import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
  * }
  *
  * message io_grpc_examples___CC4 {
- *    string s = 3;
- *    io_grpc_examples___CC5 cc5 = 4;
+ *    string s = 1;
+ *    io_grpc_examples___CC5 cc5 = 2;
  * }
  *
  * message io_grpc_examples___CC3 {
- *    string s = 5;
+ *    string s = 1;
  * }
  *
  * message io_grpc_examples___CC5 {
- *    int32 k = 6;
+ *    int32 k = 1;
  * }
  *
  * ...
  *
  * message GeneralEntityMessage {
- *    ServletInfo servletInfo = 39;
- *    string URL = 40;
- *    map<string, gHeader> headers = 41;
- *    repeated gCookie cookies = 42;
- *    string httpMethod = 43;
+ *    ServletInfo servletInfo = 1;
+ *    string URL = 2;
+ *    map<string, gHeader> headers = 3;
+ *    repeated gCookie cookies = 4;
+ *    string httpMethod = 5;
  *    oneof messageType {
- *       io_grpc_examples___CC4 io_grpc_examples___CC4_field = 44;
- *       io_grpc_examples___CC2 io_grpc_examples___CC2_field = 45;
- *       FormMap form_field = 46;
+ *       io_grpc_examples___CC4 io_grpc_examples___CC4_field = 6;
+ *       io_grpc_examples___CC2 io_grpc_examples___CC2_field = 7;
+ *       FormMap form_field = 8;
  *    }
  * }
  *
  * message GeneralReturnMessage {
- *    map<string, gHeader> headers = 47;
- *    repeated gNewCookie cookies = 48;
- *    gInteger status = 49;
+ *    map<string, gHeader> headers = 1;
+ *    repeated gNewCookie cookies = 2;
+ *    gInteger status = 3;
  *    oneof messageType {
- *       gString gString_field = 50;
+ *       gString gString_field = 4;
  *    }
  * }
  * </pre>
