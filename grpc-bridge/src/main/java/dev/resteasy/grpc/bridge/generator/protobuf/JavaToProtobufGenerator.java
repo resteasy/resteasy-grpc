@@ -226,7 +226,7 @@ import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
  */
 public class JavaToProtobufGenerator {
 
-    private static final Logger logger = Logger.getLogger(JavabufTranslatorGenerator.class);
+    private static final Logger logger = Logger.getLogger(JavaToProtobufGenerator.class);
     private static final String LS = System.lineSeparator();
 
     private static Map<String, String> TYPE_MAP = new HashMap<String, String>();
