@@ -69,7 +69,12 @@
                 <artifactId>grpc-stub</artifactId>
                 <version>${version.io.grpc}</version>
             </dependency>
-
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>protoc-gen-grpc-java</artifactId>
+                <version>${version.io.grpc}</version>
+                <type>pom</type>
+            </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>arquillian-utils</artifactId>
