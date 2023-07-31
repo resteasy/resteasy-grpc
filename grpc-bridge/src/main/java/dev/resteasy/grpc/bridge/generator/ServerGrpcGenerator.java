@@ -155,6 +155,7 @@ class ServerGrpcGenerator {
                     .startBlock("if (System.getSecurityManager() == null) {")
                     .writeLine("server = ServerBuilder.forPort(PORT)")
                     .writeLine(".addService(new ", prefix, "ServiceGrpcImpl())")
+                    .writeLine(".addService(ProtoReflectionService.newInstance())")
                     .writeLine(".build()")
                     .writeLine(".start();")
                     .endAndStart("} else {")
