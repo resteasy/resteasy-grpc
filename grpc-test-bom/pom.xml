@@ -33,6 +33,7 @@
 
     <properties>
         <version.io.grpc>1.54.1</version.io.grpc>
+        <protoc-gen-grpc-java.version>1.51.1</protoc-gen-grpc-java.version>
         <version.org.jboss.arquillian>1.7.0.Alpha14</version.org.jboss.arquillian>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha6</version.org.wildfly.arquillian.wildfly-arquillian>
     </properties>
@@ -53,7 +54,6 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-netty-shaded</artifactId>
@@ -72,7 +72,7 @@
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>protoc-gen-grpc-java</artifactId>
-                <version>${version.io.grpc}</version>
+                <version>${protoc-gen-grpc-java.version}</version>
                 <type>pom</type>
             </dependency>
             <dependency>
