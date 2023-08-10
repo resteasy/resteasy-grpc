@@ -81,7 +81,7 @@ class ServerGrpcGenerator {
                     .writeLine("private static ServletContext servletContext;")
                     .writeLine("private static int PORT = 8082;")
                     .writeLine("private Server server;")
-                    .writeLine("private final AtomicBoolean servletContextInitialized = new AtomicBoolean(false);");
+                    .writeLine("private static final AtomicBoolean servletContextInitialized = new AtomicBoolean(false);");
 
             // Write the main method
             writer.writeLine("/**")
@@ -101,7 +101,7 @@ class ServerGrpcGenerator {
             writer.writeLine("@Path(\"context\")")
                     .writeLine("@GET")
                     .startBlock("public String startContext(@Context HttpServletRequest request) throws Exception {")
-                    .writeLine("if (servletContextInitialized.compareAndSet(false, true)) {")
+                    .writeLine("if (!servletContextInitialized.getAndSet(true)) {")
                     .writeLine("servletContext = request.getServletContext();")
                     .writeLine("return \"Got \" + this + \" servletContext\";")
                     .writeLine("} else {")
