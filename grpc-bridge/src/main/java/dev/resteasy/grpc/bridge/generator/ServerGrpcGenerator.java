@@ -81,7 +81,7 @@ class ServerGrpcGenerator {
                     .writeLine("private static ServletContext servletContext;")
                     .writeLine("private static int PORT = 8082;")
                     .writeLine("private Server server;")
-                    .writeLine("private AtomicBoolean servletContextInitialized = new AtomicBoolean(false);");
+                    .writeLine("private final AtomicBoolean servletContextInitialized = new AtomicBoolean(false);");
 
             // Write the main method
             writer.writeLine("/**")
