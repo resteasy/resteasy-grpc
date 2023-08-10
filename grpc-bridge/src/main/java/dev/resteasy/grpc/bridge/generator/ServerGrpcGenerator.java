@@ -59,7 +59,8 @@ class ServerGrpcGenerator {
                     .writeLine("import jakarta.servlet.http.HttpServletRequest;")
                     .writeLine("import jakarta.ws.rs.GET;")
                     .writeLine("import jakarta.ws.rs.Path;")
-                    .writeLine("import jakarta.ws.rs.core.Context;");
+                    .writeLine("import jakarta.ws.rs.core.Context;")
+                    .writeLine("import java.util.concurrent.atomic.AtomicBoolean;");
             // Import the service implementation
             final String serviceImplName;
             if (packageName.endsWith(".")) {
@@ -79,7 +80,8 @@ class ServerGrpcGenerator {
                     "private static final Logger logger = Logger.getLogger(", prefix, "_Server.class.getName());")
                     .writeLine("private static ServletContext servletContext;")
                     .writeLine("private static int PORT = 8082;")
-                    .writeLine("private Server server;");
+                    .writeLine("private Server server;")
+                    .writeLine("private AtomicBoolean servletContextInitialized = new AtomicBoolean(false);");
 
             // Write the main method
             writer.writeLine("/**")
@@ -99,8 +101,12 @@ class ServerGrpcGenerator {
             writer.writeLine("@Path(\"context\")")
                     .writeLine("@GET")
                     .startBlock("public String startContext(@Context HttpServletRequest request) throws Exception {")
+                    .writeLine("if (servletContextInitialized.compareAndSet(false, true)) {")
                     .writeLine("servletContext = request.getServletContext();")
                     .writeLine("return \"Got \" + this + \" servletContext\";")
+                    .writeLine("} else {")
+                    .writeLine("return this + \" servletContext already initialized.\";")
+                    .writeLine("}")
                     .endBlock()
                     .writeLine();
 
