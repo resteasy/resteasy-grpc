@@ -638,4 +638,20 @@ public class CC1 {
     public String copy(String s) {
         return s;
     }
+
+    @GET
+    @Path("impl")
+    public IntfImpl impl() {
+        IntfImpl intf = new IntfImpl();
+        intf.setS("xyz");
+        return intf;
+    }
+
+    @GET
+    @Path("interface")
+    public Intf intf() {
+        Intf intf = new IntfImpl();
+        intf.setS("xyz");
+        return intf;
+    }
 }

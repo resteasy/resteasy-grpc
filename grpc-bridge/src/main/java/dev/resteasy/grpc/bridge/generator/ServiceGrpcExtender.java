@@ -19,6 +19,8 @@
 
 package dev.resteasy.grpc.bridge.generator;
 
+import static dev.resteasy.grpc.bridge.runtime.Constants.INTERFACE;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -142,12 +144,16 @@ public class ServiceGrpcExtender {
     }
 
     private void imports(Scanner scanner, StringBuilder sb, String fileName) {
-        sb.append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
+        sb.append("import static dev.resteasy.grpc.bridge.runtime.Constants.INTERFACE;" + LS)
+                .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
                 .append("import com.google.protobuf.GeneratedMessageV3;" + LS)
                 .append("import com.google.protobuf.Timestamp;" + LS)
+                .append("import dev.resteasy.grpc.bridge.runtime.Utility;" + LS)
                 .append("import io.grpc.stub.StreamObserver;" + LS)
                 .append("import java.io.ByteArrayInputStream;" + LS)
                 .append("import java.io.ByteArrayOutputStream;" + LS)
+                .append("import java.io.InputStream;" + LS)
+                .append("import java.lang.reflect.Method;" + LS)
                 .append("import java.security.AccessController;" + LS)
                 .append("import java.security.PrivilegedAction;" + LS)
                 .append("import java.text.ParseException;" + LS)
@@ -272,7 +278,8 @@ public class ServiceGrpcExtender {
             if (!"Any".equals(actualEntityClass)
                     && !"google.protobuf.Any".equals(actualEntityClass)
                     && !"gInteger".equals(actualEntityClass)
-                    && !"gEmpty".equals(actualEntityClass)) {
+                    && !"gEmpty".equals(actualEntityClass)
+                    && !INTERFACE.equals(actualEntityClass)) {
                 sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
                 imports.add(actualEntityClass);
             }
@@ -281,7 +288,8 @@ public class ServiceGrpcExtender {
             if (!"Any".equals(actualReturnClass)
                     && !"google.protobuf.Any".equals(actualReturnClass)
                     && !"gInteger".equals(actualReturnClass)
-                    && !"gEmpty".equals(actualReturnClass)) {
+                    && !"gEmpty".equals(actualReturnClass)
+                    && !INTERFACE.equals(actualReturnClass)) {
                 sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
                 imports.add(actualReturnClass);
             }
@@ -371,6 +379,32 @@ public class ServiceGrpcExtender {
                     .append("               continue;" + LS)
                     .append("            }" + LS)
                     .append("         }" + LS);
+        } else if (INTERFACE.equals(actualReturnClass)) {
+            sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();" + LS)
+                    .append("         ByteArrayOutputStream baos = msos.getDelegate();" + LS)
+                    .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());" + LS)
+                    .append("         String className = response.getHeader(" + INTERFACE + ");" + LS)
+                    .append("         Class<?> clazz = Class.forName(className);" + LS)
+                    .append("         Method parseFrom = clazz.getMethod(\"parseFrom\", InputStream.class);" + LS)
+                    .append("         String s = Utility.camelize(className);" + LS)
+                    .append("         Method setField = GeneralReturnMessage.Builder.class.getMethod(\"set\" + s + \"field\", clazz);"
+                            + LS)
+                    .append("         GeneralReturnMessage.Builder builder = createGeneralReturnMessageBuilder(response);"
+                            + LS)
+                    .append("         setField.invoke(builder, clazz.cast(parseFrom.invoke(null, bais)));" + LS);
+            /*
+             * String className = response.getHeader(INTERFACE);
+             * Class<?> clazz = Class.forName(className);
+             * Method parseFrom = clazz.getMethod("parseFrom", InputStream.class);
+             * clazz.cast(parseFrom.invoke(bais));
+             * String s = Utility.camelize(className);
+             * Method setField = dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage.Builder.class.getMethod("set" + s +
+             * "field", clazz);
+             * dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage.Builder grmb =
+             * createGeneralReturnMessageBuilder(response);
+             * setField.invoke(grmb, clazz.cast(parseFrom.invoke(bais)));
+             *
+             */
         } else {
             sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();" + LS)
                     .append("         ByteArrayOutputStream baos = msos.getDelegate();" + LS)

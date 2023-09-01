@@ -84,7 +84,7 @@ public class ReaderWriterGenerator {
     }
 
     private static void imports(Class<?> wrapperClass, String rootClass, StringBuilder sb) {
-        sb
+        sb.append("import static dev.resteasy.grpc.bridge.runtime.Constants.INTERFACE;" + LS)
                 .append("import java.io.ByteArrayOutputStream;" + LS)
                 .append("import java.io.IOException;" + LS)
                 .append("import java.io.InputStream;" + LS)
@@ -107,6 +107,7 @@ public class ReaderWriterGenerator {
                 .append("import com.google.protobuf.CodedOutputStream;" + LS)
                 .append("import ").append("jakarta.servlet.http.HttpServletResponse;" + LS)
                 .append("import ").append("dev.resteasy.grpc.bridge.runtime.servlet.AsyncMockServletOutputStream;" + LS)
+                .append("import ").append("dev.resteasy.grpc.bridge.runtime.Utility;" + LS)
                 .append("import ").append(OutboundSseEventImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import org.jboss.resteasy.core.ResteasyContext;" + LS);
@@ -209,6 +210,14 @@ public class ReaderWriterGenerator {
                 .append("         }" + LS)
                 .append("         return;" + LS)
                 .append("      }" + LS)
+                .append("      if (servletResponse != null && servletResponse.getHeader(INTERFACE) != null) {" + LS)
+                .append("         servletResponse.setHeader(INTERFACE, t.getClass().getName());" + LS)
+                .append("      }" + LS)
+                /*
+                 * if (servletResponse != null && servletResponse.getHeader(INTERFACE) != null) {
+                 * servletResponse.setHeader(INTERFACE, t.getClass().getName());
+                 * }
+                 */
                 .append("      if (servletResponse.getOutputStream() instanceof AsyncMockServletOutputStream) {" + LS)
                 .append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) servletResponse.getOutputStream();"
                         + LS)

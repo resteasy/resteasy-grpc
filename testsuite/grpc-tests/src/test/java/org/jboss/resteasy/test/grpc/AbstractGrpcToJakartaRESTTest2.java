@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -19,13 +20,17 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
+import dev.resteasy.grpc.example.CC1ServiceGrpc;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
@@ -48,6 +53,8 @@ import dev.resteasy.grpc.example.CC1_proto.gNewCookie;
 import dev.resteasy.grpc.example.CC1_proto.gString;
 import dev.resteasy.grpc.example.ExampleApp;
 import dev.resteasy.grpc.example.sub.CC8;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
@@ -56,13 +63,13 @@ import io.grpc.stub.StreamObserver;
  * @tpChapter grpc-tests tests
  * @tpSince RESTEasy 1.0.0
  */
-abstract class AbstractGrpcToJakartaRESTTest {
+public class AbstractGrpcToJakartaRESTTest2 {
 
     static Archive<?> doDeploy(final String deploymentName) throws Exception {
         final var resolver = Maven.resolver()
                 .loadPomFromFile("pom.xml");
         return ShrinkWrap.create(WebArchive.class, deploymentName + ".war")
-                .addPackage(AbstractGrpcToJakartaRESTTest.class.getPackage())
+                .addPackage(AbstractGrpcToJakartaRESTTest2.class.getPackage())
                 .addPackage(ExampleApp.class.getPackage())
                 .addPackage(CC8.class.getPackage())
                 .addAsLibrary(resolver.resolve("dev.resteasy.grpc:grpc-bridge-runtime")
@@ -85,56 +92,87 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
     /****************************************************************************************/
     /****************************************************************************************/
+
+    private static ManagedChannel channelPlaintext;
+
+    private static CC1ServiceGrpc.CC1ServiceBlockingStub blockingStubPlaintext;
+
+    private static CC1ServiceGrpc.CC1ServiceStub asyncStubPlaintext;
+
+    private static CC1ServiceGrpc.CC1ServiceFutureStub futureStubPlaintext;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        accessServletContexts();
+        channelPlaintext = ManagedChannelBuilder.forTarget("localhost:9555").usePlaintext().build();
+
+        blockingStubPlaintext = CC1ServiceGrpc.newBlockingStub(channelPlaintext);
+        asyncStubPlaintext = CC1ServiceGrpc.newStub(channelPlaintext);
+        futureStubPlaintext = CC1ServiceGrpc.newFutureStub(channelPlaintext);
+    }
+
+    @AfterClass
+    public static void afterClass() throws InterruptedException {
+        channelPlaintext.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void testSslOneway() throws Exception {
+        doBlockingTest(blockingStubPlaintext);
+        //        doAsyncTest(asyncStubSslOneway);
+        //        doFutureTest(futureStubSslOneway);
+    }
+
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
-        this.testBoolean(stub);
-        this.testBooleanWithUnnecessaryURL(stub);
-        this.testBooleanWrapper(stub);
-        this.testByte(stub);
-        this.testByteWrapper(stub);
-        this.testChar(stub);
-        this.testCharacter(stub);
-        this.testCompletionStage(stub);
-        this.testConstructor(stub);
-        this.testConsumes(stub);
-        this.testCookieParams(stub);
-        this.testDouble(stub);
-        this.testDoubleWrapper(stub);
-        this.testFloat(stub);
-        this.testFloatWrapper(stub);
-        this.testHeaderParams(stub);
-        this.testInheritance(stub);
-        this.testInnerClass(stub);
-        this.testInt(stub);
-        this.testInteger(stub);
-        this.testJaxrsResponse(stub);
-        this.testLocatorGet(stub);
-        this.testLocatorPost(stub);
-        this.testLong(stub);
-        this.testLongWrapper(stub);
-        this.testMatrixParams(stub);
-        this.testParamsList(stub);
-        this.testParamsSet(stub);
-        this.testParamsSortedSet(stub);
-        this.testPathParams(stub);
-        this.testProduces(stub);
-        this.testQueryParams(stub);
-        this.testReferenceField(stub);
-        this.testResponse(stub);
-        this.testServerCookies(stub);
-        this.testServerHeaders(stub);
-        this.testServletConfigServletName(stub);
-        this.testServletContextInitParam(stub);
-        this.testServletContextPath(stub);
-        this.testServletInfo(stub);
-        this.testServletParams(stub);
-        this.testServletPath(stub);
-        this.testServletResponse(stub);
-        this.testShort(stub);
-        this.testShortWrapper(stub);
-        this.testSSE(stub);
-        this.testString(stub);
-        this.testSuspend(stub);
-        this.testCopy(stub);
+        //        this.testBoolean(stub);
+        //        this.testBooleanWithUnnecessaryURL(stub);
+        //        this.testBooleanWrapper(stub);
+        //        this.testByte(stub);
+        //        this.testByteWrapper(stub);
+        //        this.testChar(stub);
+        //        this.testCharacter(stub);
+        //        this.testCompletionStage(stub);
+        //        this.testConstructor(stub);
+        //        this.testConsumes(stub);
+        //        this.testCookieParams(stub);
+        //        this.testDouble(stub);
+        //        this.testDoubleWrapper(stub);
+        //        this.testFloat(stub);
+        //        this.testFloatWrapper(stub);
+        //        this.testHeaderParams(stub);
+        //        this.testInheritance(stub);
+        //        this.testInnerClass(stub);
+        //        this.testInt(stub);
+        //        this.testInteger(stub);
+        //        this.testJaxrsResponse(stub);
+        //        this.testLocatorGet(stub);
+        //        this.testLocatorPost(stub);
+        //        this.testLong(stub);
+        //        this.testLongWrapper(stub);
+        //        this.testMatrixParams(stub);
+        //        this.testParamsList(stub);
+        //        this.testParamsSet(stub);
+        //        this.testParamsSortedSet(stub);
+        //        this.testPathParams(stub);
+        //        this.testProduces(stub);
+        //        this.testQueryParams(stub);
+        //        this.testReferenceField(stub);
+        //        this.testResponse(stub);
+        //        this.testServerCookies(stub);
+        //        this.testServerHeaders(stub);
+        //        this.testServletConfigServletName(stub);
+        //        this.testServletContextInitParam(stub);
+        //        this.testServletContextPath(stub);
+        //        this.testServletInfo(stub);
+        //        this.testServletParams(stub);
+        //        this.testServletPath(stub);
+        //        this.testServletResponse(stub);
+        //        this.testShort(stub);
+        //        this.testShortWrapper(stub);
+        //        this.testSSE(stub);
+        //        this.testString(stub);
+        //        this.testSuspend(stub);
+        //        this.testCopy(stub);
         this.testInterface(stub);
     }
 
@@ -1338,8 +1376,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.intf(gem);
-            CC1_proto.gInteger expected = dev.resteasy.grpc.example.CC1_proto.gInteger.newBuilder()
-                    .setValue(17)
+            CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
+                    .setValue("xyz")
                     .build();
             Assert.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
@@ -1465,25 +1503,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             ListenableFuture<GeneralReturnMessage> future = futureStub.getInt(gem);
             Assert.assertEquals(4, future.get().getGIntegerField().getValue());
-        } catch (StatusRuntimeException e) {
-
-            try (StringWriter writer = new StringWriter()) {
-                e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
-            }
-        }
-    }
-
-    void testInterface(CC1ServiceBlockingStub stub) throws Exception {
-        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/interface").build();
-        GeneralReturnMessage response;
-        try {
-            response = stub.intf(gem);
-            CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
-                    .setValue("xyz")
-                    .build();
-            Assert.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {

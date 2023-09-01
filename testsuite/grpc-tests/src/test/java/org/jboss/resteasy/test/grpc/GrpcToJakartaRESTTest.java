@@ -19,12 +19,14 @@
 
 package org.jboss.resteasy.test.grpc;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +45,10 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
 
     @Deployment
     public static Archive<?> deployPlainText() throws Exception {
-        return doDeploy(GrpcToJakartaRESTTest.class.getSimpleName());
+        Archive ar = doDeploy(GrpcToJakartaRESTTest.class.getSimpleName());
+        ar.as(ZipExporter.class).exportTo(
+                new File("/tmp/Interface.war"), true);
+        return ar;
     }
 
     private static ManagedChannel channelPlaintext;
