@@ -6,5 +6,5 @@ public final class Constants {
         // restrict instantiation
     }
 
-    public static final String INTERFACE = "INTERFACE";
+    public static final String ANY = "ANY";
 }

@@ -1,9 +1,21 @@
 package dev.resteasy.grpc.bridge.runtime;
 
+import com.google.protobuf.Any;
+
 public final class Utility {
 
     private Utility() {
         // restrict instantiation
+    }
+
+    public static Class<?> extractTypeFromAny(Any any, ClassLoader cl, String outerClassName) throws ClassNotFoundException {
+        String className = any.getTypeUrl().substring(any.getTypeUrl().indexOf('/') + 1);
+        String pkg = className.substring(0, className.lastIndexOf('.') + 1);
+        String innerClassName = className.substring(className.lastIndexOf('.') + 1);
+        className = pkg + outerClassName + "$" + innerClassName;
+        Class<?> clazz = cl.loadClass(className);
+        Class<?>[] cls = clazz.getDeclaredClasses();
+        return clazz;
     }
 
     public static String camelize(String s) {

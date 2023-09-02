@@ -120,8 +120,10 @@ service CC1Service {
   rpc copy (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/impl gEmpty dev_resteasy_grpc_example___IntfImpl GET sync
   rpc impl (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/interface gEmpty INTERFACE GET sync
-  rpc intf (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/interface/entity google.protobuf.Any gString GET sync
+  rpc intfEntity (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/interface/return gEmpty google.protobuf.Any GET sync
+  rpc intfReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
 }
 
 message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {

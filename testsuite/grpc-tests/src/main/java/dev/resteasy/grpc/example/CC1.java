@@ -640,16 +640,14 @@ public class CC1 {
     }
 
     @GET
-    @Path("impl")
-    public IntfImpl impl() {
-        IntfImpl intf = new IntfImpl();
-        intf.setS("xyz");
-        return intf;
+    @Path("interface/entity")
+    public String intfEntity(Intf intf) {
+        return intf.getS();
     }
 
     @GET
-    @Path("interface")
-    public Intf intf() {
+    @Path("interface/return")
+    public Intf intfReturn() {
         Intf intf = new IntfImpl();
         intf.setS("xyz");
         return intf;

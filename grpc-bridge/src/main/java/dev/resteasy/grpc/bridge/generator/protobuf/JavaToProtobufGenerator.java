@@ -1,6 +1,6 @@
 package dev.resteasy.grpc.bridge.generator.protobuf;
 
-import static dev.resteasy.grpc.bridge.runtime.Constants.INTERFACE;
+import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -497,7 +497,7 @@ public class JavaToProtobufGenerator {
                 .append("   string httpMethod = ").append(counter++).append(";" + LS)
                 .append("   oneof messageType {" + LS);
         for (String messageType : entityMessageTypes) {
-            if (INTERFACE.equals(messageType)) {
+            if (ANY.equals(messageType)) {
                 continue;
             }
             sb.append("      ")
@@ -520,7 +520,7 @@ public class JavaToProtobufGenerator {
                 .append("   gInteger status = ").append(counter++).append(";" + LS)
                 .append("   oneof messageType {" + LS);
         for (String messageType : returnMessageTypes) {
-            if (INTERFACE.equals(messageType)) {
+            if (ANY.equals(messageType)) {
                 continue;
             }
             sb.append("      ")
@@ -905,6 +905,9 @@ public class JavaToProtobufGenerator {
                 }
                 // array?
                 ResolvedType rt = p.getType().resolve();
+                if (isInterface(rt)) {
+                    return "google.protobuf.Any";
+                }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
                 String type = rt.describe();
                 return fqnifyClass(type, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
@@ -960,16 +963,8 @@ public class JavaToProtobufGenerator {
                 }
                 // array?
                 ResolvedType rt = ((Type) node).resolve();
-
-                if (rt instanceof ResolvedReferenceType) {
-                    Optional<ResolvedReferenceTypeDeclaration> opt = ((ResolvedReferenceType) rt).getTypeDeclaration();
-                    if (opt.isPresent()) {
-                        ResolvedReferenceTypeDeclaration rrtd = opt.get();
-                        if (rrtd.isInterface()) {
-                            System.out.println("is interface: " + rrtd.getClassName());
-                            return INTERFACE;
-                        }
-                    }
+                if (isInterface(rt)) {
+                    return "google.protobuf.Any";
                 }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
                 String type = ((Type) node).resolve().describe();
@@ -1108,5 +1103,18 @@ public class JavaToProtobufGenerator {
             return "PUT";
         }
         return HttpServletRequestImpl.LOCATOR;
+    }
+
+    private static boolean isInterface(ResolvedType rt) {
+        if (rt instanceof ResolvedReferenceType) {
+            Optional<ResolvedReferenceTypeDeclaration> opt = ((ResolvedReferenceType) rt).getTypeDeclaration();
+            if (opt.isPresent()) {
+                ResolvedReferenceTypeDeclaration rrtd = opt.get();
+                if (rrtd.isInterface()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

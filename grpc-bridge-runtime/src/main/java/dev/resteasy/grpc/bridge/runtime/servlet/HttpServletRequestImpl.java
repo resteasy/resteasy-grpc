@@ -19,6 +19,8 @@
 
 package dev.resteasy.grpc.bridge.runtime.servlet;
 
+import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -73,7 +75,6 @@ import io.undertow.util.LocaleUtils;
  */
 public class HttpServletRequestImpl implements HttpServletRequest {
 
-    public static final String GRPC_RETURN_RESPONSE = "grpc-return-response";
     public static final String LOCATOR = "LOCATOR";
 
     private ServletResponse servletResponse;
@@ -129,7 +130,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         if ("com.google.protobuf.Any".equals(retn)) {
             acceptList = new ArrayList<String>();
             acceptList.add("true");
-            headers.put(GRPC_RETURN_RESPONSE, acceptList);
+            headers.put(ANY, acceptList);
         }
         this.cookies = cookies;
         this.formParameters = formParameters;
@@ -721,7 +722,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     }
 
     public static String getGrpcReturnResponse() {
-        return GRPC_RETURN_RESPONSE;
+        return ANY;
     }
 
     public void setContextPath(String contextPath) {
@@ -766,7 +767,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         if ("com.google.protobuf.Any".equals(returnType) || "Any".equals(returnType)) {
             List<String> list = new ArrayList<String>();
             list.add("true");
-            headers.put(GRPC_RETURN_RESPONSE, list);
+            headers.put(ANY, list);
         }
     }
 
