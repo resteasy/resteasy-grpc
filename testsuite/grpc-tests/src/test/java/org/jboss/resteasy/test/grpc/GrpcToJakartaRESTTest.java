@@ -45,10 +45,7 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
 
     @Deployment
     public static Archive<?> deployPlainText() throws Exception {
-        Archive ar = doDeploy(GrpcToJakartaRESTTest.class.getSimpleName());
-        ar.as(ZipExporter.class).exportTo(
-                new File("/tmp/Interface.war"), true);
-        return ar;
+        return doDeploy(GrpcToJakartaRESTTest.class.getSimpleName());
     }
 
     private static ManagedChannel channelPlaintext;
