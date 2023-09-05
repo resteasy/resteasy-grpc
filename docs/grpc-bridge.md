@@ -885,8 +885,84 @@ client side:
            System.out.println(any.unpack(gString.class));
         } catch (StatusRuntimeException e) {
            //
-        } 
+        }
 
+Similarly, interfaces need some additional care, but, in this case, the issue shows up on both
+the client and server sides since both entity parameters and return values can be expressed as
+interfaces. For example,
+
+        public interface Intf {
+
+            String getS();
+            void setS(String s);
+        }
+  
+        public class IntfImpl implements Intf {
+
+            private String s;
+
+            @Override
+            public String getS() {
+                return s;
+            }
+
+            @Override
+            public void setS(String obj) {
+                this.s = obj;
+            }
+        }
+
+If we have a resource method with an interface entity
+
+        @GET
+        @Path("interface/entity")
+        public String intfEntity(Intf intf) {
+            return intf.getS();
+        }
+        
+then we need to send the entity as an `Any` so the type of the entity can be determined at run time:
+
+        Greet_proto.GeneralEntityMessage.Builder builder = Greet_proto.GeneralEntityMessage.newBuilder();
+        org_greet___IntfImpl entity = org_greet___IntfImpl.newBuilder().setS("abc").build();
+        Any entityAny = Any.pack(entity);
+        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/interface/entity")
+                .setGoogleProtobufAnyField(entityAny)
+                .build();
+                
+The extraction of the `org.greet.IntfImpl` on the server side is done under the covers by the intermediary layer.
+
+If we have a resource method that returns an interface
+
+        @GET
+        @Path("interface/return")
+        public Intf intfReturn() {
+            Intf intf = new IntfImpl();
+            intf.setS("xyz");
+            return intf;
+        }
+
+then the intermediary layer packs the `IntfImpl` into an `Any` so that the client can determine the type at run time.
+In this case, the extraction must be done explicitly. We have an `extractTypeFromAny()` method in the grpc-bridge-runtime
+class `dev.resteasy.grpc.bridge.runtime.Utility` that can help:
+
+        public static Class<?> extractTypeFromAny(Any any, ClassLoader cl, String outerClassName) throws ClassNotFoundException {
+            String className = any.getTypeUrl().substring(any.getTypeUrl().indexOf('/') + 1);
+            String pkg = className.substring(0, className.lastIndexOf('.') + 1);
+            String innerClassName = className.substring(className.lastIndexOf('.') + 1);
+            className = pkg + outerClassName + "$" + innerClassName;
+            Class<?> clazz = cl.loadClass(className);
+            return clazz;
+        }
+
+Then we can extract the return value as follows:
+
+        GeneralReturnMessage response;
+        try {
+            response = stub.intfReturn(gem);
+            Any any = response.getGoogleProtobufAnyField();
+            Class clazz = Utility.extractTypeFromAny(any, Greet_proto.class.getClassLoader(), "Greet_proto");
+            dev_resteasy_grpc_example___IntfImpl impl = (dev_resteasy_grpc_example___IntfImpl) any.unpack(clazz);
+    
 Another case in which we can't statically determine the return type is
 when an asynchronous resource method uses the `@Suspended` annotation:
 

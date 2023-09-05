@@ -26,6 +26,7 @@ import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
+import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
@@ -1361,7 +1362,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.intfReturn(gem);
             Any any = response.getGoogleProtobufAnyField();
-            dev_resteasy_grpc_example___IntfImpl impl = any.unpack(dev_resteasy_grpc_example___IntfImpl.class);
+            Class clazz = Utility.extractTypeFromAny(any, CC1_proto.class.getClassLoader(), "CC1_proto");
+            dev_resteasy_grpc_example___IntfImpl impl = (dev_resteasy_grpc_example___IntfImpl) any.unpack(clazz);
             Assert.assertEquals("xyz", impl.getS());
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {

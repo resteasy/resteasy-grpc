@@ -14,7 +14,6 @@ public final class Utility {
         String innerClassName = className.substring(className.lastIndexOf('.') + 1);
         className = pkg + outerClassName + "$" + innerClassName;
         Class<?> clazz = cl.loadClass(className);
-        Class<?>[] cls = clazz.getDeclaredClasses();
         return clazz;
     }
 
