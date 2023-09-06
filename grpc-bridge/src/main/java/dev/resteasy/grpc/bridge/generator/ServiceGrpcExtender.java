@@ -144,16 +144,13 @@ public class ServiceGrpcExtender {
     }
 
     private void imports(Scanner scanner, StringBuilder sb, String fileName) {
-        sb.append("import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;" + LS)
+        sb
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
                 .append("import com.google.protobuf.GeneratedMessageV3;" + LS)
                 .append("import com.google.protobuf.Timestamp;" + LS)
-                .append("import dev.resteasy.grpc.bridge.runtime.Utility;" + LS)
                 .append("import io.grpc.stub.StreamObserver;" + LS)
                 .append("import java.io.ByteArrayInputStream;" + LS)
                 .append("import java.io.ByteArrayOutputStream;" + LS)
-                .append("import java.io.InputStream;" + LS)
-                .append("import java.lang.reflect.Method;" + LS)
                 .append("import java.security.AccessController;" + LS)
                 .append("import java.security.PrivilegedAction;" + LS)
                 .append("import java.text.ParseException;" + LS)
@@ -170,10 +167,6 @@ public class ServiceGrpcExtender {
                 .append("import jakarta.servlet.http.Cookie;" + LS)
                 .append("import jakarta.servlet.http.HttpServletRequest;" + LS)
                 .append("import jakarta.servlet.http.HttpServletResponse;" + LS)
-                .append("import jakarta.ws.rs.client.Client;" + LS)
-                .append("import jakarta.ws.rs.client.ClientBuilder;" + LS)
-                .append("import jakarta.ws.rs.core.Response;" + LS)
-                .append("import dev.resteasy.grpc.bridge.runtime.i18n.Messages;" + LS)
                 .append("import dev.resteasy.grpc.bridge.runtime.servlet.AsyncMockServletOutputStream;" + LS)
                 .append("import dev.resteasy.grpc.bridge.runtime.servlet.GrpcHttpServletDispatcher;" + LS)
                 .append("import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;" + LS)
@@ -183,9 +176,6 @@ public class ServiceGrpcExtender {
                 .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
                 .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
                 .append("import com.google.protobuf.Any;" + LS)
-                .append("import ").append(packageName).append('.')
-                .append(fileName)
-                .append("_Server;" + LS)
                 .append("import ")
                 .append(packageName)
                 .append(".")

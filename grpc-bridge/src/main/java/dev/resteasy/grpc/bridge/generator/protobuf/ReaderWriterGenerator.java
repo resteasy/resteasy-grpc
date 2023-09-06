@@ -212,6 +212,9 @@ public class ReaderWriterGenerator {
                         + LS)
                 .append("      if (servletResponse != null && servletResponse.getHeader(ANY) != null) {"
                         + LS)
+                .append("         if (servletResponse instanceof HttpServletResponseImpl) {" + LS)
+                .append("            ((HttpServletResponseImpl) servletResponse).removeHeader(ANY);" + LS)
+                .append("         }" + LS)
                 .append("         CodedOutputStream cos = CodedOutputStream.newInstance(entityStream);" + LS)
                 .append("         Any.pack(message).writeTo(cos);" + LS)
                 .append("         cos.flush();" + LS)
