@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.grpc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -139,6 +140,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testCopy(stub);
         this.testInterfaceEntity(stub);
         this.testInterfaceReturn(stub);
+        this.testArrayField(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1365,6 +1367,46 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Class clazz = Utility.extractTypeFromAny(any, CC1_proto.class.getClassLoader(), "CC1_proto");
             dev_resteasy_grpc_example___IntfImpl impl = (dev_resteasy_grpc_example___IntfImpl) any.unpack(clazz);
             Assert.assertEquals("xyz", impl.getS());
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    void testArrayField(CC1ServiceBlockingStub stub) throws IOException {
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        builder.setURL("http://localhost:8080" + "/p/array/field");
+        CC1_proto.dev_resteasy_grpc_example___ArrayHolder.Builder holderBuilder = CC1_proto.dev_resteasy_grpc_example___ArrayHolder
+                .newBuilder();
+        holderBuilder.setI(3);
+        holderBuilder.addInts(5);
+        holderBuilder.addInts(7);
+        holderBuilder.addInts(11);
+        CC1_proto.dev_resteasy_grpc_example___Other.Builder otherBuilder = CC1_proto.dev_resteasy_grpc_example___Other
+                .newBuilder();
+        holderBuilder.addOthers(otherBuilder.setS("abc").build());
+        holderBuilder.addOthers(otherBuilder.setS("xyz").build());
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcExampleArrayHolderField(holderBuilder.build()).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.fieldArray(gem);
+            CC1_proto.dev_resteasy_grpc_example___ArrayHolder responseHolder = response
+                    .getDevResteasyGrpcExampleArrayHolderField();
+            Assert.assertEquals(6, responseHolder.getI());
+            Assert.assertEquals(4, responseHolder.getIntsCount());
+            Assert.assertEquals(10, responseHolder.getInts(0));
+            Assert.assertEquals(14, responseHolder.getInts(1));
+            Assert.assertEquals(22, responseHolder.getInts(2));
+            Assert.assertEquals(123, responseHolder.getInts(3));
+            Assert.assertEquals(3, responseHolder.getOthersCount());
+            Assert.assertEquals(CC1_proto.dev_resteasy_grpc_example___Other.newBuilder().setS("xabcy").build(),
+                    responseHolder.getOthers(0));
+            Assert.assertEquals(CC1_proto.dev_resteasy_grpc_example___Other.newBuilder().setS("xxyzy").build(),
+                    responseHolder.getOthers(1));
+            Assert.assertEquals(CC1_proto.dev_resteasy_grpc_example___Other.newBuilder().setS("other").build(),
+                    responseHolder.getOthers(2));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));

@@ -689,6 +689,8 @@ public class JavaToProtobufGenerator {
                         type = "bytes";
                     } else if (ct.isPrimitive()) {
                         type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
+                    } else if ((type = PRIMITIVE_WRAPPER_TYPES.get(removeTypeVariables(ct.describe()))) != null) {
+                        type = "repeated " + type;
                     } else {
                         fqn = removeTypeVariables(ct.describe());
                         if (!ct.isReferenceType()) {
@@ -819,7 +821,7 @@ public class JavaToProtobufGenerator {
                     ResolvedType ct = type.asArrayType().getComponentType();
                     if ("byte".equals(ct.describe())) {
                         typeName = "bytes";
-                    } else if (ct.isPrimitive()) {
+                    } else if ((typeName = PRIMITIVE_WRAPPER_TYPES.get(removeTypeVariables(ct.describe()))) != null) {
                         typeName = "repeated " + typeName;
                     } else {
                         fqn = type.describe();
@@ -1070,6 +1072,9 @@ public class JavaToProtobufGenerator {
 
     private static String fqnifyClass(String s, boolean isInnerClass) {
         int l = s.lastIndexOf(".");
+        if (l < 0) {
+            return s;
+        }
         String sPackage = s.substring(0, l).replace(".", "_");
         String separator = isInnerClass ? "_INNER_" : "___";
         String className = s.substring(l + 1);

@@ -652,4 +652,24 @@ public class CC1 {
         intf.setS("xyz");
         return intf;
     }
+
+    @GET
+    @Path("array/field")
+    public ArrayHolder fieldArray(ArrayHolder holder) {
+        ArrayHolder newHolder = new ArrayHolder();
+        newHolder.setI(holder.getI() * 2);
+        int[] newInts = new int[holder.getInts().length + 1];
+        for (int j = 0; j < holder.getInts().length; j++) {
+            newInts[j] = holder.getInts()[j] * 2;
+        }
+        newInts[holder.getInts().length] = 123;
+        newHolder.setInts(newInts);
+        Other[] newOthers = new Other[holder.getOthers().length + 1];
+        for (int j = 0; j < holder.getOthers().length; j++) {
+            newOthers[j] = new Other("x" + holder.getOthers()[j].getS() + "y");
+        }
+        newOthers[holder.getOthers().length] = new Other("other");
+        newHolder.setOthers(newOthers);
+        return newHolder;
+    }
 }
