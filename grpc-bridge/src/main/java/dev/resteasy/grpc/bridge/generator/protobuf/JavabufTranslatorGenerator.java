@@ -408,7 +408,7 @@ public class JavabufTranslatorGenerator {
                 .append("                  final Field field = javaClass.getDeclaredField(fd.getName());" + LS)
                 .append("                  field.setAccessible(true);" + LS)
                 .append("                  if (fd.isRepeated()) {" + LS)
-                .append("                     Class<?> componentClass = field.getType().componentType();" + LS)
+                .append("                     Class<?> componentClass = field.getType().getComponentType();" + LS)
                 .append("                     List list = (List) message.getField(fd);" + LS)
                 .append("                     Object array = Array.newInstance(componentClass, list.size());" + LS)
                 .append("                     if (componentClass.isPrimitive()) {" + LS)
