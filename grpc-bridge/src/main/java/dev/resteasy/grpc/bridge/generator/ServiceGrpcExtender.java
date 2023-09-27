@@ -19,6 +19,8 @@
 
 package dev.resteasy.grpc.bridge.generator;
 
+import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -142,7 +144,8 @@ public class ServiceGrpcExtender {
     }
 
     private void imports(Scanner scanner, StringBuilder sb, String fileName) {
-        sb.append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
+        sb
+                .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
                 .append("import com.google.protobuf.GeneratedMessageV3;" + LS)
                 .append("import com.google.protobuf.Timestamp;" + LS)
                 .append("import io.grpc.stub.StreamObserver;" + LS)
@@ -164,10 +167,6 @@ public class ServiceGrpcExtender {
                 .append("import jakarta.servlet.http.Cookie;" + LS)
                 .append("import jakarta.servlet.http.HttpServletRequest;" + LS)
                 .append("import jakarta.servlet.http.HttpServletResponse;" + LS)
-                .append("import jakarta.ws.rs.client.Client;" + LS)
-                .append("import jakarta.ws.rs.client.ClientBuilder;" + LS)
-                .append("import jakarta.ws.rs.core.Response;" + LS)
-                .append("import dev.resteasy.grpc.bridge.runtime.i18n.Messages;" + LS)
                 .append("import dev.resteasy.grpc.bridge.runtime.servlet.AsyncMockServletOutputStream;" + LS)
                 .append("import dev.resteasy.grpc.bridge.runtime.servlet.GrpcHttpServletDispatcher;" + LS)
                 .append("import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;" + LS)
@@ -177,9 +176,6 @@ public class ServiceGrpcExtender {
                 .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
                 .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
                 .append("import com.google.protobuf.Any;" + LS)
-                .append("import ").append(packageName).append('.')
-                .append(fileName)
-                .append("_Server;" + LS)
                 .append("import ")
                 .append(packageName)
                 .append(".")
@@ -272,7 +268,8 @@ public class ServiceGrpcExtender {
             if (!"Any".equals(actualEntityClass)
                     && !"google.protobuf.Any".equals(actualEntityClass)
                     && !"gInteger".equals(actualEntityClass)
-                    && !"gEmpty".equals(actualEntityClass)) {
+                    && !"gEmpty".equals(actualEntityClass)
+                    && !ANY.equals(actualEntityClass)) {
                 sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
                 imports.add(actualEntityClass);
             }
@@ -281,7 +278,8 @@ public class ServiceGrpcExtender {
             if (!"Any".equals(actualReturnClass)
                     && !"google.protobuf.Any".equals(actualReturnClass)
                     && !"gInteger".equals(actualReturnClass)
-                    && !"gEmpty".equals(actualReturnClass)) {
+                    && !"gEmpty".equals(actualReturnClass)
+                    && !ANY.equals(actualReturnClass)) {
                 sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
                 imports.add(actualReturnClass);
             }

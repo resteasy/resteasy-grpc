@@ -19,6 +19,8 @@
 
 package dev.resteasy.grpc.bridge.runtime.servlet;
 
+import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -53,7 +55,6 @@ import dev.resteasy.grpc.bridge.runtime.i18n.Messages;
  */
 public class HttpServletResponseImpl implements HttpServletResponse {
 
-    public static final String GRPC_RETURN_RESPONSE = "grpc-return-response";
     public static final String GRPC_ASYNC = "grpc-async";
 
     public enum ResponseState {
@@ -83,7 +84,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if ("com.google.protobuf.Any".equals(retn) || "Any".equals(retn)) {
             List<String> list = new ArrayList<String>();
             list.add("true");
-            headers.put(GRPC_RETURN_RESPONSE, list);
+            headers.put(ANY, list);
         }
         if ("completionStage".equals(async) || "sse".equals(async) || "suspended".equals(async)) {
             List<String> list = new ArrayList<String>();
@@ -92,6 +93,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             msos = new AsyncMockServletOutputStream();
         } else {
             msos = new MockServletOutputStream();
+        }
+        if (ANY.equals(retn)) {
+            List<String> list = new ArrayList<String>();
+            headers.put(ANY, list);
         }
         this.builder = builder;
         this.fd = fd;
@@ -354,6 +359,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     public List<Cookie> getCookies() {
         return cookies;
+    }
+
+    public void removeHeader(String name) {
+        headers.remove(name);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

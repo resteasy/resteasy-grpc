@@ -84,7 +84,7 @@ public class ReaderWriterGenerator {
     }
 
     private static void imports(Class<?> wrapperClass, String rootClass, StringBuilder sb) {
-        sb
+        sb.append("import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;" + LS)
                 .append("import java.io.ByteArrayOutputStream;" + LS)
                 .append("import java.io.IOException;" + LS)
                 .append("import java.io.InputStream;" + LS)
@@ -107,6 +107,7 @@ public class ReaderWriterGenerator {
                 .append("import com.google.protobuf.CodedOutputStream;" + LS)
                 .append("import ").append("jakarta.servlet.http.HttpServletResponse;" + LS)
                 .append("import ").append("dev.resteasy.grpc.bridge.runtime.servlet.AsyncMockServletOutputStream;" + LS)
+                .append("import ").append("dev.resteasy.grpc.bridge.runtime.Utility;" + LS)
                 .append("import ").append(OutboundSseEventImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import org.jboss.resteasy.core.ResteasyContext;" + LS);
@@ -148,9 +149,13 @@ public class ReaderWriterGenerator {
                 .append("   @Override" + LS)
                 .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
                         + LS)
-                .append("      return ")
+                .append("      if (type.isInterface()) {" + LS)
+                .append("         return true;" + LS)
+                .append("      } else {" + LS)
+                .append("         return ")
                 .append(args[2])
                 .append("JavabufTranslator.handlesFromJavabuf(type);" + LS)
+                .append("      }" + LS)
                 .append("   }" + LS + LS)
                 .append("   @SuppressWarnings(\"unchecked\")" + LS)
                 .append("   @Override" + LS)
@@ -159,7 +164,15 @@ public class ReaderWriterGenerator {
                 .append("        MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {"
                         + LS)
                 .append("      try {" + LS)
-                .append("         if (httpHeaders.getFirst(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {" + LS)
+                .append("         if (type.isInterface()) {" + LS)
+                .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
+                .append("            Class clazz = Utility.extractTypeFromAny(any, getClass().getClassLoader(), \"")
+                .append(args[2]).append("_proto\");" + LS)
+                .append("            Message m = any.unpack(clazz);" + LS)
+                .append("            return ")
+                .append(args[2])
+                .append("JavabufTranslator.translateFromJavabuf(m);" + LS)
+                .append("         } else if (httpHeaders.getFirst(ANY) != null) {" + LS)
                 .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
                 .append("            Message m = any.unpack(")
                 .append(args[2])
@@ -197,8 +210,11 @@ public class ReaderWriterGenerator {
         sb.append("      Message message = ").append(args[2]).append("JavabufTranslator.translateToJavabuf(t);" + LS)
                 .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);"
                         + LS)
-                .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {"
+                .append("      if (servletResponse != null && servletResponse.getHeader(ANY) != null) {"
                         + LS)
+                .append("         if (servletResponse instanceof HttpServletResponseImpl) {" + LS)
+                .append("            ((HttpServletResponseImpl) servletResponse).removeHeader(ANY);" + LS)
+                .append("         }" + LS)
                 .append("         CodedOutputStream cos = CodedOutputStream.newInstance(entityStream);" + LS)
                 .append("         Any.pack(message).writeTo(cos);" + LS)
                 .append("         cos.flush();" + LS)

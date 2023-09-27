@@ -26,6 +26,7 @@ import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
+import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
@@ -41,6 +42,7 @@ import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC4;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC5;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC7;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC9;
+import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___IntfImpl;
 import dev.resteasy.grpc.example.CC1_proto.gCookie;
 import dev.resteasy.grpc.example.CC1_proto.gHeader;
 import dev.resteasy.grpc.example.CC1_proto.gInteger;
@@ -135,6 +137,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testString(stub);
         this.testSuspend(stub);
         this.testCopy(stub);
+        this.testInterfaceEntity(stub);
+        this.testInterfaceReturn(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1324,6 +1328,44 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Assert.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    void testInterfaceEntity(CC1ServiceBlockingStub stub) throws Exception {
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        dev_resteasy_grpc_example___IntfImpl entity = dev_resteasy_grpc_example___IntfImpl.newBuilder().setS("abc").build();
+        Any entityAny = Any.pack(entity);
+        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/interface/entity")
+                .setGoogleProtobufAnyField(entityAny)
+                .build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.intfEntity(gem);
+            gString gs = response.getGStringField();
+            Assert.assertEquals("abc", gs.getValue());
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    void testInterfaceReturn(CC1ServiceBlockingStub stub) throws Exception {
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/interface/return").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.intfReturn(gem);
+            Any any = response.getGoogleProtobufAnyField();
+            Class clazz = Utility.extractTypeFromAny(any, CC1_proto.class.getClassLoader(), "CC1_proto");
+            dev_resteasy_grpc_example___IntfImpl impl = (dev_resteasy_grpc_example___IntfImpl) any.unpack(clazz);
+            Assert.assertEquals("xyz", impl.getS());
+        } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
                 Assert.fail(writer.toString());

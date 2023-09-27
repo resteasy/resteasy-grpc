@@ -638,4 +638,18 @@ public class CC1 {
     public String copy(String s) {
         return s;
     }
+
+    @GET
+    @Path("interface/entity")
+    public String intfEntity(Intf intf) {
+        return intf.getS();
+    }
+
+    @GET
+    @Path("interface/return")
+    public Intf intfReturn() {
+        Intf intf = new IntfImpl();
+        intf.setS("xyz");
+        return intf;
+    }
 }
