@@ -640,6 +640,12 @@ public class CC1 {
     }
 
     @GET
+    @Path("interface/impl")
+    public void intfImpl(IntfImpl implIntf) {
+        // not used: includes IntfImpl in .proto file
+    }
+
+    @GET
     @Path("interface/entity")
     public String intfEntity(Intf intf) {
         return intf.getS();

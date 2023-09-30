@@ -26,6 +26,8 @@ import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
+import dev.resteasy.grpc.arrays.ArrayHolder;
+import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
@@ -70,6 +72,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsLibrary(resolver.resolve("dev.resteasy.grpc:grpc-bridge-runtime")
                         .withoutTransitivity()
                         .asSingleFile())
+                .addClass(Array_proto.class)
+                .addPackage(ArrayHolder.class.getPackage())
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource("web.xml");
     }
@@ -1337,7 +1341,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
     void testInterfaceEntity(CC1ServiceBlockingStub stub) throws Exception {
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        dev_resteasy_grpc_example___IntfImpl entity = dev_resteasy_grpc_example___IntfImpl.newBuilder().setS("abc").build();
+        CC1_proto.dev_resteasy_grpc_example___IntfImpl entity = CC1_proto.dev_resteasy_grpc_example___IntfImpl.newBuilder()
+                .setS("abc").build();
         Any entityAny = Any.pack(entity);
         GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/interface/entity")
                 .setGoogleProtobufAnyField(entityAny)

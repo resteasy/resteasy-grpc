@@ -118,8 +118,8 @@ service CC1Service {
   rpc sse (GeneralEntityMessage) returns (stream dev_resteasy_grpc_bridge_runtime_sse___SseEvent);
 // p/copy gString gString GET sync
   rpc copy (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/impl gEmpty dev_resteasy_grpc_example___IntfImpl GET sync
-  rpc impl (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/interface/impl dev_resteasy_grpc_example___IntfImpl google.protobuf.Any GET sync
+  rpc intfImpl (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/interface/entity google.protobuf.Any gString GET sync
   rpc intfEntity (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/interface/return gEmpty google.protobuf.Any GET sync
@@ -262,7 +262,8 @@ message GeneralEntityMessage {
       gInteger gInteger_field = 16;
       google.protobuf.Any google_protobuf_Any_field = 17;
       gCharacter gCharacter_field = 18;
-      FormMap form_field = 19;
+      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 19;
+      FormMap form_field = 20;
    }
 }
 
@@ -289,6 +290,5 @@ message GeneralReturnMessage {
       gCharacter gCharacter_field = 19;
       dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 20;
       dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 21;
-      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 22;
    }
 }
