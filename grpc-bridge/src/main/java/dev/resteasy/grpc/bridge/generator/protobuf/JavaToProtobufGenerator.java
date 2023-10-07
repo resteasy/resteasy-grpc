@@ -232,7 +232,8 @@ public class JavaToProtobufGenerator {
     private static final String LS = System.lineSeparator();
 
     private static Map<String, String> TYPE_MAP = new HashMap<String, String>();
-    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES = new HashMap<String, String>();
+    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES_FIELD = new HashMap<String, String>();
+    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES_IO = new HashMap<String, String>();
     private static Map<String, String> PRIMITIVE_WRAPPER_DEFINITIONS = new HashMap<String, String>();
     private static Set<String> ANNOTATIONS = new HashSet<String>();
     private static Set<String> HTTP_VERBS = new HashSet<String>();
@@ -265,36 +266,55 @@ public class JavaToProtobufGenerator {
         TYPE_MAP.put("String", "string");
         TYPE_MAP.put("java.lang.String", "string");
 
-        PRIMITIVE_WRAPPER_TYPES.put("boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES.put("short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES.put("int", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES.put("long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES.put("float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES.put("double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES.put("boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("char", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES.put("string", "gString");
-        PRIMITIVE_WRAPPER_TYPES.put("Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("Byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES.put("Short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES.put("Integer", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES.put("Long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES.put("Float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES.put("Double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES.put("Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("Character", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES.put("String", "gString");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.String", "gString");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Integer", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Character", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.String", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("int", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("char", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("string", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Integer", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Character", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("String", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.String", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Integer", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Character", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.String", "gString");
+
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Boolean", "bool");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Byte", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Short", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Integer", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Long", "int64");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Float", "float");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Double", "double");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Character", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("String", "string");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Boolean", "bool");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Byte", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Short", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Integer", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Long", "int64");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Float", "float");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Double", "double");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Character", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.String", "string");
 
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Boolean", "message gBoolean   {bool   value = $V$;}");
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Byte", "message gByte      {int32  value = $V$;}");
@@ -360,6 +380,7 @@ public class JavaToProtobufGenerator {
         sb.append("package " + args[1].replace('-', '.') + ";" + LS);
         sb.append("import \"google/protobuf/any.proto\";" + LS);
         sb.append("import \"google/protobuf/timestamp.proto\";" + LS);
+        sb.append("import \"dev/resteasy/grpc/arrays/arrays.proto\";" + LS);
         sb.append("option java_package = \"" + args[2] + "\";" + LS);
         sb.append("option java_outer_classname = \"" + args[3] + "_proto\";" + LS);
     }
@@ -554,8 +575,8 @@ public class JavaToProtobufGenerator {
     }
 
     /****************************************************************************/
-    /********************************
-     * classes ***********************************
+    /*********************************
+     * classes **********************************
      * /
      ****************************************************************************/
 
@@ -654,6 +675,7 @@ public class JavaToProtobufGenerator {
          */
         public void visit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb) {
             resolvedTypes.remove(clazz);
+            System.out.println("visit(): " + clazz);
             if (clazz.isInterface()) {
                 return;
             }
@@ -679,9 +701,15 @@ public class JavaToProtobufGenerator {
             // Scan all variables in class.
             for (ResolvedFieldDeclaration rfd : clazz.getDeclaredFields()) {
                 String type = null;
-                if (rfd.getType().isPrimitive() || rfd.getType().isReferenceType()
-                        && String.class.getName().equals(rfd.getType().asReferenceType().getQualifiedName())) {
+                //                if (rfd.getType().isPrimitive() || rfd.getType().isReferenceType()
+                //                        && String.class.getName().equals(rfd.getType().asReferenceType().getQualifiedName())) {
+                System.out.println("  visit() 2: " + rfd.getType().describe());
+                if (TYPE_MAP.containsKey(rfd.getType().describe())) {
                     type = TYPE_MAP.get(rfd.getType().describe());
+                    System.out.println("  visit() 3: " + type);
+                } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rfd.getType().describe())) {
+                    type = PRIMITIVE_WRAPPER_TYPES_FIELD.get(rfd.getType().describe());
+                    System.out.println("  visit() 4: " + type);
                 } else if (rfd.getType() instanceof ResolvedArrayType) {
                     ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
                     ResolvedType ct = rat.getComponentType();
@@ -689,6 +717,8 @@ public class JavaToProtobufGenerator {
                         type = "bytes";
                     } else if (ct.isPrimitive()) {
                         type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
+                    } else if (ct instanceof ResolvedArrayType) {
+                        type = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                     } else {
                         fqn = removeTypeVariables(ct.describe());
                         if (!ct.isReferenceType()) {
@@ -710,10 +740,12 @@ public class JavaToProtobufGenerator {
                             resolvedTypes.add(rrtd);
                         }
                         type = fqnifyClass(fqn, isInnerClass(rrtd));
+                        System.out.println("visit() 5: " + type);
                     } else if (rfd.getType().isTypeVariable()) {
                         type = "bytes ";
                     }
                 }
+                System.out.println("visit() 6: " + type);
                 if (type != null) {
                     sb.append("  ")
                             .append(type)
@@ -807,12 +839,12 @@ public class JavaToProtobufGenerator {
 
             // Begin protobuf message definition.
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
-
             // Scan all variables in class.
             for (FieldDeclaration fd : clazz.getFields()) {
                 ResolvedFieldDeclaration rfd = fd.resolve();
                 ResolvedType type = rfd.getType();
                 String typeName = type.describe();
+                System.out.println("typeName: " + typeName);
                 if (TYPE_MAP.containsKey(typeName)) {
                     typeName = TYPE_MAP.get(typeName);
                 } else if (type.isArray()) {
@@ -900,8 +932,11 @@ public class JavaToProtobufGenerator {
         for (Parameter p : md.getParameters()) {
             if (isEntity(p)) {
                 String rawType = p.getTypeAsString();
-                if (PRIMITIVE_WRAPPER_TYPES.containsKey(rawType)) {
-                    return PRIMITIVE_WRAPPER_TYPES.get(rawType);
+                if (PRIMITIVE_WRAPPER_TYPES_IO.containsKey(rawType)) {
+                    return PRIMITIVE_WRAPPER_TYPES_IO.get(rawType);
+                }
+                if (TYPE_MAP.containsKey(rawType)) {
+                    return TYPE_MAP.get(rawType);
                 }
                 // array?
                 ResolvedType rt = p.getType().resolve();
@@ -955,8 +990,11 @@ public class JavaToProtobufGenerator {
                         rawType = type;
                     }
                 }
-                if (PRIMITIVE_WRAPPER_TYPES.containsKey(rawType)) {
-                    return PRIMITIVE_WRAPPER_TYPES.get(rawType);
+                if (PRIMITIVE_WRAPPER_TYPES_IO.containsKey(rawType)) {
+                    return PRIMITIVE_WRAPPER_TYPES_IO.get(rawType);
+                }
+                if (TYPE_MAP.containsKey(rawType)) {
+                    return TYPE_MAP.get(rawType);
                 }
                 if ("jakarta.ws.rs.core.Response".equals(rawType) || "Response".equals(rawType)) {
                     return "google.protobuf.Any";
@@ -1117,4 +1155,28 @@ public class JavaToProtobufGenerator {
         }
         return false;
     }
+
+    //    private String handleArrays(ResolvedFieldDeclaration rfd ) {
+    //         String type = null;
+    //         ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
+    //         ResolvedType ct = rat.getComponentType();
+    //         if ("byte".equals(ct.describe())) {
+    //             type = "bytes";
+    //         } else if (ct.isPrimitive()) {
+    //             type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
+    //         } else if (ct instanceof ResolvedArrayType) {
+    //
+    //         } else {
+    //             String fqn = removeTypeVariables(ct.describe());
+    //             if (!ct.isReferenceType()) {
+    //                 return;
+    //             }
+    //             if (!visited.contains(fqn)) {
+    //                 resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
+    //             }
+    //             type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+    //                     .getTypeDeclaration()
+    //                     .get()));
+    //         }
+    //    }
 }

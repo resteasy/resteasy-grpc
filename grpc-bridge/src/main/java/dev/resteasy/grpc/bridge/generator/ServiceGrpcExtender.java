@@ -45,6 +45,7 @@ public class ServiceGrpcExtender {
     private static final Logger logger = Logger.getLogger(ServiceGrpcExtender.class);
     private static final String LS = System.lineSeparator();
     private static final String SSE_EVENT_CLASSNAME = "dev_resteasy_grpc_bridge_runtime_sse___SseEvent";
+    private static final Set<String> PROTOBUF_PRIMITIVES = new HashSet<String>();
 
     private String packageName = "";
     private String outerClassName = "";
@@ -52,6 +53,16 @@ public class ServiceGrpcExtender {
     private String servletName = "";
     private String generatedSourcePath;
     private Set<String> imports = new HashSet<String>();
+
+    static {
+        PROTOBUF_PRIMITIVES.add("bool");
+        PROTOBUF_PRIMITIVES.add("int32");
+        PROTOBUF_PRIMITIVES.add("int64");
+        PROTOBUF_PRIMITIVES.add("float");
+        PROTOBUF_PRIMITIVES.add("double");
+        PROTOBUF_PRIMITIVES.add("string");
+
+    }
 
     public static void main(String[] args) {
         if (args == null || (args.length < 3)) {
@@ -264,22 +275,26 @@ public class ServiceGrpcExtender {
         scanner.findWithinHorizon("\\(", 0);
         scanner.useDelimiter("\\)");
         String param = getParamType(packageName, outerClassName, scanner.next());
+        System.out.println("actualEntityClass: " + actualEntityClass);
         if (!imports.contains(actualEntityClass)) {
             if (!"Any".equals(actualEntityClass)
                     && !"google.protobuf.Any".equals(actualEntityClass)
                     && !"gInteger".equals(actualEntityClass)
                     && !"gEmpty".equals(actualEntityClass)
-                    && !ANY.equals(actualEntityClass)) {
+                    && !ANY.equals(actualEntityClass)
+                    && !PROTOBUF_PRIMITIVES.contains(actualEntityClass)) {
                 sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
                 imports.add(actualEntityClass);
             }
         }
+        System.out.println("actualReturnClass: " + actualReturnClass);
         if (!imports.contains(actualReturnClass)) {
             if (!"Any".equals(actualReturnClass)
                     && !"google.protobuf.Any".equals(actualReturnClass)
                     && !"gInteger".equals(actualReturnClass)
                     && !"gEmpty".equals(actualReturnClass)
-                    && !ANY.equals(actualReturnClass)) {
+                    && !ANY.equals(actualReturnClass)
+                    && !PROTOBUF_PRIMITIVES.contains(actualEntityClass)) {
                 sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
                 imports.add(actualReturnClass);
             }

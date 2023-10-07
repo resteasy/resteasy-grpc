@@ -658,4 +658,10 @@ public class CC1 {
         intf.setS("xyz");
         return intf;
     }
+
+    @GET
+    @Path("arrays")
+    public ArrayStuff arrays() {
+        return new ArrayStuff(3);
+    }
 }

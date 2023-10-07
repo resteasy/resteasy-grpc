@@ -12,6 +12,10 @@ public class CC9 {
     char c;
     CC3 cc3;
 
+    Boolean bb;
+    Short ss;
+    Integer ii;
+
     public CC9(
             boolean bo,
             byte by,
