@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import dev.resteasy.grpc.arrays.ArrayHolder;
 import dev.resteasy.grpc.arrays.Array_proto;
+import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.example.ArrayStuff;
 import dev.resteasy.grpc.example.CC1JavabufTranslator;
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
@@ -91,6 +92,7 @@ public class GrpcToJakartaRESTIndependentTest {
 
     private static ManagedChannel channelPlaintext;
     private static CC1ServiceGrpc.CC1ServiceBlockingStub blockingStubPlaintext;
+    private static JavabufTranslator translator = new CC1JavabufTranslator();
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -111,7 +113,8 @@ public class GrpcToJakartaRESTIndependentTest {
     }
 
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
-        this.testArrays(stub);
+        this.testArraysReturn(stub);
+        //        this.testArraysSend(stub);
         //        this.testBoolean(stub);
         //        this.testBooleanWithUnnecessaryURL(stub);
         //        this.testBooleanWrapper(stub);
@@ -176,19 +179,43 @@ public class GrpcToJakartaRESTIndependentTest {
 
     /****************************************************************************************/
     /****************************************************************************************/
-    void testArrays(CC1ServiceBlockingStub stub) throws Exception {
-
+    void testArraysReturn(CC1ServiceBlockingStub stub) throws Exception {
         dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
                 .newBuilder();
         GeneralEntityMessage gem = builder.build();
         GeneralReturnMessage response;
         try {
-            response = stub.arrays(gem);
+            //           ArrayStuff ass = (ArrayStuff) translator.translateFromJavabuf(CC1_proto.dev_resteasy_grpc_example___ArrayStuff.newBuilder().build());
+            response = stub.arraysReturn(gem);
             CC1_proto.dev_resteasy_grpc_example___ArrayStuff as = response.getDevResteasyGrpcExampleArrayStuffField();
             System.out.println(as);
-            CC1JavabufTranslator translator = new CC1JavabufTranslator();
             ArrayStuff arrayStuff = (ArrayStuff) translator.translateFromJavabuf(as);
-            Assert.assertEquals(new ArrayStuff(3), arrayStuff);
+            ArrayStuff expected = new ArrayStuff(3);
+            Assert.assertEquals(expected, arrayStuff);
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    void testArraysSend(CC1ServiceBlockingStub stub) throws Exception {
+        ArrayStuff as = new ArrayStuff(7);
+        //       ArrayStuff arrayStuff = (ArrayStuff) translator.translateToJavabuf(as);
+        //        CC1_proto.dev_resteasy_grpc_example___ArrayStuff drgeas = (CC1_proto.dev_resteasy_grpc_example___ArrayStuff) translator
+        //                .translateToJavabuf(as);
+        Object drgeas = translator.translateToJavabuf(as);
+        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
+                .newBuilder();
+        GeneralEntityMessage gem = builder.build();//= builder.setDevResteasyGrpcExampleArrayStuffField(drgeas).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.arraysReturn(gem);
+            CC1_proto.dev_resteasy_grpc_example___ArrayStuff drgeas2 = response.getDevResteasyGrpcExampleArrayStuffField();
+            System.out.println(drgeas2);
+            ArrayStuff arrayStuff = (ArrayStuff) translator.translateFromJavabuf(drgeas2);
+            Assert.assertEquals(new ArrayStuff(8), arrayStuff);
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));

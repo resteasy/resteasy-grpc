@@ -660,8 +660,15 @@ public class CC1 {
     }
 
     @GET
-    @Path("arrays")
-    public ArrayStuff arrays() {
+    @Path("arrays/send")
+    public ArrayStuff arraysSend(ArrayStuff as) {
+        int n = as.ints[0];
+        return new ArrayStuff(n + 1);
+    }
+
+    @GET
+    @Path("arrays/return")
+    public ArrayStuff arraysReturn() {
         return new ArrayStuff(3);
     }
 }

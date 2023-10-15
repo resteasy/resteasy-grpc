@@ -2,6 +2,7 @@ syntax = "proto3";
 package dev.resteasy.grpc.example;
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
+import "dev/resteasy/grpc/arrays/arrays.proto";
 option java_package = "dev.resteasy.grpc.example";
 option java_outer_classname = "CC1_proto";
 
@@ -124,6 +125,10 @@ service CC1Service {
   rpc intfEntity (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/interface/return gEmpty google.protobuf.Any GET sync
   rpc intfReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/send dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff GET sync
+  rpc arraysSend (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/return gEmpty dev_resteasy_grpc_example___ArrayStuff GET sync
+  rpc arraysReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
 }
 
 message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {
@@ -144,6 +149,9 @@ message dev_resteasy_grpc_example___CC9 {
   double d = 7;
   int32 c = 8;
   dev_resteasy_grpc_example___CC3 cc3 = 9;
+  bool bb = 10;
+  int32 ss = 11;
+  int32 ii = 12;
 }
 
 message dev_resteasy_grpc_example___CC7 {
@@ -173,6 +181,11 @@ message dev_resteasy_grpc_example_CC1_INNER_InnerClass {
 
 message dev_resteasy_grpc_example___IntfImpl {
   string s = 1;
+}
+
+message dev_resteasy_grpc_example___ArrayStuff {
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder intss = 1;
+  repeated int32 ints = 2;
 }
 
 message dev_resteasy_grpc_example___CC3 {
@@ -262,8 +275,9 @@ message GeneralEntityMessage {
       gInteger gInteger_field = 16;
       google.protobuf.Any google_protobuf_Any_field = 17;
       gCharacter gCharacter_field = 18;
-      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 19;
-      FormMap form_field = 20;
+      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 19;
+      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 20;
+      FormMap form_field = 21;
    }
 }
 
@@ -289,6 +303,7 @@ message GeneralReturnMessage {
       dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 18;
       gCharacter gCharacter_field = 19;
       dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 20;
-      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 21;
+      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 21;
+      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 22;
    }
 }

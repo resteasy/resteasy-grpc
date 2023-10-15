@@ -17,6 +17,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
@@ -65,7 +66,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
     static Archive<?> doDeploy(final String deploymentName) throws Exception {
         final var resolver = Maven.resolver()
                 .loadPomFromFile("pom.xml");
-        return ShrinkWrap.create(WebArchive.class, deploymentName + ".war")
+        Archive ar = ShrinkWrap.create(WebArchive.class, deploymentName + ".war")
                 .addPackage(AbstractGrpcToJakartaRESTTest.class.getPackage())
                 .addPackage(ExampleApp.class.getPackage())
                 .addPackage(CC8.class.getPackage())
@@ -76,6 +77,9 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addPackage(ArrayHolder.class.getPackage())
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource("web.xml");
+        ar.as(ZipExporter.class).exportTo(
+                new File("/tmp/arrays.war"), true);
+        return ar;
     }
 
     static void accessServletContexts() {
