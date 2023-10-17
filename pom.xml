@@ -74,7 +74,7 @@
         <version.com.github.javaparser>3.18.0</version.com.github.javaparser>
         <version.com.google.protobuf>3.22.3</version.com.google.protobuf>
 
-        <version.io.undertow>2.3.8.Final</version.io.undertow>
+        <version.io.undertow>2.3.10.Final</version.io.undertow>
 
         <version.org.jboss.logging.jboss-logging>3.5.3.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-tools>2.2.1.Final</version.org.jboss.logging.jboss-logging-tools>
