@@ -223,7 +223,7 @@ public class JavabufTranslatorGenerator {
     private static void imports(Class<?>[] wrappedClasses, StringBuilder sb) {
         sb.append("import java.lang.reflect.Array;" + LS)
                 .append("import java.lang.reflect.Field;" + LS)
-                .append("import java.util.AbstractList;" + LS)
+                //                .append("import java.util.AbstractList;" + LS)
                 .append("import java.util.ArrayList;" + LS)
                 .append("import java.util.HashMap;" + LS)
                 .append("import java.util.List;" + LS)
@@ -231,6 +231,7 @@ public class JavabufTranslatorGenerator {
                 .append("import com.google.protobuf.Descriptors;" + LS)
                 .append("import com.google.protobuf.Descriptors.Descriptor;" + LS)
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
+                .append("import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;" + LS)
                 .append("import com.google.protobuf.DynamicMessage;" + LS)
                 .append("import com.google.protobuf.Message;" + LS)
                 .append("import ").append(ArrayUtility.class.getCanonicalName()).append(";" + LS)
@@ -538,7 +539,7 @@ public class JavabufTranslatorGenerator {
                  * }
                  */
                 .append("                  if (fd.isRepeated()) {" + LS)
-                .append("                     if (message.getField(fd) instanceof AbstractList) {" + LS)
+                .append("                     if (message.getField(fd) instanceof List) {" + LS)
                 .append("                        List list = (List) message.getField(fd);" + LS)
                 //                .append("                        if (message.getField(fd).getClass().getPackage().getName().startsWith(\"com.google.common.primitives\")) {"
                 //                        + LS)
@@ -573,7 +574,7 @@ public class JavabufTranslatorGenerator {
                 .append("                        Object obj = fromJavabufMap.get(fd.getMessageType().getName()).assignFromJavabuf(submessage);"
                         + LS)
                 .append("                        ArrayUtility.assignArray(field, object, obj);" + LS)
-                .append("                  } else if (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.class.getSimpleName().equals(fd.getMessageType().getName())) {"
+                .append("                  } else if (JavaType.MESSAGE.equals(fd.getJavaType()) && Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.class.getSimpleName().equals(fd.getMessageType().getName())) {"
                         + LS)
                 .append("                     dev_resteasy_grpc_arrays___ArrayHolder submessage = (dev_resteasy_grpc_arrays___ArrayHolder) message.getField(fd);"
                         + LS)

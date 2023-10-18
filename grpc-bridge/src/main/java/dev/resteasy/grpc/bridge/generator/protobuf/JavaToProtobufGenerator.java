@@ -600,6 +600,10 @@ public class JavaToProtobufGenerator {
                 classPath = classPath.substring(1, classPath.length() - 1);
             }
             for (BodyDeclaration<?> bd : subClass.getMembers()) {
+                System.out.println("bd: " + bd);
+                if (bd instanceof ClassOrInterfaceDeclaration) {
+                    System.out.println("class: " + bd);
+                }
                 if (bd instanceof MethodDeclaration) {
                     MethodDeclaration md = (MethodDeclaration) bd;
                     if (!isResourceOrLocatorMethod(md)) {
@@ -712,6 +716,7 @@ public class JavaToProtobufGenerator {
                     System.out.println("  visit() 4: " + type);
                 } else if (rfd.getType() instanceof ResolvedArrayType) {
                     ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
+                    System.out.println("  visit() 4.5: " + rat.describe());
                     ResolvedType ct = rat.getComponentType();
                     if ("byte".equals(ct.describe())) {
                         type = "bytes";
@@ -719,6 +724,16 @@ public class JavaToProtobufGenerator {
                         type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
                     } else if (ct instanceof ResolvedArrayType) {
                         type = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                        ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
+                        System.out.println("basic array type: " + bat);
+                        if (bat.isReference()) {
+                            ResolvedReferenceTypeDeclaration rrtd = (ResolvedReferenceTypeDeclaration) bat.asReferenceType()
+                                    .getTypeDeclaration().get();
+                            fqn = rrtd.getPackageName() + "." + rrtd.getClassName();
+                            if (!visited.contains(fqn)) {
+                                resolvedTypes.add(rrtd);
+                            }
+                        }
                     } else {
                         fqn = removeTypeVariables(ct.describe());
                         if (!ct.isReferenceType()) {
@@ -1111,6 +1126,10 @@ public class JavaToProtobufGenerator {
         String sPackage = s.substring(0, l).replace(".", "_");
         String separator = isInnerClass ? "_INNER_" : "___";
         String className = s.substring(l + 1);
+        System.out.println("fqnifyClass(): " + sPackage + separator + className);
+        //        if (isInnerClass) {
+        //            new Exception("INNER").printStackTrace();
+        //        }
         return sPackage + separator + className;
     }
 
@@ -1156,6 +1175,13 @@ public class JavaToProtobufGenerator {
         return false;
     }
 
+    private static ResolvedType getBasicArrayType(ResolvedArrayType rat) {
+        if (rat.getComponentType().isArray()) {
+            return getBasicArrayType((ResolvedArrayType) rat.getComponentType());
+        } else {
+            return rat.getComponentType();
+        }
+    }
     //    private String handleArrays(ResolvedFieldDeclaration rfd ) {
     //         String type = null;
     //         ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
