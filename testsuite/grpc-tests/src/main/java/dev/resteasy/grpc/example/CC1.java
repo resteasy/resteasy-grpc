@@ -671,4 +671,36 @@ public class CC1 {
     public ArrayStuff arraysReturn() {
         return new ArrayStuff(3);
     }
+
+    @GET
+    @Path("arrays/int/1")
+    public int[] arraysInt1(int[] ints) {
+        for (int i = 0; i < ints.length; i++) {
+            ints[i]++;
+        }
+        return ints;
+    }
+
+    @GET
+    @Path("arrays/int/2")
+    public int[][] arraysInt2(int[][] ints) {
+        for (int i = 0; i < ints.length; i++) {
+            for (int j = 0; j < ints[i].length; j++)
+                ints[i][j]++;
+        }
+        return ints;
+    }
+
+    @GET
+    @Path("arrays/int/5")
+    public int[][][][][] arraysInt5(int[][][][][] intsssss) {
+        for (int i = 0; i < intsssss.length; i++) {
+            for (int j = 0; j < intsssss[i].length; j++)
+                for (int k = 0; k < intsssss[i][j].length; k++)
+                    for (int l = 0; l < intsssss[i][j][k].length; l++)
+                        for (int m = 0; m < intsssss[i][j][k][l].length; m++)
+                            intsssss[i][j][k][l][m]++;
+        }
+        return intsssss;
+    }
 }

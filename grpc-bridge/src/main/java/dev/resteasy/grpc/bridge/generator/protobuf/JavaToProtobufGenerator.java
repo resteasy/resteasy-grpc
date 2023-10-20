@@ -657,6 +657,9 @@ public class JavaToProtobufGenerator {
                         if (p.getType().resolve().isPrimitive()) {
                             continue;
                         }
+                        if (p.getType().isArrayType()) {
+                            continue;
+                        }
                         ReferenceTypeImpl rt = (ReferenceTypeImpl) p.getType().resolve();
                         ResolvedReferenceTypeDeclaration rrtd = rt.getTypeDeclaration().get();
                         String type = rt.asReferenceType().getQualifiedName();
@@ -958,6 +961,10 @@ public class JavaToProtobufGenerator {
                 if (isInterface(rt)) {
                     return "google.protobuf.Any";
                 }
+                if (rt.isArray()) {
+                    //                    return "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
+                    return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
                 String type = rt.describe();
                 return fqnifyClass(type, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
@@ -1018,6 +1025,10 @@ public class JavaToProtobufGenerator {
                 ResolvedType rt = ((Type) node).resolve();
                 if (isInterface(rt)) {
                     return "google.protobuf.Any";
+                }
+                if (rt.isArray()) {
+                    //                    return "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
+                    return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                 }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
                 String type = ((Type) node).resolve().describe();

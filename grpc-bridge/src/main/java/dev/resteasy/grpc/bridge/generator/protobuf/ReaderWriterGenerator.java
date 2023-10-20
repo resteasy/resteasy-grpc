@@ -106,8 +106,10 @@ public class ReaderWriterGenerator {
                 .append("import com.google.protobuf.CodedInputStream;" + LS)
                 .append("import com.google.protobuf.CodedOutputStream;" + LS)
                 .append("import ").append("jakarta.servlet.http.HttpServletResponse;" + LS)
+                .append("import dev.resteasy.grpc.arrays.ArrayUtility;" + LS)
                 .append("import ").append("dev.resteasy.grpc.bridge.runtime.servlet.AsyncMockServletOutputStream;" + LS)
                 .append("import ").append("dev.resteasy.grpc.bridge.runtime.Utility;" + LS)
+                .append("import ").append("dev.resteasy.grpc.arrays.Array_proto;" + LS)
                 .append("import ").append("dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;" + LS)
                 .append("import ").append(OutboundSseEventImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
@@ -147,12 +149,28 @@ public class ReaderWriterGenerator {
                 .append("public class ")
                 .append(args[2])
                 .append("MessageBodyReaderWriter implements MessageBodyReader<Object>, MessageBodyWriter<Object> {" + LS + LS)
-                .append("   JavabufTranslator translator = new " + args[2] + "JavabufTranslator();" + LS)
+                .append("   static JavabufTranslator translator = new " + args[2] + "JavabufTranslator();" + LS)
                 .append("   @Override" + LS)
                 .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
                         + LS)
                 .append("      if (type.isInterface()) {" + LS)
                 .append("         return true;" + LS)
+                .append("      } else if (type.isArray()) {" + LS)
+                .append("         if (type.getComponentType().isArray()) {" + LS)
+                .append("            return true;" + LS)
+                .append("         } else {" + LS)
+                .append("            return translator.handlesFromJavabuf(type.getComponentType());" + LS)
+                .append("         }" + LS)
+                /*
+                 * if (type.getComponentType().isArray()) {
+                 * return true;
+                 * } else {
+                 * return translator.handlesFromJavabuf(type.getComponentType());
+                 * }
+                 *
+                 * } else if (type.isArray()) {
+                 * return translator.handlesFromJavabuf(type.getComponentType());
+                 */
                 .append("      } else {" + LS)
                 .append("         return ")
                 //                .append(args[2])
@@ -186,12 +204,37 @@ public class ReaderWriterGenerator {
                 //                .append(args[2])
                 //                .append("JavabufTranslator.translateFromJavabuf(m);" + LS)
                 .append("translator.translateFromJavabuf(m);" + LS)
+                .append("         } else if (type.isArray()) {" + LS)
+                .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
+                .append("            return ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message, \"")
+                .append(args[2]).append("_proto\");" + LS)
                 .append("         } else {" + LS)
                 .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
-                .append("            return ")
-                //                .append(args[2])
-                //                .append("JavabufTranslator.translateFromJavabuf(message);" + LS)
-                .append("translator.translateFromJavabuf(message);" + LS)
+                .append("            return translator.translateFromJavabuf(message);" + LS)
+                /*
+                 * GeneratedMessageV3 message = getMessage(type, entityStream);
+                 * return translator.translateFromJavabuf(message);
+                 *
+                 *
+                 * } else if (type.isArray()) {
+                 * GeneratedMessageV3 message = getMessage(type, entityStream);
+                 * return ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message,
+                 * "CC1_proto");
+                 * } else {
+                 * GeneratedMessageV3 message = getMessage(type, entityStream);
+                 * return translator.translateFromJavabuf(message);
+                 * }
+                 */
+
+                //                //                .append(args[2])
+                //                //                .append("JavabufTranslator.translateFromJavabuf(message);" + LS)
+                //                .append("translator.translateFromJavabuf(message);" + LS)
+                /*
+                 * Object array = ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder)
+                 * message, "CC1_proto");
+                 * // return translator.translateFromJavabuf(message);
+                 * return array;
+                 */
                 .append("         }" + LS)
                 .append("      } catch (Exception e) {" + LS)
                 .append("         throw new RuntimeException(e);" + LS)
@@ -200,7 +243,28 @@ public class ReaderWriterGenerator {
                 .append("   @Override" + LS)
                 .append("   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
                         + LS)
-                .append("      return translator.handlesToJavabuf(type);" + LS)
+                .append("      if (type.isArray()) {" + LS)
+                .append("         if (type.getComponentType().isArray()) {" + LS)
+                .append("            return true;" + LS)
+                .append("         } else {" + LS)
+                .append("            return translator.handlesToJavabuf(type.getComponentType());" + LS)
+                .append("         }" + LS)
+                .append("      } else {" + LS)
+                .append("         return translator.handlesToJavabuf(type);" + LS)
+                .append("      }" + LS)
+                //                .append("      return translator.handlesToJavabuf(type);" + LS)
+                /*
+                 * if (type.getComponentType().isArray()) {
+                 * return true;
+                 * } else {
+                 * return translator.handlesToJavabuf(type.getComponentType());
+                 * }
+                 * if (type.isArray()) {
+                 * return translator.handlesToJavabuf(type.getComponentType());
+                 * } else {
+                 * return translator.handlesToJavabuf(type);
+                 * }
+                 */
                 //                .append(args[2])
                 //                .append("JavabufTranslator.handlesToJavabuf(type);" + LS)
                 //                .append("translator.handlesToJavabuf(type);" + LS)
@@ -216,7 +280,21 @@ public class ReaderWriterGenerator {
                     .append("      }" + LS);
         }
         //        sb.append("      Message message = ").append(args[2]).append("JavabufTranslator.translateToJavabuf(t);" + LS)
-        sb.append("      Message message = translator.translateToJavabuf(t);" + LS)
+        //        sb.append("      Message message = translator.translateToJavabuf(t);" + LS)
+        /*
+         * Message message = null;
+         * if (t.getClass().isArray()) {
+         * message = ArrayUtility.getHolder(translator, t);
+         * } else {
+         * message = translator.translateToJavabuf(t);
+         * }
+         */
+        sb.append("      Message message = null;" + LS)
+                .append("      if (t.getClass().isArray()) {" + LS)
+                .append("         message = ArrayUtility.getHolder(translator, t);" + LS)
+                .append("      } else {" + LS)
+                .append("         message = translator.translateToJavabuf(t);" + LS)
+                .append("      }" + LS)
                 .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);"
                         + LS)
                 .append("      if (servletResponse != null && servletResponse.getHeader(ANY) != null) {"
@@ -272,6 +350,14 @@ public class ReaderWriterGenerator {
                     .append("         return ").append(simpleName).append(".parseFrom(is);" + LS)
                     .append("      } ");
         }
+        sb.append("else if (clazz.isArray()) {" + LS)
+                //                .append("         return ArrayUtility.getHolder(translator, is);" + LS)
+                .append("         return Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.parseFrom(is);" + LS)
+                .append("      } ");
+        /*
+         * } else if (clazz.isArray()) {
+         * return ArrayUtility.getHolder(translator, is);
+         */
         if (subclasses.length > 0) {
             sb.append("else {" + LS)
                     .append("         throw new IOException(\"unrecognized class: \" + clazz);" + LS)
