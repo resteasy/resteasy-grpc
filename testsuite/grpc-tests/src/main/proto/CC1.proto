@@ -125,14 +125,14 @@ service CC1Service {
   rpc intfEntity (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/interface/return gEmpty google.protobuf.Any GET sync
   rpc intfReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/arrays/return gEmpty dev_resteasy_grpc_example___ArrayStuff GET sync
-  rpc arraysReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/arrays/int/1 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder GET sync
   rpc arraysInt1 (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/arrays/int/2 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder GET sync
   rpc arraysInt2 (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/arrays/int/5 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder GET sync
   rpc arraysInt5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/stuff dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff GET sync
+  rpc arrayStuff (GeneralEntityMessage) returns (GeneralReturnMessage);
 }
 
 message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {
@@ -188,11 +188,40 @@ message dev_resteasy_grpc_example___IntfImpl {
 }
 
 message dev_resteasy_grpc_example___ArrayStuff {
-  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder intss = 1;
-  repeated int32 ints = 2;
-  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder intsss = 3;
-  repeated dev_resteasy_grpc_example_ArrayStuff_INNER_Stuff ss = 4;
-  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder sss = 5;
+  repeated bool bos = 1;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder boss = 2;
+  repeated bool Bos___1 = 3;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Boss___1 = 4;
+  bytes bys = 5;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder byss = 6;
+  repeated int32 Bys___1 = 7;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Byss___1 = 8;
+  repeated int32 ss = 9;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder sss = 10;
+  repeated int32 Ss___1 = 11;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Sss___1 = 12;
+  repeated int32 is = 13;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder iss = 14;
+  repeated int32 Is___1 = 15;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Iss___1 = 16;
+  repeated int64 ls = 17;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder lss = 18;
+  repeated int64 Ls___1 = 19;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Lss___1 = 20;
+  repeated float fs = 21;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder fss = 22;
+  repeated float Fs___1 = 23;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Fss___1 = 24;
+  repeated double ds = 25;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dss = 26;
+  repeated double Ds___1 = 27;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Dss___1 = 28;
+  repeated int32 cs = 29;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder css = 30;
+  repeated int32 Cs___1 = 31;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Css___1 = 32;
+  repeated dev_resteasy_grpc_example_ArrayStuff_INNER_Stuff sts = 33;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder stss = 34;
 }
 
 message dev_resteasy_grpc_example___CC3 {
@@ -287,8 +316,9 @@ message GeneralEntityMessage {
       gInteger gInteger_field = 17;
       google.protobuf.Any google_protobuf_Any_field = 18;
       gCharacter gCharacter_field = 19;
-      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 20;
-      FormMap form_field = 21;
+      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 20;
+      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 21;
+      FormMap form_field = 22;
    }
 }
 

@@ -41,6 +41,7 @@ import jakarta.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
+import org.junit.Assert;
 
 @Path("p")
 public class CC1 {
@@ -666,11 +667,11 @@ public class CC1 {
     //        return new ArrayStuff(n + 1);
     //    }
 
-    @GET
-    @Path("arrays/return")
-    public ArrayStuff arraysReturn() {
-        return new ArrayStuff(3);
-    }
+    //    @GET
+    //    @Path("arrays/return")
+    //    public ArrayStuff arraysReturn() {
+    //        return new ArrayStuff(3);
+    //    }
 
     @GET
     @Path("arrays/int/1")
@@ -702,5 +703,12 @@ public class CC1 {
                             intsssss[i][j][k][l][m]++;
         }
         return intsssss;
+    }
+
+    @GET
+    @Path("arrays/stuff")
+    public ArrayStuff arrayStuff(ArrayStuff as) {
+        Assert.assertEquals(new ArrayStuff(false), as);
+        return new ArrayStuff(true);
     }
 }

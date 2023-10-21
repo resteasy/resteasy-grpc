@@ -22,8 +22,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.protobuf.DynamicMessage;
+
 import dev.resteasy.grpc.arrays.ArrayHolder;
+import dev.resteasy.grpc.arrays.ArrayUtility;
 import dev.resteasy.grpc.arrays.Array_proto;
+import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.example.ArrayStuff;
 import dev.resteasy.grpc.example.CC1JavabufTranslator;
@@ -32,6 +36,7 @@ import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1_proto;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
+import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___ArrayStuff;
 import dev.resteasy.grpc.example.ExampleApp;
 import dev.resteasy.grpc.example.sub.CC8;
 import io.grpc.ManagedChannel;
@@ -113,8 +118,9 @@ public class GrpcToJakartaRESTIndependentTest {
     }
 
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
-        this.testArraysReturn(stub);
+        //        this.testArraysInts5(stub);
         //        this.testArraysSend(stub);
+        this.testArrayStuff(stub);
         //        this.testBoolean(stub);
         //        this.testBooleanWithUnnecessaryURL(stub);
         //        this.testBooleanWrapper(stub);
@@ -179,19 +185,22 @@ public class GrpcToJakartaRESTIndependentTest {
 
     /****************************************************************************************/
     /****************************************************************************************/
-    void testArraysReturn(CC1ServiceBlockingStub stub) throws Exception {
+    void testArraysInts1(CC1ServiceBlockingStub stub) throws Exception {
         dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
                 .newBuilder();
-        GeneralEntityMessage gem = builder.build();
+        int[] ints = new int[] { 1, 2, 3 };
+        dev_resteasy_grpc_arrays___ArrayHolder ah = ArrayUtility.getHolder(translator, ints);
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
         GeneralReturnMessage response;
         try {
             //           ArrayStuff ass = (ArrayStuff) translator.translateFromJavabuf(CC1_proto.dev_resteasy_grpc_example___ArrayStuff.newBuilder().build());
-            response = stub.arraysReturn(gem);
-            CC1_proto.dev_resteasy_grpc_example___ArrayStuff as = response.getDevResteasyGrpcExampleArrayStuffField();
+            response = stub.arraysInt1(gem);
+            dev_resteasy_grpc_arrays___ArrayHolder as = response
+                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
             System.out.println(as);
-            ArrayStuff arrayStuff = (ArrayStuff) translator.translateFromJavabuf(as);
-            ArrayStuff expected = new ArrayStuff(3);
-            Assert.assertEquals(expected, arrayStuff);
+            Object o = translator.translateFromJavabuf(as);
+            int[] expected = new int[] { 2, 3, 4 };
+            Assert.assertArrayEquals(expected, (int[]) o);
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -200,22 +209,23 @@ public class GrpcToJakartaRESTIndependentTest {
         }
     }
 
-    void testArraysSend(CC1ServiceBlockingStub stub) throws Exception {
-        ArrayStuff as = new ArrayStuff(7);
-        //       ArrayStuff arrayStuff = (ArrayStuff) translator.translateToJavabuf(as);
-        //        CC1_proto.dev_resteasy_grpc_example___ArrayStuff drgeas = (CC1_proto.dev_resteasy_grpc_example___ArrayStuff) translator
-        //                .translateToJavabuf(as);
-        Object drgeas = translator.translateToJavabuf(as);
+    void testArraysInts2(CC1ServiceBlockingStub stub) throws Exception {
         dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
                 .newBuilder();
-        GeneralEntityMessage gem = builder.build();//= builder.setDevResteasyGrpcExampleArrayStuffField(drgeas).build();
+        int[][] intss = new int[][] { { 1, 2 }, { 3, 4 } };
+        dev_resteasy_grpc_arrays___ArrayHolder ah = ArrayUtility.getHolder(translator, intss);
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
         GeneralReturnMessage response;
         try {
-            response = stub.arraysReturn(gem);
-            CC1_proto.dev_resteasy_grpc_example___ArrayStuff drgeas2 = response.getDevResteasyGrpcExampleArrayStuffField();
-            System.out.println(drgeas2);
-            ArrayStuff arrayStuff = (ArrayStuff) translator.translateFromJavabuf(drgeas2);
-            Assert.assertEquals(new ArrayStuff(8), arrayStuff);
+            //           ArrayStuff ass = (ArrayStuff) translator.translateFromJavabuf(CC1_proto.dev_resteasy_grpc_example___ArrayStuff.newBuilder().build());
+            //            Object oo = ArrayUtility.getArray(translator, ah, "CC1");
+            response = stub.arraysInt2(gem);
+            dev_resteasy_grpc_arrays___ArrayHolder as = response
+                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            System.out.println(as);
+            Object o = translator.translateFromJavabuf(as);
+            int[][] expected = new int[][] { { 2, 3 }, { 4, 5 } };
+            Assert.assertArrayEquals(expected, (int[][]) o);
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -224,6 +234,104 @@ public class GrpcToJakartaRESTIndependentTest {
         }
     }
 
+    void testArraysInts5(CC1ServiceBlockingStub stub) throws Exception {
+        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
+                .newBuilder();
+        int[][][][][] intsssss = new int[][][][][] { { { { { 1, 2, 3 } } } }, { { { { 4, 5 } } } } };
+
+        dev_resteasy_grpc_arrays___ArrayHolder ah = ArrayUtility.getHolder(translator, intsssss);
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
+        GeneralReturnMessage response;
+        try {
+            //           ArrayStuff ass = (ArrayStuff) translator.translateFromJavabuf(CC1_proto.dev_resteasy_grpc_example___ArrayStuff.newBuilder().build());
+            //            Object oo = ArrayUtility.getArray(translator, ah, "CC1");
+            response = stub.arraysInt5(gem);
+            dev_resteasy_grpc_arrays___ArrayHolder as = response
+                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            System.out.println(as);
+            Object o = translator.translateFromJavabuf(as);
+            int[][][][][] expected = new int[][][][][] { { { { { 2, 3, 4 } } } }, { { { { 5, 6 } } } } };
+            Assert.assertArrayEquals(expected, (int[][][][][]) o);
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    void testArrayStuff(CC1ServiceBlockingStub stub) throws Exception {
+        System.out.println("as class: " + translator.translateToJavabuf(new ArrayStuff(false)).getClass());
+        //        if (true) return;
+        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
+                .newBuilder();
+        DynamicMessage o = (DynamicMessage) translator.translateToJavabuf(new ArrayStuff(false));
+//        o.
+        System.out.println("as class: " + o.getClass());
+        System.out.println("o: " + o);
+        dev_resteasy_grpc_example___ArrayStuff as1 = (dev_resteasy_grpc_example___ArrayStuff) translator
+                .translateToJavabuf(new ArrayStuff(false));
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcExampleArrayStuffField(as1).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.arrayStuff(gem);
+            dev_resteasy_grpc_example___ArrayStuff as2 = response.getDevResteasyGrpcExampleArrayStuffField();
+            System.out.println(as2);
+            ArrayStuff expected = new ArrayStuff(true);
+            Assert.assertEquals(expected, translator.translateFromJavabuf(as2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    //    void testArraysReturn(CC1ServiceBlockingStub stub) throws Exception {
+    //        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
+    //                .newBuilder();
+    //        GeneralEntityMessage gem = builder.build();
+    //        GeneralReturnMessage response;
+    //        try {
+    //            //           ArrayStuff ass = (ArrayStuff) translator.translateFromJavabuf(CC1_proto.dev_resteasy_grpc_example___ArrayStuff.newBuilder().build());
+    //            response = stub.arraysReturn(gem);
+    //            CC1_proto.dev_resteasy_grpc_example___ArrayStuff as = response.getDevResteasyGrpcExampleArrayStuffField();
+    //            System.out.println(as);
+    //            ArrayStuff arrayStuff = (ArrayStuff) translator.translateFromJavabuf(as);
+    //            ArrayStuff expected = new ArrayStuff(false);
+    //            Assert.assertEquals(expected, arrayStuff);
+    //        } catch (StatusRuntimeException e) {
+    //            try (StringWriter writer = new StringWriter()) {
+    //                e.printStackTrace(new PrintWriter(writer));
+    //                Assert.fail(writer.toString());
+    //            }
+    //        }
+    //    }
+    //
+    //    void testArraysSend(CC1ServiceBlockingStub stub) throws Exception {
+    //        ArrayStuff as = new ArrayStuff(false);
+    //        //       ArrayStuff arrayStuff = (ArrayStuff) translator.translateToJavabuf(as);
+    //        //        CC1_proto.dev_resteasy_grpc_example___ArrayStuff drgeas = (CC1_proto.dev_resteasy_grpc_example___ArrayStuff) translator
+    //        //                .translateToJavabuf(as);
+    //        Object drgeas = translator.translateToJavabuf(as);
+    //        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
+    //                .newBuilder();
+    //        GeneralEntityMessage gem = builder.build();//= builder.setDevResteasyGrpcExampleArrayStuffField(drgeas).build();
+    //        GeneralReturnMessage response;
+    //        try {
+    //            response = stub.arraysReturn(gem);
+    //            CC1_proto.dev_resteasy_grpc_example___ArrayStuff drgeas2 = response.getDevResteasyGrpcExampleArrayStuffField();
+    //            System.out.println(drgeas2);
+    //            ArrayStuff arrayStuff = (ArrayStuff) translator.translateFromJavabuf(drgeas2);
+    //            Assert.assertEquals(new ArrayStuff(true), arrayStuff);
+    //        } catch (StatusRuntimeException e) {
+    //            try (StringWriter writer = new StringWriter()) {
+    //                e.printStackTrace(new PrintWriter(writer));
+    //                Assert.fail(writer.toString());
+    //            }
+    //        }
+    //    }
+    //
     //    void testBoolean(CC1ServiceBlockingStub stub) throws Exception {
     //        dev.resteasy.grpc.example.CC1_proto.gBoolean n = dev.resteasy.grpc.example.CC1_proto.gBoolean.newBuilder()
     //                .setValue(false)
