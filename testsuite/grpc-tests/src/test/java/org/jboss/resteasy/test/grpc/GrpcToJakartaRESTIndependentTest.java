@@ -22,8 +22,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.protobuf.DynamicMessage;
-
 import dev.resteasy.grpc.arrays.ArrayHolder;
 import dev.resteasy.grpc.arrays.ArrayUtility;
 import dev.resteasy.grpc.arrays.Array_proto;
@@ -261,16 +259,17 @@ public class GrpcToJakartaRESTIndependentTest {
     }
 
     void testArrayStuff(CC1ServiceBlockingStub stub) throws Exception {
-        System.out.println("as class: " + translator.translateToJavabuf(new ArrayStuff(false)).getClass());
+        //        System.out.println("as class: " + translator.translateToJavabuf(new ArrayStuff(false)).getClass());
         //        if (true) return;
         dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
                 .newBuilder();
-        DynamicMessage o = (DynamicMessage) translator.translateToJavabuf(new ArrayStuff(false));
-//        o.
-        System.out.println("as class: " + o.getClass());
-        System.out.println("o: " + o);
+        //        Message o = translator.translateToJavabuf(new ArrayStuff(false));
+        //        o.
+        //        System.out.println("as class: " + o.getClass());
+        //        System.out.println("o: " + o);
+        ArrayStuff as = new ArrayStuff(false);
         dev_resteasy_grpc_example___ArrayStuff as1 = (dev_resteasy_grpc_example___ArrayStuff) translator
-                .translateToJavabuf(new ArrayStuff(false));
+                .translateToJavabuf(as);
         GeneralEntityMessage gem = builder.setDevResteasyGrpcExampleArrayStuffField(as1).build();
         GeneralReturnMessage response;
         try {

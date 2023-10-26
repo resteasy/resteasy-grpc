@@ -230,6 +230,7 @@ public class JavabufTranslatorGenerator {
                 .append("import java.util.List;" + LS)
                 .append("import java.util.Map;" + LS)
                 .append("import java.util.Set;" + LS)
+                .append("import com.google.protobuf.ByteString;" + LS)
                 .append("import com.google.protobuf.Descriptors;" + LS)
                 .append("import com.google.protobuf.Descriptors.Descriptor;" + LS)
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
@@ -541,6 +542,15 @@ public class JavabufTranslatorGenerator {
                         + LS)
                 .append("                           Character c = field.getChar(obj);" + LS)
                 .append("                           messageBuilder.setField(fd, (int) c);" + LS)
+                .append("                        } else if (Descriptors.FieldDescriptor.JavaType.BYTE_STRING.equals(fd.getJavaType())) {"
+                        + LS)
+                .append("                           ByteString bs = ByteString.copyFrom((byte[]) field.get(obj));" + LS)
+                .append("                           messageBuilder.setField(fd, bs);" + LS)
+                /*
+                 * } else if ("BYTESTRING".equals(fd.getJavaType())) {
+                 * ByteString bs = ByteString.copyFrom((byte[]) field.get(obj));
+                 * messageBuilder.setField(fd, bs);
+                 */
                 .append("                        } else {" + LS)
                 .append("                           messageBuilder.setField(fd, field.get(obj));" + LS)
                 .append("                        }" + LS)
@@ -601,13 +611,62 @@ public class JavabufTranslatorGenerator {
                 .append("                  if (fd.isRepeated()) {" + LS)
                 .append("                     if (message.getField(fd) instanceof List) {" + LS)
                 .append("                        List list = (List) message.getField(fd);" + LS)
+                .append("                        if (list.size() == 0) {" + LS)
+                .append("                           return;" + LS)
+                .append("                        }" + LS)
                 //                .append("                        if (message.getField(fd).getClass().getPackage().getName().startsWith(\"com.google.common.primitives\")) {"
                 //                        + LS)
                 .append("                        if (message.getField(fd).getClass().getPackage().getName().startsWith(\"com.google.protobuf\")) {"
                         + LS)
-                .append("                           for (int i = 0; i < list.size(); i++) {" + LS)
-                .append("                              Array.set(field.get(object), i, list.get(i));" + LS)
+                /*
+                 * if (list.get(0) instanceof Integer.class) {
+                 * for (int i = 0; i < list.size(); i++) {
+                 * Integer in = (Integer) list.get(i);
+                 * Array.set(field.get(object), i, ((Integer) list.get(i)).byteValue());
+                 * }
+                 * }
+                 */
+                .append("                           if (field.get(object) == null) {" + LS)
+                .append("                              field.set(object, getArray(field, list.size()));"
+                        + LS)
                 .append("                           }" + LS)
+                /*
+                 * if ((byte.class.equals(field.getType().getComponentType())
+                 * || Byte.class.equals(field.getType().getComponentType())
+                 * && list.get(0) instanceof Integer)) {
+                 */
+                .append("                           if ((byte.class.equals(field.getType().getComponentType())" + LS)
+                .append("                             || Byte.class.equals(field.getType().getComponentType()))" + LS)
+                .append("                                && list.get(0) instanceof Integer) {" + LS)
+                .append("                              for (int i = 0; i < list.size(); i++) {" + LS)
+                /*
+                 * if (field.get(object) == null) {
+                 * field.set(object, field.getGenericType().getClass().newInstance());
+                 * }
+                 */
+                .append("                                 Array.set(field.get(object), i, ((Integer) list.get(i)).byteValue());"
+                        + LS)
+                .append("                              }" + LS)
+                .append("                           }" + LS)
+                .append("                           if ((short.class.equals(field.getType().getComponentType())" + LS)
+                .append("                             || Short.class.equals(field.getType().getComponentType()))" + LS)
+                .append("                                && list.get(0) instanceof Integer) {" + LS)
+                .append("                              for (int i = 0; i < list.size(); i++) {" + LS)
+                .append("                                 Array.set(field.get(object), i, ((Integer) list.get(i)).shortValue());"
+                        + LS)
+                .append("                               }" + LS)
+                .append("                           } else {" + LS)
+                .append("                              for (int i = 0; i < list.size(); i++) {" + LS)
+                .append("                                 Array.set(field.get(object), i, list.get(i));" + LS)
+                .append("                              }" + LS)
+                .append("                           }" + LS)
+                /*
+                 * } else {
+                 * for (int i = 0; i < list.size(); i++) {
+                 * Array.set(field.get(object), i, list.get(i));
+                 * }
+                 * }
+                 */
                 .append("                        } else {" + LS)
                 .append("                           for (int i = 0; i < list.size(); i++) {" + LS)
                 .append("                              Array.set(field.get(object), i, translator.translateFromJavabuf((Message) list.get(i)));"
@@ -730,6 +789,13 @@ public class JavabufTranslatorGenerator {
                         + LS)
                 .append("                        int i = ((Integer)ooo).intValue();" + LS)
                 .append("                        field.set(object, Character.toChars(i)[0]);" + LS)
+                .append("                     } else if (ooo instanceof ByteString) {" + LS)
+                .append("                        field.set(object, ((ByteString) ooo).newInput().readAllBytes());" + LS)
+                /*
+                 * } else if (ooo instanceof ByteString) {
+                 * System.out.println("yes");
+                 * field.set(object, ((ByteString) ooo).newInput().readAllBytes());
+                 */
                 .append("                     } else {" + LS)
                 .append("                        field.set(object, ooo);" + LS)
                 .append("                     }" + LS)
@@ -826,7 +892,9 @@ public class JavabufTranslatorGenerator {
         } else {
             sb.append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName())
                     .append(".getDescriptor();" + LS)
-                    .append("      private static DynamicMessage.Builder builder = DynamicMessage.newBuilder(descriptor);" + LS)
+                    //                    .append("      private static DynamicMessage.Builder builder = DynamicMessage.newBuilder(descriptor);" + LS)
+                    .append("      private static ").append(fqnify(clazz.getSimpleName())).append(".Builder builder = ")
+                    .append(fqnify(clazz.getSimpleName())).append(".newBuilder();" + LS)
                     .append("      private static List<AssignToJavabuf> assignList = new ArrayList<AssignToJavabuf>();" + LS
                             + LS)
                     .append("      static {" + LS)

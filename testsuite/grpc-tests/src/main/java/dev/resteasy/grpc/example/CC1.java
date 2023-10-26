@@ -41,7 +41,6 @@ import jakarta.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
-import org.junit.Assert;
 
 @Path("p")
 public class CC1 {
@@ -708,7 +707,9 @@ public class CC1 {
     @GET
     @Path("arrays/stuff")
     public ArrayStuff arrayStuff(ArrayStuff as) {
-        Assert.assertEquals(new ArrayStuff(false), as);
-        return new ArrayStuff(true);
+        if (as.equals(new ArrayStuff(false))) {
+            return new ArrayStuff(true);
+        }
+        throw new RuntimeException("arrayStuff() fails");
     }
 }
