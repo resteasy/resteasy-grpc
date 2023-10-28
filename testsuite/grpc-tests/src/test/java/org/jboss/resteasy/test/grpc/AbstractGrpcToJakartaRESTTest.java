@@ -594,7 +594,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                     .setL(4L)
                     .setF(5.0f)
                     .setD(6.0d)
-                    .setC('7')
+                    .setC("7")
                     .setCc3(cc3)
                     .build();
             Assert.assertEquals(expected, response.getDevResteasyGrpcExampleCC9Field());

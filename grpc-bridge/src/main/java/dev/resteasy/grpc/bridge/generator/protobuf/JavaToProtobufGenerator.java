@@ -262,7 +262,8 @@ public class JavaToProtobufGenerator {
         TYPE_MAP.put("float", "float");
         TYPE_MAP.put("double", "double");
         TYPE_MAP.put("boolean", "bool");
-        TYPE_MAP.put("char", "int32");
+        //        TYPE_MAP.put("char", "int32");
+        TYPE_MAP.put("char", "string");
         TYPE_MAP.put("String", "string");
         TYPE_MAP.put("java.lang.String", "string");
 
@@ -684,7 +685,7 @@ public class JavaToProtobufGenerator {
         public void visit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb) {
             Set<String> fieldNames = new HashSet<String>();
             resolvedTypes.remove(clazz);
-            System.out.println("visit(): " + clazz);
+            System.out.println("visit(): " + clazz.getClassName());
             if (clazz.isInterface()) {
                 return;
             }
@@ -725,6 +726,8 @@ public class JavaToProtobufGenerator {
                     ResolvedType ct = rat.getComponentType();
                     if ("byte".equals(ct.describe())) {
                         type = "bytes";
+                    } else if ("char".equals(ct.describe()) || "java.lang.Character".equals(ct.describe())) {
+                        type = "string";
                     } else if (ct.isPrimitive()) {
                         type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
                     } else if (ct instanceof ResolvedArrayType) {
@@ -881,6 +884,8 @@ public class JavaToProtobufGenerator {
                     ResolvedType ct = type.asArrayType().getComponentType();
                     if ("byte".equals(ct.describe())) {
                         typeName = "bytes";
+                    } else if ("class [C".equals(ct.describe()) || "class [Ljava.lang.Character".equals(ct.describe())) {
+                        typeName = "string";
                     } else if (ct.isPrimitive()) {
                         typeName = "repeated " + typeName;
                     } else {
