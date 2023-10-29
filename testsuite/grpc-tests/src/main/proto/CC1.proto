@@ -151,7 +151,7 @@ message dev_resteasy_grpc_example___CC9 {
   int64 l = 5;
   float f = 6;
   double d = 7;
-  int32 c = 8;
+  string c = 8;
   dev_resteasy_grpc_example___CC3 cc3 = 9;
   bool bb = 10;
   int32 ss = 11;
@@ -216,9 +216,9 @@ message dev_resteasy_grpc_example___ArrayStuff {
   dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dss = 26;
   repeated double Ds___1 = 27;
   dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Dss___1 = 28;
-  repeated int32 cs = 29;
+  string cs = 29;
   dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder css = 30;
-  repeated int32 Cs___1 = 31;
+  string Cs___1 = 31;
   dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Css___1 = 32;
   repeated dev_resteasy_grpc_example_ArrayStuff_INNER_Stuff sts = 33;
   dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder stss = 34;

@@ -237,6 +237,7 @@ public class JavabufTranslatorGenerator {
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;" + LS)
                 .append("import com.google.protobuf.DynamicMessage;" + LS)
+                .append("import com.google.protobuf.Internal.IntList;" + LS)
                 .append("import com.google.protobuf.Message;" + LS)
                 .append("import ").append(ArrayUtility.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(AssignFromJavabuf.class.getCanonicalName()).append(";" + LS)
@@ -504,11 +505,24 @@ public class JavabufTranslatorGenerator {
                 .append("                           if (Character.class.equals(componentType) || char.class.equals(componentType)) {"
                         + LS)
                 .append("                              messageBuilder.setField(fd, charsToString(array));" + LS)
-                .append("                           } else if (Byte.class.equals(componentType) || byte.class.equals(componentType)) {"
+                .append("                           } else if (byte.class.equals(componentType)) {"
                         + LS)
+                .append("                              messageBuilder.setField(fd, ByteString.copyFrom((byte[])array));" + LS)
+                //                .append("                              for (int i = 0; i < Array.getLength(array); i++) {" + LS)
+                //                .append("                                 byte b = (byte) Array.get(array, i);" + LS)
+                //                .append("                                 messageBuilder.addRepeatedField(fd, (int) b.byteValue());" + LS)
+                //                .append("                                 messageBuilder.setField(fd, b);" + LS)
+                //                .append("                              }" + LS)
+                /*
+                 * } else if (Byte.class.equals(componentType)) {
+                 * for (int i = 0; i < Array.getLength(array); i++) {
+                 * messageBuilder.addRepeatedField(fd, Array.get(array, i));
+                 * }
+                 *
+                 */
+                .append("                           } else if (Byte.class.equals(componentType)) {" + LS)
                 .append("                              for (int i = 0; i < Array.getLength(array); i++) {" + LS)
-                .append("                                 Byte b = (Byte) Array.get(array, i);" + LS)
-                .append("                                 messageBuilder.addRepeatedField(fd, (int) b.byteValue());" + LS)
+                .append("                                 messageBuilder.addRepeatedField(fd, Array.get(array, i));" + LS)
                 .append("                              }" + LS)
                 .append("                           } else if (componentType.getClass().isArray()) {" + LS)
                 .append("                              messageBuilder.setField(fd, arrayHolderToJavabuf.assignToJavabuf(field.get(obj)));"
@@ -703,6 +717,36 @@ public class JavabufTranslatorGenerator {
                 .append("                            Character[] cs = stringToCharacters((String) message.getField(fd));" + LS)
                 .append("                            field.set(object, cs);" + LS)
                 .append("                        }" + LS)
+                .append("                     } else if (byte.class.equals(field.getType().getComponentType())) {"
+                        + LS)
+                .append("                        ByteString bs = (ByteString) message.getField(fd);" + LS)
+                .append("                        field.set(object, bs.toByteArray());" + LS)
+                .append("                      } else if (Byte.class.equals(field.getType().getComponentType())) {" + LS)
+                .append("                         IntList il = (IntList) message.getField(fd);" + LS)
+                .append("                         Byte[] bs = new Byte[il.size()];" + LS)
+                .append("                         for (int i = 0; i < il.size(); i++) {" + LS)
+                .append("                            bs[i] = il.get(i).byteValue();" + LS)
+                .append("                         }" + LS)
+                .append("                         field.set(object, bs);" + LS)
+                //                .append("                         field.set(object, il.toArray(new Byte[il.size()]));" + LS)
+
+                /*
+                 * IntList il = (IntList) message.getField(fd);
+                 * Byte[] bs = new Byte[il.size()];
+                 * for (int i = 0; i < il.size(); i++) {
+                 * bs[i] = il.get(i).byteValue();
+                 * }
+                 * field.set(object, bs);
+                 * } else if (byte.class.equals(field.getType().getComponentType()) ||
+                 * Byte.class.equals(field.getType().getComponentType())) {
+                 * ByteString bs = (ByteString) message.getField(fd);
+                 * field.set(object, bs.toByteArray());
+                 */
+                /*
+                 * } else if (Byte.class.equals(field.getType().getComponentType())) {
+                 * IntList il = (IntList) message.getField(fd);
+                 * field.set(object, il.toArray());
+                 */
                 .append("                     } else if (message.getField(fd) instanceof List) {" + LS)
                 .append("                        List list = (List) message.getField(fd);" + LS)
                 .append("                        if (list.size() == 0) {" + LS)
@@ -770,8 +814,15 @@ public class JavabufTranslatorGenerator {
                  * Array.set(field.get(object), i, list.get(i));
                  * }
                  * }
+                 * if (field.get(object) == null) {
+                 * field.set(object, Array.newInstance(field.getType().getComponentType(), list.size()));
+                 * }
                  */
                 .append("                        } else {" + LS)
+                .append("                           if (field.get(object) == null) {" + LS)
+                .append("                              field.set(object, Array.newInstance(field.getType().getComponentType(), list.size()));"
+                        + LS)
+                .append("                            }" + LS)
                 .append("                           for (int i = 0; i < list.size(); i++) {" + LS)
                 .append("                              Array.set(field.get(object), i, translator.translateFromJavabuf((Message) list.get(i)));"
                         + LS)
