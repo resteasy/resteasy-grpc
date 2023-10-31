@@ -262,7 +262,6 @@ public class JavaToProtobufGenerator {
         TYPE_MAP.put("float", "float");
         TYPE_MAP.put("double", "double");
         TYPE_MAP.put("boolean", "bool");
-        //        TYPE_MAP.put("char", "int32");
         TYPE_MAP.put("char", "string");
         TYPE_MAP.put("String", "string");
         TYPE_MAP.put("java.lang.String", "string");
@@ -344,7 +343,6 @@ public class JavaToProtobufGenerator {
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println("entering main()");
         if (args == null || (args.length != 4)) {
             logger.info("need four args");
             logger.info("  arg[0]: root directory");
@@ -407,7 +405,7 @@ public class JavaToProtobufGenerator {
         }
         symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
         sourceRoot.getParserConfiguration().setSymbolResolver(symbolSolver);
-        List<ParseResult<CompilationUnit>> list = sourceRoot.tryToParseParallelized();
+        List<ParseResult<CompilationUnit>> list = sourceRoot.tryToParse();
         for (ParseResult<CompilationUnit> p : list) {
             jakartaRESTResourceVisitor.visit(p.getResult().get(), sb);
         }
@@ -602,10 +600,6 @@ public class JavaToProtobufGenerator {
                 classPath = classPath.substring(1, classPath.length() - 1);
             }
             for (BodyDeclaration<?> bd : subClass.getMembers()) {
-                System.out.println("bd: " + bd);
-                if (bd instanceof ClassOrInterfaceDeclaration) {
-                    System.out.println("class: " + bd);
-                }
                 if (bd instanceof MethodDeclaration) {
                     MethodDeclaration md = (MethodDeclaration) bd;
                     if (!isResourceOrLocatorMethod(md)) {
@@ -685,7 +679,6 @@ public class JavaToProtobufGenerator {
         public void visit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb) {
             Set<String> fieldNames = new HashSet<String>();
             resolvedTypes.remove(clazz);
-            System.out.println("visit(): " + clazz.getClassName());
             if (clazz.isInterface()) {
                 return;
             }
@@ -711,18 +704,12 @@ public class JavaToProtobufGenerator {
             // Scan all variables in class.
             for (ResolvedFieldDeclaration rfd : clazz.getDeclaredFields()) {
                 String type = null;
-                //                if (rfd.getType().isPrimitive() || rfd.getType().isReferenceType()
-                //                        && String.class.getName().equals(rfd.getType().asReferenceType().getQualifiedName())) {
-                System.out.println("  visit() 2: " + rfd.getType().describe());
                 if (TYPE_MAP.containsKey(rfd.getType().describe())) {
                     type = TYPE_MAP.get(rfd.getType().describe());
-                    System.out.println("  visit() 3: " + type);
                 } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rfd.getType().describe())) {
                     type = PRIMITIVE_WRAPPER_TYPES_FIELD.get(rfd.getType().describe());
-                    System.out.println("  visit() 4: " + type);
                 } else if (rfd.getType() instanceof ResolvedArrayType) {
                     ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
-                    System.out.println("  visit() 4.5: " + rat.describe());
                     ResolvedType ct = rat.getComponentType();
                     if ("byte".equals(ct.describe())) {
                         type = "bytes";
@@ -733,7 +720,6 @@ public class JavaToProtobufGenerator {
                     } else if (ct instanceof ResolvedArrayType) {
                         type = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                         ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
-                        System.out.println("basic array type: " + bat);
                         if (bat.isReference()) {
                             ResolvedReferenceTypeDeclaration rrtd = (ResolvedReferenceTypeDeclaration) bat.asReferenceType()
                                     .getTypeDeclaration().get();
@@ -743,17 +729,14 @@ public class JavaToProtobufGenerator {
                             }
                         }
                     } else {
-                        System.out.println("visit(): 8: " + fqn);
                         fqn = removeTypeVariables(ct.describe());
                         if (!ct.isReferenceType()) {
                             continue;
                         }
                         if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(fqn)) {
-                            System.out.println("visit(): 9" + fqn);
                             type = "repeated " + PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn);
                         } else if (!visited.contains(fqn)) {
                             resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
-                            System.out.println("visit() 7: " + fqn);
                             type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
                                     .getTypeDeclaration()
                                     .get()));
@@ -769,12 +752,10 @@ public class JavaToProtobufGenerator {
                             resolvedTypes.add(rrtd);
                         }
                         type = fqnifyClass(fqn, isInnerClass(rrtd));
-                        System.out.println("visit() 5: " + type);
                     } else if (rfd.getType().isTypeVariable()) {
                         type = "bytes ";
                     }
                 }
-                System.out.println("visit() 6: " + type);
                 String fieldName = getFieldName(fieldNames, rfd.getName());
 
                 if (type != null) {
@@ -854,7 +835,6 @@ public class JavaToProtobufGenerator {
          * For each class, create a message type with a field for each variable in the class.
          */
         public void visit(ClassOrInterfaceDeclaration clazz, StringBuilder sb) {
-            System.out.println("visit() 1: " + clazz.getName().asString());
             if (PRIMITIVE_WRAPPER_DEFINITIONS.containsKey(clazz.getName().asString())) {
                 return;
             }
@@ -869,7 +849,6 @@ public class JavaToProtobufGenerator {
             visited.add(fqn);
             counter = 1;
 
-            System.out.println("fqn 1: " + fqnifyClass(fqn, isInnerClass(clazz)));
             // Begin protobuf message definition.
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
             // Scan all variables in class.
@@ -877,7 +856,6 @@ public class JavaToProtobufGenerator {
                 ResolvedFieldDeclaration rfd = fd.resolve();
                 ResolvedType type = rfd.getType();
                 String typeName = type.describe();
-                System.out.println("typeName: " + typeName);
                 if (TYPE_MAP.containsKey(typeName)) {
                     typeName = TYPE_MAP.get(typeName);
                 } else if (type.isArray()) {
@@ -890,7 +868,6 @@ public class JavaToProtobufGenerator {
                         typeName = "repeated " + typeName;
                     } else {
                         fqn = type.describe();
-                        System.out.println("fqn: " + fqn);
                         additionalClasses.add(dir + ":" + fqn);
                         typeName = "repeated "
                                 + fqnifyClass(fqn, isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
@@ -1151,7 +1128,6 @@ public class JavaToProtobufGenerator {
     }
 
     private static String fqnifyClass(String s, boolean isInnerClass) {
-        System.out.println("fqnifyClass() 1: " + s);
         if (s.endsWith("java.lang.Boolean")) {
             new Exception(s).printStackTrace();
         }
@@ -1160,10 +1136,6 @@ public class JavaToProtobufGenerator {
         String sPackage = s.substring(0, l).replace(".", "_");
         String separator = isInnerClass ? "_INNER_" : "___";
         String className = s.substring(l + 1);
-        System.out.println("fqnifyClass() 2: " + sPackage + separator + className);
-        //        if (isInnerClass) {
-        //            new Exception("INNER").printStackTrace();
-        //        }
         return sPackage + separator + className;
     }
 
@@ -1218,37 +1190,12 @@ public class JavaToProtobufGenerator {
     }
 
     private static String getFieldName(Set<String> fieldNames, String proposedName) {
-        System.out.println("getFieldName() 1: " + proposedName);
         String name = proposedName;
         int counter = 1;
         while (fieldNames.contains(name.toLowerCase())) {
             name = proposedName + "___" + counter++;
         }
         fieldNames.add(name.toLowerCase());
-        System.out.println("getFieldName() 2: " + name);
         return name;
     }
-    //    private String handleArrays(ResolvedFieldDeclaration rfd ) {
-    //         String type = null;
-    //         ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
-    //         ResolvedType ct = rat.getComponentType();
-    //         if ("byte".equals(ct.describe())) {
-    //             type = "bytes";
-    //         } else if (ct.isPrimitive()) {
-    //             type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
-    //         } else if (ct instanceof ResolvedArrayType) {
-    //
-    //         } else {
-    //             String fqn = removeTypeVariables(ct.describe());
-    //             if (!ct.isReferenceType()) {
-    //                 return;
-    //             }
-    //             if (!visited.contains(fqn)) {
-    //                 resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
-    //             }
-    //             type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
-    //                     .getTypeDeclaration()
-    //                     .get()));
-    //         }
-    //    }
 }

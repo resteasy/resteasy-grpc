@@ -26,6 +26,5 @@ import com.google.protobuf.GeneratedMessageV3;
  */
 public interface AssignToJavabuf {
 
-    //    void assign(Object from, DynamicMessage.Builder builder);
     void assign(Object from, GeneratedMessageV3.Builder builder);
 }

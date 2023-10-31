@@ -161,20 +161,8 @@ public class ReaderWriterGenerator {
                 .append("         } else {" + LS)
                 .append("            return translator.handlesFromJavabuf(type.getComponentType());" + LS)
                 .append("         }" + LS)
-                /*
-                 * if (type.getComponentType().isArray()) {
-                 * return true;
-                 * } else {
-                 * return translator.handlesFromJavabuf(type.getComponentType());
-                 * }
-                 *
-                 * } else if (type.isArray()) {
-                 * return translator.handlesFromJavabuf(type.getComponentType());
-                 */
                 .append("      } else {" + LS)
                 .append("         return ")
-                //                .append(args[2])
-                //                .append("JavabufTranslator.handlesFromJavabuf(type);" + LS)
                 .append("translator.handlesFromJavabuf(type);" + LS)
                 .append("      }" + LS)
                 .append("   }" + LS + LS)
@@ -191,18 +179,12 @@ public class ReaderWriterGenerator {
                 .append(args[2]).append("_proto\");" + LS)
                 .append("            Message m = any.unpack(clazz);" + LS)
                 .append("            return ")
-                //                .append(args[2])
-                //                .append("JavabufTranslator.translateFromJavabuf(m);" + LS)
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (httpHeaders.getFirst(ANY) != null) {" + LS)
                 .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
                 .append("            Message m = any.unpack(")
-                //                .append(args[2])
-                //                .append("JavabufTranslator.translateToJavabufClass(type));" + LS)
                 .append("translator.translateToJavabufClass(type));" + LS)
                 .append("            return ")
-                //                .append(args[2])
-                //                .append("JavabufTranslator.translateFromJavabuf(m);" + LS)
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (type.isArray()) {" + LS)
                 .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
@@ -211,30 +193,6 @@ public class ReaderWriterGenerator {
                 .append("         } else {" + LS)
                 .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
                 .append("            return translator.translateFromJavabuf(message);" + LS)
-                /*
-                 * GeneratedMessageV3 message = getMessage(type, entityStream);
-                 * return translator.translateFromJavabuf(message);
-                 *
-                 *
-                 * } else if (type.isArray()) {
-                 * GeneratedMessageV3 message = getMessage(type, entityStream);
-                 * return ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message,
-                 * "CC1_proto");
-                 * } else {
-                 * GeneratedMessageV3 message = getMessage(type, entityStream);
-                 * return translator.translateFromJavabuf(message);
-                 * }
-                 */
-
-                //                //                .append(args[2])
-                //                //                .append("JavabufTranslator.translateFromJavabuf(message);" + LS)
-                //                .append("translator.translateFromJavabuf(message);" + LS)
-                /*
-                 * Object array = ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder)
-                 * message, "CC1_proto");
-                 * // return translator.translateFromJavabuf(message);
-                 * return array;
-                 */
                 .append("         }" + LS)
                 .append("      } catch (Exception e) {" + LS)
                 .append("         throw new RuntimeException(e);" + LS)
@@ -252,22 +210,6 @@ public class ReaderWriterGenerator {
                 .append("      } else {" + LS)
                 .append("         return translator.handlesToJavabuf(type);" + LS)
                 .append("      }" + LS)
-                //                .append("      return translator.handlesToJavabuf(type);" + LS)
-                /*
-                 * if (type.getComponentType().isArray()) {
-                 * return true;
-                 * } else {
-                 * return translator.handlesToJavabuf(type.getComponentType());
-                 * }
-                 * if (type.isArray()) {
-                 * return translator.handlesToJavabuf(type.getComponentType());
-                 * } else {
-                 * return translator.handlesToJavabuf(type);
-                 * }
-                 */
-                //                .append(args[2])
-                //                .append("JavabufTranslator.handlesToJavabuf(type);" + LS)
-                //                .append("translator.handlesToJavabuf(type);" + LS)
                 .append("   }" + LS + LS)
                 .append("   @Override" + LS)
                 .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType,"
@@ -279,16 +221,6 @@ public class ReaderWriterGenerator {
                     .append("         t = convertSseEvent((OutboundSseEventImpl) t);" + LS)
                     .append("      }" + LS);
         }
-        //        sb.append("      Message message = ").append(args[2]).append("JavabufTranslator.translateToJavabuf(t);" + LS)
-        //        sb.append("      Message message = translator.translateToJavabuf(t);" + LS)
-        /*
-         * Message message = null;
-         * if (t.getClass().isArray()) {
-         * message = ArrayUtility.getHolder(translator, t);
-         * } else {
-         * message = translator.translateToJavabuf(t);
-         * }
-         */
         sb.append("      Message message = null;" + LS)
                 .append("      if (t.getClass().isArray()) {" + LS)
                 .append("         message = ArrayUtility.getHolder(translator, t);" + LS)
@@ -351,13 +283,8 @@ public class ReaderWriterGenerator {
                     .append("      } ");
         }
         sb.append("else if (clazz.isArray()) {" + LS)
-                //                .append("         return ArrayUtility.getHolder(translator, is);" + LS)
                 .append("         return Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.parseFrom(is);" + LS)
                 .append("      } ");
-        /*
-         * } else if (clazz.isArray()) {
-         * return ArrayUtility.getHolder(translator, is);
-         */
         if (subclasses.length > 0) {
             sb.append("else {" + LS)
                     .append("         throw new IOException(\"unrecognized class: \" + clazz);" + LS)
@@ -365,7 +292,6 @@ public class ReaderWriterGenerator {
         }
         sb.append("   }" + LS + LS);
         if (hasSSE) {
-            //            sb.append("   private static SseEvent convertSseEvent(OutboundSseEventImpl osei) throws IOException {" + LS)
             sb.append("   private SseEvent convertSseEvent(OutboundSseEventImpl osei) throws IOException {" + LS)
                     .append("      SseEvent sseEvent = new SseEvent();" + LS)
                     .append("      sseEvent.setComment(osei.getComment());" + LS)
@@ -375,8 +301,6 @@ public class ReaderWriterGenerator {
                     .append("      sseEvent.setReconnectDelay(osei.getReconnectDelay());" + LS)
                     .append("      return sseEvent;" + LS)
                     .append("   }" + LS + LS);
-            //            sb.append("   private static Any convertData(OutboundSseEventImpl osei) throws IOException {" + LS)
-            //                    .append("      Message message = ").append(args[2])
             sb.append("   private Any convertData(OutboundSseEventImpl osei) throws IOException {" + LS)
                     .append("      Message message = translator.translateToJavabuf(osei.getData());" + LS)
                     .append("      return Any.pack(message);" + LS)

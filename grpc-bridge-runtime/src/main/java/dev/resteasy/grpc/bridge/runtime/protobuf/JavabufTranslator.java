@@ -13,6 +13,4 @@ public interface JavabufTranslator {
     Message translateToJavabuf(Object o);
 
     Class translateToJavabufClass(Class<?> clazz);
-
-    //	Class<?> toJavabufClass(Class<?> clazz);
 }

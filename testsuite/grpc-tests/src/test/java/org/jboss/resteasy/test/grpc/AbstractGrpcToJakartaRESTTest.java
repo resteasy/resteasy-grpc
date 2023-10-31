@@ -17,7 +17,6 @@ import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
@@ -74,7 +73,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
     static Archive<?> doDeploy(final String deploymentName) throws Exception {
         final var resolver = Maven.resolver()
                 .loadPomFromFile("pom.xml");
-        Archive ar = ShrinkWrap.create(WebArchive.class, deploymentName + ".war")
+        Archive<?> ar = ShrinkWrap.create(WebArchive.class, deploymentName + ".war")
                 .addPackage(AbstractGrpcToJakartaRESTTest.class.getPackage())
                 .addPackage(ExampleApp.class.getPackage())
                 .addPackage(CC8.class.getPackage())
@@ -85,8 +84,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addPackage(ArrayHolder.class.getPackage())
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource("web.xml");
-        ar.as(ZipExporter.class).exportTo(
-                new File("/tmp/arrays.war"), true);
+        //        ar.as(ZipExporter.class).exportTo(
+        //                new File("/tmp/arrays.war"), true);
         return ar;
     }
 
@@ -158,6 +157,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testArraysInts1(stub);
         this.testArraysInts2(stub);
         this.testArraysInts5(stub);
+        this.testArrayStuff(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1516,6 +1516,9 @@ abstract class AbstractGrpcToJakartaRESTTest {
         }
     }
 
+    //////////////////////////////
+    ///       array tests      ///
+    //////////////////////////////
     void testArraysInts1(CC1ServiceBlockingStub stub) throws Exception {
         dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
                 .newBuilder();
@@ -1527,7 +1530,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.arraysInt1(gem);
             dev_resteasy_grpc_arrays___ArrayHolder as = response
                     .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
-            System.out.println(as);
             Object o = translator.translateFromJavabuf(as);
             int[] expected = new int[] { 2, 3, 4 };
             Assert.assertArrayEquals(expected, (int[]) o);
@@ -1550,7 +1552,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.arraysInt2(gem);
             dev_resteasy_grpc_arrays___ArrayHolder as = response
                     .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
-            System.out.println(as);
             Object o = translator.translateFromJavabuf(as);
             int[][] expected = new int[][] { { 2, 3 }, { 4, 5 } };
             Assert.assertArrayEquals(expected, (int[][]) o);
@@ -1573,10 +1574,30 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.arraysInt5(gem);
             dev_resteasy_grpc_arrays___ArrayHolder as = response
                     .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
-            System.out.println(as);
             Object o = translator.translateFromJavabuf(as);
             int[][][][][] expected = new int[][][][][] { { { { { 2, 3, 4 } } } }, { { { { 5, 6 } } } } };
             Assert.assertArrayEquals(expected, (int[][][][][]) o);
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    void testArrayStuff(CC1ServiceBlockingStub stub) throws Exception {
+        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
+                .newBuilder();
+        ArrayStuff as = new ArrayStuff(false);
+        dev_resteasy_grpc_example___ArrayStuff as1 = (dev_resteasy_grpc_example___ArrayStuff) translator
+                .translateToJavabuf(as);
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcExampleArrayStuffField(as1).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.arrayStuff(gem);
+            dev_resteasy_grpc_example___ArrayStuff as2 = response.getDevResteasyGrpcExampleArrayStuffField();
+            ArrayStuff expected = new ArrayStuff(true);
+            Assert.assertEquals(expected, translator.translateFromJavabuf(as2));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -1592,27 +1613,5 @@ abstract class AbstractGrpcToJakartaRESTTest {
             return fieldName.substring(pos);
         }
         return fieldName;
-    }
-
-    void testArrayStuff(CC1ServiceBlockingStub stub) throws Exception {
-        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
-                .newBuilder();
-        System.out.println("as class: " + translator.translateToJavabuf(new ArrayStuff(false)));
-        dev_resteasy_grpc_example___ArrayStuff as1 = (dev_resteasy_grpc_example___ArrayStuff) translator
-                .translateToJavabuf(new ArrayStuff(false));
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcExampleArrayStuffField(as1).build();
-        GeneralReturnMessage response;
-        try {
-            response = stub.arrayStuff(gem);
-            dev_resteasy_grpc_example___ArrayStuff as2 = response.getDevResteasyGrpcExampleArrayStuffField();
-            System.out.println(as2);
-            ArrayStuff expected = new ArrayStuff(true);
-            Assert.assertEquals(expected, translator.translateFromJavabuf(as2));
-        } catch (StatusRuntimeException e) {
-            try (StringWriter writer = new StringWriter()) {
-                e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
-            }
-        }
     }
 }

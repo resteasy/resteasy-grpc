@@ -270,7 +270,6 @@ public class ServiceGrpcExtender {
 
     private void rpc(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass,
             String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
-        System.out.println("actualEntityClass 1: " + actualEntityClass);
         if ("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
             actualEntityClass = "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
         }
@@ -282,7 +281,6 @@ public class ServiceGrpcExtender {
         scanner.findWithinHorizon("\\(", 0);
         scanner.useDelimiter("\\)");
         String param = getParamType(packageName, outerClassName, scanner.next());
-        System.out.println("actualEntityClass 2: " + actualEntityClass);
         if (!imports.contains(actualEntityClass)) {
             if (!"Any".equals(actualEntityClass)
                     && !"google.protobuf.Any".equals(actualEntityClass)
@@ -299,7 +297,6 @@ public class ServiceGrpcExtender {
                 }
             }
         }
-        System.out.println("actualReturnClass: " + actualReturnClass);
         if (!imports.contains(actualReturnClass)) {
             if (!"Any".equals(actualReturnClass)
                     && !"google.protobuf.Any".equals(actualReturnClass)
@@ -530,12 +527,6 @@ public class ServiceGrpcExtender {
                 .append(root)
                 .append("_Server.getServletContext();" + LS)
                 .append("      if (servletContext == null) {" + LS)
-                //                .append("         Client client = ClientBuilder.newClient();" + LS)
-                //                .append("         Response response = client.target(\"http://localhost:8080/" + artifactIdVersion
-                //                        + "/grpcToJakartaRest/grpcserver/context\").request().get();" + LS)
-                //                .append("         if (200 != response.getStatus()) {" + LS)
-                //                .append("            throw new RuntimeException(Messages.MESSAGES.cantGetServletContext());" + LS)
-                //                .append("         }" + LS)
                 .append("         servletContext = ")
                 .append(root)
                 .append("_Server.getServletContext();" + LS)
@@ -701,7 +692,6 @@ public class ServiceGrpcExtender {
     }
 
     private String getGetterMethod(String actualEntityClass) {
-        System.out.println("actualEntityClass: " + actualEntityClass);
         if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
             actualEntityClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
         }
@@ -722,11 +712,9 @@ public class ServiceGrpcExtender {
     }
 
     private String getSetterMethod(String actualReturnClass) {
-        System.out.println("getSetterMethod(): " + actualReturnClass);
         if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
-            //            actualReturnClass = "dev_resteasy_grpc_arrays___ArrayHolder";
             actualReturnClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
-        } //setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField
+        }
         if ("com.google.protobuf.Any".equals(actualReturnClass) || "Any".equals(actualReturnClass)) {
             return "grmb.setGoogleProtobufAnyField";
         }
