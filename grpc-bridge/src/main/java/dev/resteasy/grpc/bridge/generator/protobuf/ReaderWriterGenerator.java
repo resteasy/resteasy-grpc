@@ -188,8 +188,8 @@ public class ReaderWriterGenerator {
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (type.isArray()) {" + LS)
                 .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
-                .append("            return ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message, \"")
-                .append(args[2]).append("_proto\");" + LS)
+                .append("            return ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message);"
+                        + LS)
                 .append("         } else {" + LS)
                 .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
                 .append("            return translator.translateFromJavabuf(message);" + LS)
