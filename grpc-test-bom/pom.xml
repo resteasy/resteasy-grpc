@@ -34,7 +34,7 @@
     <properties>
         <version.io.grpc>1.54.1</version.io.grpc>
         <protoc-gen-grpc-java.version>1.51.1</protoc-gen-grpc-java.version>
-        <version.org.jboss.arquillian>1.7.1.Final</version.org.jboss.arquillian>
+        <version.org.jboss.arquillian>1.7.2.Final</version.org.jboss.arquillian>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.1.Final</version.org.wildfly.arquillian.wildfly-arquillian>
     </properties>
 
