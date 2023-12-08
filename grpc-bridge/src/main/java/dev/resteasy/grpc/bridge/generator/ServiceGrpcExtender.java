@@ -304,7 +304,7 @@ public class ServiceGrpcExtender {
                     && !"gEmpty".equals(actualReturnClass)
                     && !ANY.equals(actualReturnClass)
                     && !PROTOBUF_PRIMITIVES.contains(actualReturnClass)) {
-                if ("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
+                if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
                     sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;");
                     imports.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder");
                 } else {
