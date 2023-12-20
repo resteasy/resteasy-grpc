@@ -1149,14 +1149,14 @@ generate the initial state of the bridge project, run
         mvn archetype:generate -B \
            -DarchetypeGroupId=dev.resteasy.grpc \
            -DarchetypeArtifactId=gRPCtoJakartaREST-archetype \
-           -DarchetypeVersion=1.0.0.Alpha7 \
+           -DarchetypeVersion=1.0.0.Alpha6 \
            -DgroupId=org.greet \
            -DartifactId=greet \
            -Dversion=0.0.1-SNAPSHOT \
            -Dgenerate-prefix=Greet \
            -Dgenerate-package=org.greet \
            -Dresteasy-version=6.2.4.Final \
-           -Dgrpc-bridge-version=1.0.0.Alpha4
+           -Dgrpc-bridge-version=1.0.0.Alpha3
 
 The following parameters need to be supplied:
 
@@ -1301,7 +1301,7 @@ These presumably need to be modified. Maven repository configuration is
 beyond the scope of this document.
 
 Depending on the environment to which it will be deployed, the WAR's
-WEB-INF/lib directory can contain only grpc-bridge-runtime-1.0.0.Alpha1.jar
+WEB-INF/lib directory can contain only grpc-bridge-runtime-1.0.0.Alpha3.jar
 or it can be populated with all of the protobuf, gRPC,
 and other JARs necessary for the intermediary classes to run. For
 example, if the WAR is to be deployed to an instance of WildFly running
@@ -1309,7 +1309,7 @@ with the gRPC subsystem
 <https://github.com/wildfly-extras/wildfly-grpc-feature-pack>, then it
 should be built with parameter "inWildFly" set to "true" (or
 anything other than "false"), which will result in a WEB/lib
-directory with just grpc-bridge-runtime-1.0.0.Alpha1.jar. Setting it to "false"
+directory with just grpc-bridge-runtime-1.0.0.Alpha3.jar. Setting it to "false"
 will populate WEB-INF/lib appropriately.
 
 ## Using the generated WAR
