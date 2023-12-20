@@ -50,7 +50,6 @@ message dev_resteasy_grpc_arrays___ArrayHolderArray {
 
 message dev_resteasy_grpc_arrays___ArrayHolder {
   string componentClass = 1;
-  bool bottom = 2;
   oneof messageType {
      dev_resteasy_grpc_arrays___BooleanArray booleanArray_field = 3;
      dev_resteasy_grpc_arrays___ByteArray byteArray_field = 4;
