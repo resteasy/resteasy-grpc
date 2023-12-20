@@ -158,72 +158,12 @@ the method is not implemented. The idea is that the developer should
 create a class extending `GreetServiceImplBase` with implementing
 methods. A simple example is
 
+        @java.lang.Override
         public void greet(org.greet.Greet_proto.gString request, StreamObserver<org.greet.Greet_proto.Greeting> responseObserver) {
            String name = request.getValue();
            org.greet.Greet_proto.Greeting greeting = org.greet.Greet_proto.Greeting.newBuilder().setS("hello, " + name).build();
            responseObserver.onNext(greeting);
         }
-       
-
-### google.protobuf.Any
-
-As we will see below, there are situations in which the actual type of a
-message cannot be determined until runtime, and protobuf has a general
-purpose type, `google.protobuf.Any`, which can hold any type of message.
-The definition of `Any` is
-
-        message Any {
-           string type_url = 1;
-           bytes value = 2;
-        }   
-
-The `value` field has built-in type `bytes`, which "May contain any
-arbitrary sequence of bytes no longer than 2^32", according to
-<https://developers.google.com/protocol-buffers/docs/proto3>. The type
-of the message stored in the `value` is described by the URL in the
-`type_url` field. Consider, for example,
-
-        gString gs = gString.newBuilder().setValue("abc").build();
-        Message m = Any.pack(gs);
-        System.out.println(m);
-       
-
-The output is
-
-        type_url: "type.googleapis.com/org.greet.gString"
-        value: "\272\001\003abc"
-
-The string "\\272\\001\\003abc" is the internal representation of a
-`gString`, the details of which are beyond the scope of this discussion.
-See <https://developers.google.com/protocol-buffers/docs/encoding> for
-details. The URL is "type.googleapis.com/org.greet.gString", where the
-path "org.greet.gString" gives the type of the object represented in
-the `value` field.
-
-The advantage of the `type_url` field is that it can be used to retrieve
-the value of the `Any`. Consider, for example, the code
-
-        Any any = null;
-        if (/* some predicate */) {
-           gString gs = gString.newBuilder().setValue("abc").build();
-           any = Any.pack(gs);
-        } else {
-           gInteger gi = gInteger.newBuilder().setValue(7).build();
-           any = Any.pack(gi);
-        }
-        /* send any */
-       
-
-Then, the `Any` can be unpacked as follows:
-
-        /* get any */
-        if (any.getTypeUrl().endsWith("org.greet.gString")) {
-           gString gs = any.unpack(gString.class);
-           System.out.println("gs: " + gs);
-        } else if (any.getTypeUrl().endsWith("org.greet.gInteger")) {
-           gInteger gi = any.unpack(gInteger.class);
-           System.out.println("gi: " + gi);
-        }   
 
 ## Connecting a gRPC client to a Jakarta REST server
 
@@ -243,10 +183,10 @@ resteasy-grpc's grpc-bridge module automates the process.
 The class
 `dev.resteasy.grpc.bridge.generator.protobuf.JavaToProtobufGenerator`
 traverses, with the help of the Java parser
-<https://github.com/javaparser/javaparser>, a set of Jakarta REST
+<https://github.com/javaparser/javaparser>, the transitive closure of a set of Jakarta REST
 resource classes. For each class that appears as an entity type or a
-return type of a resource method or resource locator,
-`JavaToProtobufGenerator` generates a protobuf message. For each
+return type of a resource method or resource locator, or as a field, superclass, or
+inner class thereof, `JavaToProtobufGenerator` generates a protobuf message. For each
 resource method or resource locator, it generates an rpc entry.
 
 Note that not all message types can be discovered by syntactic
@@ -519,6 +459,316 @@ process Greet.proto treat it accordingly.
 Note, by the way, that `getGeneralGreeting()` doesn't lead to an rpc entry. That's because,
 lacking in Jakarta REST annotations, it's not a resource method.
 
+### Translating Java classes
+<a name="translating_java_classes"/>
+
+Note that the sequence
+
+                  org.greet.Greeting (Java class)
+                          -> (translated by JavaToProtobufGenerator) -> 
+                          -> org_greet___Greeting (protobuf message)
+                          -> (translated by protoc) -> 
+                          -> org.greet.Greet_proto.org_greet___Greeting (Java class)
+
+turns the Java class `org.greet.Greeting` into a second Java class
+`org.greet.Greet_proto.org_greet___Greeting` by way of the protobuf
+message type `org_greet___Greeting`. For clarity, we refer to
+`org.greet.Greet_proto.org_greet___Greeting` as the **javabuf** version
+of `org.greet.Greeting`.
+
+Two classes are generated to translate back and forth between a Java
+class and its javabuf counterpart. In particular, the class
+`dev.resteasy.grpc.bridge.generator.protobuf.JavabufTranslatorGenerator`
+generates a class like `org.greet.GreetJavabufTranslator`, which has two
+static methods
+
+        public static Message translateToJavabuf(Object o);
+        public static Object translateFromJavabuf(Message message);
+
+which do the translations. Note that all javabuf classes implement the
+interface `com.google.protobuf.Message`. Without going too deeply into
+the details, `GreetJavabufTranslator` has two classes for each message
+type; for example,
+
+        static class org_greet___Greeting_ToJavabuf implements TranslateToJavabuf { ... }
+        static class org_greet___Greeting_FromJavabuf implements TranslateFromJavabuf { ... }
+
+Each class has a list of lambdas, each lambda being responsible for
+translating one field.
+
+`GreetJavabufTranslator` does the heavy lifting of the translations. It
+is called from the class `org.greet.GreetMessageBodyReaderWriter`, which is generated by
+`dev.resteasy.grpc.bridge.generator.protobuf.ReaderWriterGenerator`.
+`GreetMessageBodyReaderWriter` implements `jakarta.ws.rs.ext.MessageBodyReader` and
+`jakarta.ws.rs.ext.MessageBodyWriter`, so it's registered as a provider
+with the RESTEasy runtime.
+
+### Arrays
+
+Protobuf supports simple arrays with the keyword "repeated". For example,
+
+        message intArray {
+            repeated sfixed32 int_field = 1;
+        }
+
+represents a message with an array of integers, i.e., `int[]` in Java. However, there is no
+built-in support for multidimensional arrays like `int[][]`, so we have to we have to implement
+support explicitly. grpc-bridge-runtime has the class `dev.resteasy.grpc.arrays.ArrayHolder`, which looks like
+
+        public class ArrayHolder {
+
+            private boolean[] booleans;
+            private byte[] bytes;
+            private short[] shorts;
+            private int[] ints;
+            private long[] longs;
+            private float[] floats;
+            private double[] doubles;
+            private char[] chars;
+            private Object[] objects;
+
+            private ArrayHolder[] arrayHolders;
+
+            public boolean[] getBooleans() {
+                return booleans;
+            }
+
+            public void setBooleans(boolean[] booleans) {
+                this.booleans = booleans;
+            }
+            ...
+        }
+
+Any one dimensional array like `int[]` is represented explicitly, but a multidimensional array
+like `int[][]` is represented as an array of `ArrayHolders`. Translated into protobuf, `ArrayHolder`
+looks like
+
+        ...
+        message dev_resteasy_grpc_arrays___BooleanArray {
+          repeated bool bool_field = 1;
+        }
+        ...
+        message dev_resteasy_grpc_arrays___IntArray {
+           repeated sfixed32 int_field = 1;
+        }
+        ...
+        message dev_resteasy_grpc_arrays___ArrayHolderArray {
+           repeated dev_resteasy_grpc_arrays___ArrayHolder arrayHolder_field = 1;
+        }
+
+        message dev_resteasy_grpc_arrays___ArrayHolder {
+           string componentClass = 1;
+           bool bottom = 2;
+           oneof messageType {
+              dev_resteasy_grpc_arrays___BooleanArray booleanArray_field = 3;
+              dev_resteasy_grpc_arrays___ByteArray byteArray_field = 4;
+              dev_resteasy_grpc_arrays___ShortArray shortArray_field = 5;
+              dev_resteasy_grpc_arrays___IntArray   intArray_field = 6;
+              dev_resteasy_grpc_arrays___LongArray  longArray_field = 7;
+              dev_resteasy_grpc_arrays___FloatArray floatArray_field = 8;
+              dev_resteasy_grpc_arrays___DoubleArray doubleArray_field = 9;
+              dev_resteasy_grpc_arrays___CharArray   charArray_field = 10;
+              dev_resteasy_grpc_arrays___StringArray stringArray_field = 11;
+              dev_resteasy_grpc_arrays___AnyArray anyArray_field = 12;
+              dev_resteasy_grpc_arrays___ArrayHolderArray arrayHolderArray_field = 13;
+        }
+
+These are defined in `arrays.proto` in grpc-bridge-runtime.
+
+For example, suppose we want to create the javabuf analog of
+
+        int[] is = new int[] { 1, 2 };
+
+That can be done, somewhat laboriously, as follows:
+
+      dev_resteasy_grpc_arrays___IntArray.Builder iab = dev_resteasy_grpc_arrays___IntArray.newBuilder();
+      iab.addIntField(1);
+      iab.addIntField(2);
+      dev_resteasy_grpc_arrays___IntArray ia = iab.build();
+      dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+      ahb.setIntArrayField(ia);
+      ahb.setComponentClass(int.class.getName());
+      dev_resteasy_grpc_arrays___ArrayHolder ah = ahb.build();
+      System.out.println(ah);
+
+The output would be
+
+        componentClass: "int"
+        intArray_field {
+           int_field: 1
+           int_field: 2
+        }
+
+Even worse is
+
+        int[][] iss = new int[][] { { 1, 2 }, { 3, 4, 5 } };
+
+That can be translated manually by
+
+      // {1, 2}
+      dev_resteasy_grpc_arrays___IntArray.Builder iab1 = dev_resteasy_grpc_arrays___IntArray.newBuilder();
+      iab1.addIntField(1);
+      iab1.addIntField(2);
+      dev_resteasy_grpc_arrays___IntArray ia1 = iab1.build();
+      dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb1 = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+      ahb1.setIntArrayField(ia1);
+      ahb1.setComponentClass(int.class.getName());
+      dev_resteasy_grpc_arrays___ArrayHolder ah1 = ahb1.build();
+      
+      // {3, 4, 5}
+      dev_resteasy_grpc_arrays___IntArray.Builder iab2 = dev_resteasy_grpc_arrays___IntArray.newBuilder();
+      iab2.addIntField(3);
+      iab2.addIntField(4);
+      iab2.addIntField(5);
+      dev_resteasy_grpc_arrays___IntArray ia2 = iab2.build();
+      dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb2 = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+      ahb2.setIntArrayField(ia2);
+      ahb2.setComponentClass(int.class.getName());
+      dev_resteasy_grpc_arrays___ArrayHolder ah2 = ahb2.build();
+      
+      // { {1, 2}, {3, 4, 5}}
+      dev_resteasy_grpc_arrays___ArrayHolderArray.Builder ahab = dev_resteasy_grpc_arrays___ArrayHolderArray.newBuilder();
+      ahab.addArrayHolderField(ah1);
+      ahab.addArrayHolderField(ah2);
+      dev_resteasy_grpc_arrays___ArrayHolderArray aha = ahab.build();
+      dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb3 = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+      ahb3.setArrayHolderArrayField(aha);
+      ahb3.setComponentClass("[I");
+      dev_resteasy_grpc_arrays___ArrayHolder ah = ahb3.build();
+      System.out.println(ah);
+
+where the output would be
+
+      componentClass: "[I"
+         arrayHolderArray_field {
+            arrayHolder_field {
+               componentClass: "int"
+                  intArray_field {
+                  int_field: 1
+                  int_field: 2
+               }
+            }
+            arrayHolder_field {
+               componentClass: "int"
+               intArray_field {
+                  int_field: 3
+                  int_field: 4
+                  int_field: 5
+               }
+            }
+         }
+
+To avoid all of this mess, grpc-bridge-runtime includes the class `dev.resteasy.grpc.arrays.ArrayUtility`, which
+can be used as follows:
+
+        int[][] iss = new int[][] { { 1, 2 }, { 3, 4, 5 } };
+        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(iss);
+     
+`ArrayUtility` can also translate from javabuf back to the original Java:
+
+        Object array = ArrayUtility.getArray(holder);
+        Assert.assertArrayEquals(iss, (int[][]) array);
+        
+This works if the arrays are constructed from primitive types. There are also methods
+
+        public static dev_resteasy_grpc_arrays___ArrayHolder getHolder(JavabufTranslator translator, Object o);
+
+and
+
+        public static Object getArray(JavabufTranslator translator, Array_proto.dev_resteasy_grpc_arrays___ArrayHolder ah)
+            throws Exception;
+
+for non primitive types.
+
+Suppose we have a resource method
+
+           @Path("ints")
+           @GET
+           public int[][] ints(int[][] iss) {
+             return iss;
+           }
+
+that we want to call from a gRPC client. We can use `ArrayUtility` as follows:
+
+        void testArrays(ServiceBlockingStub stub) throws Exception {
+           int[][] iss = new int[][] {{1, 2}, {2, 3, 4}};
+           dev_resteasy_grpc_arrays___ArrayHolder ah = ArrayUtility.getHolder(iss);
+           Array_proto.GeneralEntityMessage.Builder builder = Array_proto.GeneralEntityMessage.newBuilder();
+           GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
+           GeneralReturnMessage response;
+           try {
+              response = stub.ints(gem);
+              dev_resteasy_grpc_arrays___ArrayHolder ah2 = response.getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+              Object o = ArrayUtility.getArray(ah2);
+              Assert.assertArrayEquals(iss, (int[][]) o);
+           } catch (StatusRuntimeException e) {
+              //
+           }
+        }
+
+Note that on the server side, RESTEasy handles the translation behind the scenes with the appropriate `MessageBodyReaderWriter`,
+`JavabufTranslator`, and `ArrayUtility`.
+
+### google.protobuf.Any
+
+As we will see below, there are situations in which the actual type of a
+message cannot be determined until runtime, and protobuf has a general
+purpose type, `google.protobuf.Any`, which can hold any type of message.
+The definition of `Any` is
+
+        message Any {
+           string type_url = 1;
+           bytes value = 2;
+        }   
+
+The `value` field has built-in type `bytes`, which "May contain any
+arbitrary sequence of bytes no longer than 2^32", according to
+<https://developers.google.com/protocol-buffers/docs/proto3>. The type
+of the message stored in the `value` is described by the URL in the
+`type_url` field. Consider, for example,
+
+        gString gs = gString.newBuilder().setValue("abc").build();
+        Message m = Any.pack(gs);
+        System.out.println(m);
+       
+
+The output is
+
+        type_url: "type.googleapis.com/org.greet.gString"
+        value: "\272\001\003abc"
+
+The string "\\272\\001\\003abc" is the internal representation of a
+`gString`, the details of which are beyond the scope of this discussion.
+See <https://developers.google.com/protocol-buffers/docs/encoding> for
+details. The URL is "type.googleapis.com/org.greet.gString", where the
+path "org.greet.gString" gives the type of the object represented in
+the `value` field.
+
+The advantage of the `type_url` field is that it can be used to retrieve
+the value of the `Any`. Consider, for example, the code
+
+        Any any = null;
+        if (/* some predicate */) {
+           gString gs = gString.newBuilder().setValue("abc").build();
+           any = Any.pack(gs);
+        } else {
+           gInteger gi = gInteger.newBuilder().setValue(7).build();
+           any = Any.pack(gi);
+        }
+        /* send any */
+       
+
+Then, the `Any` can be unpacked as follows:
+
+        /* get any */
+        if (any.getTypeUrl().endsWith("org.greet.gString")) {
+           gString gs = any.unpack(gString.class);
+           System.out.println("gs: " + gs);
+        } else if (any.getTypeUrl().endsWith("org.greet.gInteger")) {
+           gInteger gi = any.unpack(gInteger.class);
+           System.out.println("gi: " + gi);
+        }   
+
 ### Runtime intermediary layer on the server
 
 The gRPC runtime accepts a gRPC request and dispatches it to
@@ -536,9 +786,9 @@ methods in `GreetServiceGrpc` that need to be overridden. For example,
 
         public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserver<org.greet.Greet_proto.GeneralReturnMessage> responseObserver);
        
-
 will be overridden by
 
+        @java.lang.Override
         public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserver<org.greet.Greet_proto.GeneralReturnMessage> responseObserver) {
            HttpServletRequest request = null;
            try {
@@ -580,119 +830,6 @@ into too much detail, the following steps occur:
     method of the target servlet
 6.  parse the response object
 7.  pass the response back to the gRPC runtime
-
-### Translating Java classes
-<a name="translating_java_classes"/>
-
-Note that the sequence
-
-                  org.greet.Greeting (Java class)
-                          -> (translated by JavaToProtobufGenerator) -> 
-                          -> org_greet___Greeting (protobuf message)
-                          -> (translated by protoc) -> 
-                          -> org.greet.Greet_proto.org_greet___Greeting (Java class)
-
-turns the Java class `org.greet.Greeting` into a second Java class
-`org.greet.Greet_proto.org_greet___Greeting` by way of the protobuf
-message type `org_greet___Greeting`. For clarity, we refer to
-`org.greet.Greet_proto.org_greet___Greeting` as the **javabuf** version
-of `org.greet.Greeting`.
-
-Two classes are generated to translate back and forth between a Java
-class and its javabuf counterpart. In particular, the class
-`dev.resteasy.grpc.bridge.generator.protobuf.JavabufTranslatorGenerator`
-generates a class like `org.greet.GreetJavabufTranslator`, which has two
-static methods
-
-        public static Message translateToJavabuf(Object o);
-        public static Object translateFromJavabuf(Message message);
-
-which do the translations. Note that all javabuf classes implement the
-interface `com.google.protobuf.Message`. Without going too deeply into
-the details, `GreetJavabufTranslator` has two classes for each message
-type; for example,
-
-        static class org_greet___Greeting_ToJavabuf implements TranslateToJavabuf { ... }
-        static class org_greet___Greeting_FromJavabuf implements TranslateFromJavabuf { ... }
-
-Each class has a list of lambdas, each lambda being responsible for
-translating one field.
-
-`GreetJavabufTranslator` does the heavy lifting of the translations. It
-is called from the class `org.greet.GreetMessageBodyReaderWriter`, which
-is generated by
-`dev.resteasy.grpc.bridge.generator.protobuf.ReaderWriterGenerator`.
-`GreetMessageBodyReaderWriter` implements
-`jakarta.ws.rs.ext.MessageBodyReader` and
-`jakarta.ws.rs.ext.MessageBodyWriter`, so it's registered as a provider
-with the RESTEasy runtime. The request entity and the response entity
-are instances of javabuf classes, so it's important that
-`GreetMessageBodyReaderWriter` is always used instead of any other
-providers. Since some built-in providers like
-`org.jboss.resteasy.plugins.providers.StringTextStar` are very general,
-it is important to guarantee that `GreetMessageBodyReaderWriter` has the
-highest priority. One strategy available in RESTEasy is to eliminate
-**all** built-in providers and then add back any that are necessary. For
-example, that can be accomplished in a web.xml file as follows:
-
-        <servlet>
-           <servlet-name>GreetServlet</servlet-name>
-           <servlet-class>
-              dev.resteasy.grpc.bridge.runtime.servlet.GrpcHttpServletDispatcher
-           </servlet-class>
-        </servlet>
-        
-        <!-- 
-           The intention is that GreetMessageBodyReaderWriter (with the help of GreetJavabufTranslator)
-           will handle all reading and writing of data objects. Therefore, we
-
-           1. eliminate all builtin providers, and then
-           2. add back builtin providers other than MessageBodyReaders and MessageBodyWriters.
-
-         -->
-        <context-param>
-            <param-name>resteasy.use.builtin.providers</param-name>
-            <param-value>false</param-value>
-        </context-param>
-        <context-param>
-            <param-name>resteasy.servlet.mapping.prefix</param-name>
-            <param-value>/grpcToJakartaRest</param-value>
-        </context-param>
-        ...
-         <context-param>
-           <param-name>resteasy.providers</param-name>
-           <param-value>
-              org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider,
-              org.jboss.resteasy.plugins.interceptors.CacheControlFeature,
-              org.jboss.resteasy.plugins.interceptors.ClientContentEncodingAnnotationFeature,
-              org.jboss.resteasy.plugins.interceptors.MessageSanitizerContainerResponseFilter,
-              org.jboss.resteasy.plugins.interceptors.ServerContentEncodingAnnotationFeature,
-              org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider,
-              org.jboss.resteasy.plugins.providers.CompletionStageProvider,
-              org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter,
-              org.jboss.resteasy.plugins.providers.jackson.UnrecognizedPropertyExceptionHandler,
-              org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder,
-              org.jboss.resteasy.plugins.providers.jsonp.JsonpPatchMethodFilter,
-              org.jboss.resteasy.plugins.providers.ReactiveStreamProvider,
-              org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionMapper,
-              org.jboss.resteasy.plugins.validation.ValidatorContextResolver,
-              org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI,
-              org.jboss.resteasy.security.doseta.ClientDigitalSigningHeaderDecoratorFeature,
-              org.jboss.resteasy.security.doseta.ClientDigitalVerificationHeaderDecoratorFeature,
-              org.jboss.resteasy.security.doseta.DigitalSigningInterceptor,
-              org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor,
-              org.jboss.resteasy.security.doseta.ServerDigitalSigningHeaderDecoratorFeature,
-              org.jboss.resteasy.security.doseta.ServerDigitalVerificationHeaderDecoratorFeature
-           </param-value>
-        </context-param>
-
-        <servlet-mapping>
-           <servlet-name>GreetServlet</servlet-name>
-           <url-pattern>/grpcToJakartaRest/*</url-pattern>
-        </servlet-mapping>
-
-Of course, the list of providers can be reduced to those that are
-actually needed.
 
 ### SSE
 <a name="SSE"/>
@@ -1012,14 +1149,14 @@ generate the initial state of the bridge project, run
         mvn archetype:generate -B \
            -DarchetypeGroupId=dev.resteasy.grpc \
            -DarchetypeArtifactId=gRPCtoJakartaREST-archetype \
-           -DarchetypeVersion=1.0.0.Alpha1 \
+           -DarchetypeVersion=1.0.0.Alpha7 \
            -DgroupId=org.greet \
            -DartifactId=greet \
            -Dversion=0.0.1-SNAPSHOT \
            -Dgenerate-prefix=Greet \
            -Dgenerate-package=org.greet \
            -Dresteasy-version=6.2.4.Final \
-           -Dgrpc-bridge-version=1.0.0.Alpha1
+           -Dgrpc-bridge-version=1.0.0.Alpha4
 
 The following parameters need to be supplied:
 
@@ -1049,9 +1186,11 @@ new project is
         |  |  +- beans.xml
         |  +- WEB-INF
         |     +- web.xml
-        +- src/main/resources
-        |  +- buildjar
-        |  +- deployjar
+        +- src/main
+        |  +- proto/dev/resteasy/grpc/arrays/arrays.proto
+        +- +- resources
+        |     +- buildjar
+        |     +- deployjar
 
 The most important file is pom.xml, which describes the sequence of
 events necessary for generating a WAR with the contents of the target
@@ -1060,6 +1199,7 @@ project plus the intermediary layer. The other files are
 -   beans.xml: empty file
 -   web.xml: implements the Jakarta REST provider removal described
     above (See [Translating Java classes](#translating_java_classes).)
+-   arrays.proto: definitions for handling arrays
 -   buildjar: a bash script that produces a JAR file
 -   deployjar: a bash script that deploys the JAR built by buildjar to a
     maven repository (See ([Output products](#output_products).)
@@ -1112,8 +1252,10 @@ When the project is built, the layout is as follows:
         |  +- deployjar
         +- target/generated-sources/protobuf
         |  +- java
+        |     +- dev.resteasy.grpc.arrays
+        |        +- Array_proto.java
         |     +- org.greet
-        |     |  +- Greet_proto.java
+        |        +- Greet_proto.java
         |  +- grpc-java
         |     +- org.greet
         |        +- Greet_Server.java 
@@ -1255,6 +1397,84 @@ that running maven to build the bridge project results in copying Java
 classes from the target project. It should be noted that if other files
 are needed, that would need to be handled separately.
 
+### Runtime
+
+As discussed in [Translating Java classes](#translating_java_classes), grpc-bridge
+generates a `MessageBodyReader`/`MessageBodyWriter` which uses the generated
+`JavabufTranslator` to translated back and forth between the original Java classes
+and their javabuf counterparts. This class is a Jakarta REST provider, and the Jakarta
+REST specification describes how, based on a variety of factors including applicabilty
+to classes to be translated, a provider is chosen
+from a set of available providers. When RESTEasy is running in the context of a gRPC intermediary
+layer, it is crucial that the generated class is chosen over all available possibilities, but
+the presence of built-in providers might turn out to be a problem. For example,
+`org.jboss.resteasy.plugins.providers.StringTextStar` is willing to process just about
+any string. Now, the generated class is decorated with a `jakarta.annotation.Priority`
+annotation with the maximum priority, so there won't be a problem in this case, but,
+in principle, some built-in providers could be troublesome.
+One strategy available in RESTEasy is to eliminate
+**all** built-in providers and then add back any that are necessary. For
+example, that can be accomplished in a web.xml file as follows:
+
+        <servlet>
+           <servlet-name>GreetServlet</servlet-name>
+           <servlet-class>
+              dev.resteasy.grpc.bridge.runtime.servlet.GrpcHttpServletDispatcher
+           </servlet-class>
+        </servlet>
+        
+        <!-- 
+           The intention is that GreetMessageBodyReaderWriter (with the help of GreetJavabufTranslator)
+           will handle all reading and writing of data objects. Therefore, we
+
+           1. eliminate all builtin providers, and then
+           2. add back builtin providers other than MessageBodyReaders and MessageBodyWriters.
+
+         -->
+        <context-param>
+            <param-name>resteasy.use.builtin.providers</param-name>
+            <param-value>false</param-value>
+        </context-param>
+        <context-param>
+            <param-name>resteasy.servlet.mapping.prefix</param-name>
+            <param-value>/grpcToJakartaRest</param-value>
+        </context-param>
+        ...
+         <context-param>
+           <param-name>resteasy.providers</param-name>
+           <param-value>
+              org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider,
+              org.jboss.resteasy.plugins.interceptors.CacheControlFeature,
+              org.jboss.resteasy.plugins.interceptors.ClientContentEncodingAnnotationFeature,
+              org.jboss.resteasy.plugins.interceptors.MessageSanitizerContainerResponseFilter,
+              org.jboss.resteasy.plugins.interceptors.ServerContentEncodingAnnotationFeature,
+              org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider,
+              org.jboss.resteasy.plugins.providers.CompletionStageProvider,
+              org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter,
+              org.jboss.resteasy.plugins.providers.jackson.UnrecognizedPropertyExceptionHandler,
+              org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder,
+              org.jboss.resteasy.plugins.providers.jsonp.JsonpPatchMethodFilter,
+              org.jboss.resteasy.plugins.providers.ReactiveStreamProvider,
+              org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionMapper,
+              org.jboss.resteasy.plugins.validation.ValidatorContextResolver,
+              org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI,
+              org.jboss.resteasy.security.doseta.ClientDigitalSigningHeaderDecoratorFeature,
+              org.jboss.resteasy.security.doseta.ClientDigitalVerificationHeaderDecoratorFeature,
+              org.jboss.resteasy.security.doseta.DigitalSigningInterceptor,
+              org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor,
+              org.jboss.resteasy.security.doseta.ServerDigitalSigningHeaderDecoratorFeature,
+              org.jboss.resteasy.security.doseta.ServerDigitalVerificationHeaderDecoratorFeature
+           </param-value>
+        </context-param>
+
+        <servlet-mapping>
+           <servlet-name>GreetServlet</servlet-name>
+           <url-pattern>/grpcToJakartaRest/*</url-pattern>
+        </servlet-mapping>
+
+Of course, the list of providers can be reduced to those that are
+actually needed.
+
 ### Servlet environment
 <a name="servlet_environment"/>
 
@@ -1270,7 +1490,9 @@ injection of certain servlet related types:
 
 RESTEasy supports servlets, and, accordingly, grpc-bridge creates a
 servlet environment for Jakarta REST resources to execute in, including
-the four mandated servlet types.
+the four mandated servlet types. Now, the generated class is decorated with a
+`jakarta.annotation.Priority` annotation with the maximum priority, so there won't be a
+problem, but, in principle, other providers could be troublesome. One solution available
 
 Note that [Using the generated WAR](#using_war) discusses a step
 involving a Jakarta REST client call that must be taken before gRPC
@@ -1313,4 +1535,3 @@ by the client. On the other hand, the information in
 
 which would normally come from the network connection, must be supplied
 explicitly as part of the invocation.
-

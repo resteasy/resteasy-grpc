@@ -425,6 +425,9 @@ public class JavabufTranslatorGenerator {
                 .append("                     }" + LS)
                 .append("                  } else if (field.getType().isArray()) {" + LS)
                 .append("                        Object array = field.get(obj);" + LS)
+                .append("                        if (array == null) {" + LS)
+                .append("                           return;" + LS)
+                .append("                        }" + LS)
                 .append("                        Class<?> componentType = array.getClass().getComponentType();" + LS)
                 .append("                        if (componentType.isArray()) {" + LS)
                 .append("                           messageBuilder.setField(fd, arrayHolderToJavabuf.assignToJavabuf(field.get(obj)));"

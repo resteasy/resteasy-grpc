@@ -49,6 +49,10 @@ public class ArrayUtility {
         PRIMITIVE_TYPES.put("C", "char");
     }
 
+    public static Object getArray(Array_proto.dev_resteasy_grpc_arrays___ArrayHolder ah) throws Exception {
+        return getArray(null, ah);
+    }
+
     public static Object getArray(JavabufTranslator translator, Array_proto.dev_resteasy_grpc_arrays___ArrayHolder ah)
             throws Exception {
 
@@ -227,6 +231,9 @@ public class ArrayUtility {
                 }
                 dev_resteasy_grpc_arrays___AnyArray aa = ah.getAnyArrayField();
                 String className = ah.getComponentClass();
+                if ("".equals(className) || className == null) {
+                    return null;
+                }
                 Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
                 Object array = createArray(className, aa.getAnyFieldCount());
                 List<Any> list = aa.getAnyFieldList();
