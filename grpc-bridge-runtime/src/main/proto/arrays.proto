@@ -1,0 +1,66 @@
+syntax = "proto3";
+package dev.resteasy.grpc.arrays;
+import "google/protobuf/any.proto";
+option java_package = "dev.resteasy.grpc.arrays";
+option java_outer_classname = "Array_proto";
+
+message dev_resteasy_grpc_arrays___BooleanArray {
+   repeated bool bool_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___ByteArray {
+   bytes bytes_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___ShortArray {
+   repeated int32 short_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___IntArray {
+   repeated sfixed32 int_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___LongArray {
+   repeated sfixed64 long_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___FloatArray {
+   repeated float float_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___DoubleArray {
+   repeated double double_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___CharArray {
+   repeated string char_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___StringArray {
+   repeated string string_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___AnyArray {
+  repeated google.protobuf.Any any_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___ArrayHolderArray {
+  repeated dev_resteasy_grpc_arrays___ArrayHolder arrayHolder_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___ArrayHolder {
+  string componentClass = 1;
+  oneof messageType {
+     dev_resteasy_grpc_arrays___BooleanArray booleanArray_field = 3;
+     dev_resteasy_grpc_arrays___ByteArray byteArray_field = 4;
+     dev_resteasy_grpc_arrays___ShortArray shortArray_field = 5;
+     dev_resteasy_grpc_arrays___IntArray   intArray_field = 6;
+     dev_resteasy_grpc_arrays___LongArray  longArray_field = 7;
+     dev_resteasy_grpc_arrays___FloatArray floatArray_field = 8;
+     dev_resteasy_grpc_arrays___DoubleArray doubleArray_field = 9;
+     dev_resteasy_grpc_arrays___CharArray   charArray_field = 10;
+     dev_resteasy_grpc_arrays___StringArray stringArray_field = 11;
+     dev_resteasy_grpc_arrays___AnyArray anyArray_field = 12;
+     dev_resteasy_grpc_arrays___ArrayHolderArray arrayHolderArray_field = 13;
+  }
+}

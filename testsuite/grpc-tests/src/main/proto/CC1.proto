@@ -2,6 +2,7 @@ syntax = "proto3";
 package dev.resteasy.grpc.example;
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
+import "dev/resteasy/grpc/arrays/arrays.proto";
 option java_package = "dev.resteasy.grpc.example";
 option java_outer_classname = "CC1_proto";
 
@@ -118,12 +119,20 @@ service CC1Service {
   rpc sse (GeneralEntityMessage) returns (stream dev_resteasy_grpc_bridge_runtime_sse___SseEvent);
 // p/copy gString gString GET sync
   rpc copy (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/impl gEmpty dev_resteasy_grpc_example___IntfImpl GET sync
-  rpc impl (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/interface/impl dev_resteasy_grpc_example___IntfImpl google.protobuf.Any GET sync
+  rpc intfImpl (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/interface/entity google.protobuf.Any gString GET sync
   rpc intfEntity (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/interface/return gEmpty google.protobuf.Any GET sync
   rpc intfReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/int/1 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder GET sync
+  rpc arraysInt1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/int/2 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder GET sync
+  rpc arraysInt2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/int/5 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder GET sync
+  rpc arraysInt5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/stuff dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff GET sync
+  rpc arrayStuff (GeneralEntityMessage) returns (GeneralReturnMessage);
 }
 
 message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {
@@ -142,8 +151,11 @@ message dev_resteasy_grpc_example___CC9 {
   int64 l = 5;
   float f = 6;
   double d = 7;
-  int32 c = 8;
+  string c = 8;
   dev_resteasy_grpc_example___CC3 cc3 = 9;
+  bool bb = 10;
+  int32 ss = 11;
+  int32 ii = 12;
 }
 
 message dev_resteasy_grpc_example___CC7 {
@@ -175,12 +187,53 @@ message dev_resteasy_grpc_example___IntfImpl {
   string s = 1;
 }
 
+message dev_resteasy_grpc_example___ArrayStuff {
+  repeated bool bos = 1;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder boss = 2;
+  repeated bool Bos___1 = 3;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Boss___1 = 4;
+  bytes bys = 5;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder byss = 6;
+  repeated int32 Bys___1 = 7;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Byss___1 = 8;
+  repeated int32 ss = 9;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder sss = 10;
+  repeated int32 Ss___1 = 11;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Sss___1 = 12;
+  repeated int32 is = 13;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder iss = 14;
+  repeated int32 Is___1 = 15;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Iss___1 = 16;
+  repeated int64 ls = 17;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder lss = 18;
+  repeated int64 Ls___1 = 19;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Lss___1 = 20;
+  repeated float fs = 21;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder fss = 22;
+  repeated float Fs___1 = 23;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Fss___1 = 24;
+  repeated double ds = 25;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dss = 26;
+  repeated double Ds___1 = 27;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Dss___1 = 28;
+  string cs = 29;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder css = 30;
+  string Cs___1 = 31;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder Css___1 = 32;
+  repeated dev_resteasy_grpc_example_ArrayStuff_INNER_Stuff sts = 33;
+  dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder stss = 34;
+}
+
 message dev_resteasy_grpc_example___CC3 {
   string s = 1;
 }
 
 message dev_resteasy_grpc_example___CC5 {
   int32 k = 1;
+}
+
+message dev_resteasy_grpc_example_ArrayStuff_INNER_Stuff {
+  int32 i = 1;
 }
 
 message gEmpty {}
@@ -249,20 +302,23 @@ message GeneralEntityMessage {
    repeated gCookie cookies = 4;
    string httpMethod = 5;
    oneof messageType {
-      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 6;
-      gEmpty gEmpty_field = 7;
-      gByte gByte_field = 8;
-      gString gString_field = 9;
-      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 10;
-      gFloat gFloat_field = 11;
-      gDouble gDouble_field = 12;
-      gBoolean gBoolean_field = 13;
-      gLong gLong_field = 14;
-      gShort gShort_field = 15;
-      gInteger gInteger_field = 16;
-      google.protobuf.Any google_protobuf_Any_field = 17;
-      gCharacter gCharacter_field = 18;
-      FormMap form_field = 19;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder_field = 6;
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 7;
+      gEmpty gEmpty_field = 8;
+      gByte gByte_field = 9;
+      gString gString_field = 10;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 11;
+      gFloat gFloat_field = 12;
+      gDouble gDouble_field = 13;
+      gBoolean gBoolean_field = 14;
+      gLong gLong_field = 15;
+      gShort gShort_field = 16;
+      gInteger gInteger_field = 17;
+      google.protobuf.Any google_protobuf_Any_field = 18;
+      gCharacter gCharacter_field = 19;
+      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 20;
+      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 21;
+      FormMap form_field = 22;
    }
 }
 
@@ -271,24 +327,25 @@ message GeneralReturnMessage {
    repeated gNewCookie cookies = 2;
    gInteger status = 3;
    oneof messageType {
-      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 4;
-      gString gString_field = 5;
-      gByte gByte_field = 6;
-      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 7;
-      gEmpty gEmpty_field = 8;
-      gFloat gFloat_field = 9;
-      gDouble gDouble_field = 10;
-      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 11;
-      gBoolean gBoolean_field = 12;
-      gLong gLong_field = 13;
-      gShort gShort_field = 14;
-      gInteger gInteger_field = 15;
-      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 16;
-      google.protobuf.Any google_protobuf_Any_field = 17;
-      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 18;
-      gCharacter gCharacter_field = 19;
-      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 20;
-      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 21;
-      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 22;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder_field = 4;
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 5;
+      gString gString_field = 6;
+      gByte gByte_field = 7;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 8;
+      gEmpty gEmpty_field = 9;
+      gFloat gFloat_field = 10;
+      gDouble gDouble_field = 11;
+      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 12;
+      gBoolean gBoolean_field = 13;
+      gLong gLong_field = 14;
+      gShort gShort_field = 15;
+      gInteger gInteger_field = 16;
+      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 17;
+      google.protobuf.Any google_protobuf_Any_field = 18;
+      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 19;
+      gCharacter gCharacter_field = 20;
+      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 21;
+      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 22;
+      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 23;
    }
 }

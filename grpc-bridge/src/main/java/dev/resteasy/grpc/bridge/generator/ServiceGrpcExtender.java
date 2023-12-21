@@ -45,6 +45,7 @@ public class ServiceGrpcExtender {
     private static final Logger logger = Logger.getLogger(ServiceGrpcExtender.class);
     private static final String LS = System.lineSeparator();
     private static final String SSE_EVENT_CLASSNAME = "dev_resteasy_grpc_bridge_runtime_sse___SseEvent";
+    private static final Set<String> PROTOBUF_PRIMITIVES = new HashSet<String>();
 
     private String packageName = "";
     private String outerClassName = "";
@@ -52,6 +53,16 @@ public class ServiceGrpcExtender {
     private String servletName = "";
     private String generatedSourcePath;
     private Set<String> imports = new HashSet<String>();
+
+    static {
+        PROTOBUF_PRIMITIVES.add("bool");
+        PROTOBUF_PRIMITIVES.add("int32");
+        PROTOBUF_PRIMITIVES.add("int64");
+        PROTOBUF_PRIMITIVES.add("float");
+        PROTOBUF_PRIMITIVES.add("double");
+        PROTOBUF_PRIMITIVES.add("string");
+
+    }
 
     public static void main(String[] args) {
         if (args == null || (args.length < 3)) {
@@ -259,6 +270,12 @@ public class ServiceGrpcExtender {
 
     private void rpc(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass,
             String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
+        if ("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
+            actualEntityClass = "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
+        }
+        if ("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
+            actualReturnClass = "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
+        }
         sbBody.append(LS + "   @java.lang.Override" + LS);
         String method = scanner.next();
         scanner.findWithinHorizon("\\(", 0);
@@ -269,9 +286,15 @@ public class ServiceGrpcExtender {
                     && !"google.protobuf.Any".equals(actualEntityClass)
                     && !"gInteger".equals(actualEntityClass)
                     && !"gEmpty".equals(actualEntityClass)
-                    && !ANY.equals(actualEntityClass)) {
-                sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
-                imports.add(actualEntityClass);
+                    && !ANY.equals(actualEntityClass)
+                    && !PROTOBUF_PRIMITIVES.contains(actualEntityClass)) {
+                if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
+                    sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;" + LS);
+                    imports.add("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder");
+                } else {
+                    sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
+                    imports.add(actualEntityClass);
+                }
             }
         }
         if (!imports.contains(actualReturnClass)) {
@@ -279,9 +302,15 @@ public class ServiceGrpcExtender {
                     && !"google.protobuf.Any".equals(actualReturnClass)
                     && !"gInteger".equals(actualReturnClass)
                     && !"gEmpty".equals(actualReturnClass)
-                    && !ANY.equals(actualReturnClass)) {
-                sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
-                imports.add(actualReturnClass);
+                    && !ANY.equals(actualReturnClass)
+                    && !PROTOBUF_PRIMITIVES.contains(actualReturnClass)) {
+                if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
+                    sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;");
+                    imports.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder");
+                } else {
+                    sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
+                    imports.add(actualReturnClass);
+                }
             }
         }
         scanner.findWithinHorizon("returns", 0);
@@ -498,12 +527,6 @@ public class ServiceGrpcExtender {
                 .append(root)
                 .append("_Server.getServletContext();" + LS)
                 .append("      if (servletContext == null) {" + LS)
-                //                .append("         Client client = ClientBuilder.newClient();" + LS)
-                //                .append("         Response response = client.target(\"http://localhost:8080/" + artifactIdVersion
-                //                        + "/grpcToJakartaRest/grpcserver/context\").request().get();" + LS)
-                //                .append("         if (200 != response.getStatus()) {" + LS)
-                //                .append("            throw new RuntimeException(Messages.MESSAGES.cantGetServletContext());" + LS)
-                //                .append("         }" + LS)
                 .append("         servletContext = ")
                 .append(root)
                 .append("_Server.getServletContext();" + LS)
@@ -669,6 +692,9 @@ public class ServiceGrpcExtender {
     }
 
     private String getGetterMethod(String actualEntityClass) {
+        if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
+            actualEntityClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
+        }
         actualEntityClass = actualEntityClass.replaceAll("___", "_");
         StringBuilder sb = new StringBuilder("get");
         sb.append(actualEntityClass.substring(0, 1).toUpperCase());
@@ -686,6 +712,9 @@ public class ServiceGrpcExtender {
     }
 
     private String getSetterMethod(String actualReturnClass) {
+        if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
+            actualReturnClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
+        }
         if ("com.google.protobuf.Any".equals(actualReturnClass) || "Any".equals(actualReturnClass)) {
             return "grmb.setGoogleProtobufAnyField";
         }

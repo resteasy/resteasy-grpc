@@ -35,4 +35,8 @@ public final class Utility {
         Class<?> clazz = cl.loadClass(className);
         return clazz;
     }
+
+    public static String extractStringTypeFromAny(Any any) {
+        return any.getTypeUrl().substring(any.getTypeUrl().indexOf('/') + 1);
+    }
 }

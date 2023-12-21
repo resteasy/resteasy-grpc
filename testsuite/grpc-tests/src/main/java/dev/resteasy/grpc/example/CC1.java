@@ -640,6 +640,12 @@ public class CC1 {
     }
 
     @GET
+    @Path("interface/impl")
+    public void intfImpl(IntfImpl implIntf) {
+        // not used: includes IntfImpl in .proto file
+    }
+
+    @GET
     @Path("interface/entity")
     public String intfEntity(Intf intf) {
         return intf.getS();
@@ -651,5 +657,59 @@ public class CC1 {
         Intf intf = new IntfImpl();
         intf.setS("xyz");
         return intf;
+    }
+
+    //    @GET
+    //    @Path("arrays/send")
+    //    public ArrayStuff arraysSend(ArrayStuff as) {
+    //        int n = as.ints[0];
+    //        return new ArrayStuff(n + 1);
+    //    }
+
+    //    @GET
+    //    @Path("arrays/return")
+    //    public ArrayStuff arraysReturn() {
+    //        return new ArrayStuff(3);
+    //    }
+
+    @GET
+    @Path("arrays/int/1")
+    public int[] arraysInt1(int[] ints) {
+        for (int i = 0; i < ints.length; i++) {
+            ints[i]++;
+        }
+        return ints;
+    }
+
+    @GET
+    @Path("arrays/int/2")
+    public int[][] arraysInt2(int[][] ints) {
+        for (int i = 0; i < ints.length; i++) {
+            for (int j = 0; j < ints[i].length; j++)
+                ints[i][j]++;
+        }
+        return ints;
+    }
+
+    @GET
+    @Path("arrays/int/5")
+    public int[][][][][] arraysInt5(int[][][][][] intsssss) {
+        for (int i = 0; i < intsssss.length; i++) {
+            for (int j = 0; j < intsssss[i].length; j++)
+                for (int k = 0; k < intsssss[i][j].length; k++)
+                    for (int l = 0; l < intsssss[i][j][k].length; l++)
+                        for (int m = 0; m < intsssss[i][j][k][l].length; m++)
+                            intsssss[i][j][k][l][m]++;
+        }
+        return intsssss;
+    }
+
+    @GET
+    @Path("arrays/stuff")
+    public ArrayStuff arrayStuff(ArrayStuff as) {
+        if (as.equals(new ArrayStuff(false))) {
+            return new ArrayStuff(true);
+        }
+        throw new RuntimeException("arrayStuff() fails");
     }
 }

@@ -232,7 +232,8 @@ public class JavaToProtobufGenerator {
     private static final String LS = System.lineSeparator();
 
     private static Map<String, String> TYPE_MAP = new HashMap<String, String>();
-    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES = new HashMap<String, String>();
+    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES_FIELD = new HashMap<String, String>();
+    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES_IO = new HashMap<String, String>();
     private static Map<String, String> PRIMITIVE_WRAPPER_DEFINITIONS = new HashMap<String, String>();
     private static Set<String> ANNOTATIONS = new HashSet<String>();
     private static Set<String> HTTP_VERBS = new HashSet<String>();
@@ -261,40 +262,59 @@ public class JavaToProtobufGenerator {
         TYPE_MAP.put("float", "float");
         TYPE_MAP.put("double", "double");
         TYPE_MAP.put("boolean", "bool");
-        TYPE_MAP.put("char", "int32");
+        TYPE_MAP.put("char", "string");
         TYPE_MAP.put("String", "string");
         TYPE_MAP.put("java.lang.String", "string");
 
-        PRIMITIVE_WRAPPER_TYPES.put("boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES.put("short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES.put("int", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES.put("long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES.put("float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES.put("double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES.put("boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("char", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES.put("string", "gString");
-        PRIMITIVE_WRAPPER_TYPES.put("Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("Byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES.put("Short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES.put("Integer", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES.put("Long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES.put("Float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES.put("Double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES.put("Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("Character", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES.put("String", "gString");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.String", "gString");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Integer", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.Character", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES.put("java.lang.String", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("int", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("char", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("string", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Integer", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Character", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("String", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.String", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Integer", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Character", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.String", "gString");
+
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Boolean", "bool");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Byte", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Short", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Integer", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Long", "int64");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Float", "float");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Double", "double");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Character", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("String", "string");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Boolean", "bool");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Byte", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Short", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Integer", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Long", "int64");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Float", "float");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Double", "double");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Character", "int32");
+        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.String", "string");
 
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Boolean", "message gBoolean   {bool   value = $V$;}");
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Byte", "message gByte      {int32  value = $V$;}");
@@ -360,6 +380,7 @@ public class JavaToProtobufGenerator {
         sb.append("package " + args[1].replace('-', '.') + ";" + LS);
         sb.append("import \"google/protobuf/any.proto\";" + LS);
         sb.append("import \"google/protobuf/timestamp.proto\";" + LS);
+        sb.append("import \"dev/resteasy/grpc/arrays/arrays.proto\";" + LS);
         sb.append("option java_package = \"" + args[2] + "\";" + LS);
         sb.append("option java_outer_classname = \"" + args[3] + "_proto\";" + LS);
     }
@@ -384,7 +405,7 @@ public class JavaToProtobufGenerator {
         }
         symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
         sourceRoot.getParserConfiguration().setSymbolResolver(symbolSolver);
-        List<ParseResult<CompilationUnit>> list = sourceRoot.tryToParseParallelized();
+        List<ParseResult<CompilationUnit>> list = sourceRoot.tryToParse();
         for (ParseResult<CompilationUnit> p : list) {
             jakartaRESTResourceVisitor.visit(p.getResult().get(), sb);
         }
@@ -554,8 +575,8 @@ public class JavaToProtobufGenerator {
     }
 
     /****************************************************************************/
-    /********************************
-     * classes ***********************************
+    /*********************************
+     * classes **********************************
      * /
      ****************************************************************************/
 
@@ -632,6 +653,9 @@ public class JavaToProtobufGenerator {
                         if (p.getType().resolve().isPrimitive()) {
                             continue;
                         }
+                        if (p.getType().isArrayType()) {
+                            continue;
+                        }
                         ReferenceTypeImpl rt = (ReferenceTypeImpl) p.getType().resolve();
                         ResolvedReferenceTypeDeclaration rrtd = rt.getTypeDeclaration().get();
                         String type = rt.asReferenceType().getQualifiedName();
@@ -653,6 +677,7 @@ public class JavaToProtobufGenerator {
          * For each class, create a message type with a field for each variable in the class.
          */
         public void visit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb) {
+            Set<String> fieldNames = new HashSet<String>();
             resolvedTypes.remove(clazz);
             if (clazz.isInterface()) {
                 return;
@@ -679,27 +704,44 @@ public class JavaToProtobufGenerator {
             // Scan all variables in class.
             for (ResolvedFieldDeclaration rfd : clazz.getDeclaredFields()) {
                 String type = null;
-                if (rfd.getType().isPrimitive() || rfd.getType().isReferenceType()
-                        && String.class.getName().equals(rfd.getType().asReferenceType().getQualifiedName())) {
+                if (TYPE_MAP.containsKey(rfd.getType().describe())) {
                     type = TYPE_MAP.get(rfd.getType().describe());
+                } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rfd.getType().describe())) {
+                    type = PRIMITIVE_WRAPPER_TYPES_FIELD.get(rfd.getType().describe());
                 } else if (rfd.getType() instanceof ResolvedArrayType) {
                     ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
                     ResolvedType ct = rat.getComponentType();
                     if ("byte".equals(ct.describe())) {
                         type = "bytes";
+                    } else if ("char".equals(ct.describe()) || "java.lang.Character".equals(ct.describe())) {
+                        type = "string";
                     } else if (ct.isPrimitive()) {
                         type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
+                    } else if (ct instanceof ResolvedArrayType) {
+                        type = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                        ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
+                        if (bat.isReference()) {
+                            ResolvedReferenceTypeDeclaration rrtd = (ResolvedReferenceTypeDeclaration) bat.asReferenceType()
+                                    .getTypeDeclaration().get();
+                            fqn = rrtd.getPackageName() + "." + rrtd.getClassName();
+                            if (!visited.contains(fqn)) {
+                                resolvedTypes.add(rrtd);
+                            }
+                        }
                     } else {
                         fqn = removeTypeVariables(ct.describe());
                         if (!ct.isReferenceType()) {
                             continue;
                         }
-                        if (!visited.contains(fqn)) {
+                        if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(fqn)) {
+                            type = "repeated " + PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn);
+                        } else if (!visited.contains(fqn)) {
                             resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
+                            type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                                    .getTypeDeclaration()
+                                    .get()));
                         }
-                        type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
-                                .getTypeDeclaration()
-                                .get()));
+
                     }
                 } else { // Defined type
                     if (rfd.getType().isReferenceType()) {
@@ -714,11 +756,13 @@ public class JavaToProtobufGenerator {
                         type = "bytes ";
                     }
                 }
+                String fieldName = getFieldName(fieldNames, rfd.getName());
+
                 if (type != null) {
                     sb.append("  ")
                             .append(type)
                             .append(" ")
-                            .append(rfd.getName())
+                            .append(fieldName)
                             .append(" = ")
                             .append(counter++)
                             .append(";" + LS);
@@ -807,7 +851,6 @@ public class JavaToProtobufGenerator {
 
             // Begin protobuf message definition.
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
-
             // Scan all variables in class.
             for (FieldDeclaration fd : clazz.getFields()) {
                 ResolvedFieldDeclaration rfd = fd.resolve();
@@ -819,6 +862,8 @@ public class JavaToProtobufGenerator {
                     ResolvedType ct = type.asArrayType().getComponentType();
                     if ("byte".equals(ct.describe())) {
                         typeName = "bytes";
+                    } else if ("class [C".equals(ct.describe()) || "class [Ljava.lang.Character".equals(ct.describe())) {
+                        typeName = "string";
                     } else if (ct.isPrimitive()) {
                         typeName = "repeated " + typeName;
                     } else {
@@ -900,13 +945,20 @@ public class JavaToProtobufGenerator {
         for (Parameter p : md.getParameters()) {
             if (isEntity(p)) {
                 String rawType = p.getTypeAsString();
-                if (PRIMITIVE_WRAPPER_TYPES.containsKey(rawType)) {
-                    return PRIMITIVE_WRAPPER_TYPES.get(rawType);
+                if (PRIMITIVE_WRAPPER_TYPES_IO.containsKey(rawType)) {
+                    return PRIMITIVE_WRAPPER_TYPES_IO.get(rawType);
+                }
+                if (TYPE_MAP.containsKey(rawType)) {
+                    return TYPE_MAP.get(rawType);
                 }
                 // array?
                 ResolvedType rt = p.getType().resolve();
                 if (isInterface(rt)) {
                     return "google.protobuf.Any";
+                }
+                if (rt.isArray()) {
+                    //                    return "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
+                    return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                 }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
                 String type = rt.describe();
@@ -955,8 +1007,11 @@ public class JavaToProtobufGenerator {
                         rawType = type;
                     }
                 }
-                if (PRIMITIVE_WRAPPER_TYPES.containsKey(rawType)) {
-                    return PRIMITIVE_WRAPPER_TYPES.get(rawType);
+                if (PRIMITIVE_WRAPPER_TYPES_IO.containsKey(rawType)) {
+                    return PRIMITIVE_WRAPPER_TYPES_IO.get(rawType);
+                }
+                if (TYPE_MAP.containsKey(rawType)) {
+                    return TYPE_MAP.get(rawType);
                 }
                 if ("jakarta.ws.rs.core.Response".equals(rawType) || "Response".equals(rawType)) {
                     return "google.protobuf.Any";
@@ -965,6 +1020,10 @@ public class JavaToProtobufGenerator {
                 ResolvedType rt = ((Type) node).resolve();
                 if (isInterface(rt)) {
                     return "google.protobuf.Any";
+                }
+                if (rt.isArray()) {
+                    //                    return "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
+                    return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                 }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
                 String type = ((Type) node).resolve().describe();
@@ -1069,6 +1128,10 @@ public class JavaToProtobufGenerator {
     }
 
     private static String fqnifyClass(String s, boolean isInnerClass) {
+        if (s.endsWith("java.lang.Boolean")) {
+            new Exception(s).printStackTrace();
+        }
+
         int l = s.lastIndexOf(".");
         String sPackage = s.substring(0, l).replace(".", "_");
         String separator = isInnerClass ? "_INNER_" : "___";
@@ -1116,5 +1179,23 @@ public class JavaToProtobufGenerator {
             }
         }
         return false;
+    }
+
+    private static ResolvedType getBasicArrayType(ResolvedArrayType rat) {
+        if (rat.getComponentType().isArray()) {
+            return getBasicArrayType((ResolvedArrayType) rat.getComponentType());
+        } else {
+            return rat.getComponentType();
+        }
+    }
+
+    private static String getFieldName(Set<String> fieldNames, String proposedName) {
+        String name = proposedName;
+        int counter = 1;
+        while (fieldNames.contains(name.toLowerCase())) {
+            name = proposedName + "___" + counter++;
+        }
+        fieldNames.add(name.toLowerCase());
+        return name;
     }
 }
