@@ -464,6 +464,24 @@ public class ArrayUtility {
         }
     }
 
+    public static String getComponentClass(Array_proto.dev_resteasy_grpc_arrays___ArrayHolder holder) {
+        if (holder.hasArrayHolderArrayField()) {
+            dev_resteasy_grpc_arrays___ArrayHolderArray holderArray = holder.getArrayHolderArrayField();
+            if (holderArray.getArrayHolderFieldCount() == 0) {
+                return "";
+            }
+            return getComponentClass(holderArray.getArrayHolderField(0));
+        }
+        return holder.getComponentClass();
+    }
+
+    public static Class<?> getComponentClass(Class<?> clazz) {
+        if (clazz.getComponentType().isArray()) {
+            return getComponentClass(clazz.getComponentType());
+        }
+        return clazz.getComponentType();
+    }
+
     private static boolean componentTypeWraps(Object from, Object to) {
         String fromComponentType = from.getClass().getComponentType().toString();
         String toComponentType = to.getClass().getComponentType().toString();

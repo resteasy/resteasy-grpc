@@ -1128,10 +1128,6 @@ public class JavaToProtobufGenerator {
     }
 
     private static String fqnifyClass(String s, boolean isInnerClass) {
-        if (s.endsWith("java.lang.Boolean")) {
-            new Exception(s).printStackTrace();
-        }
-
         int l = s.lastIndexOf(".");
         String sPackage = s.substring(0, l).replace(".", "_");
         String separator = isInnerClass ? "_INNER_" : "___";

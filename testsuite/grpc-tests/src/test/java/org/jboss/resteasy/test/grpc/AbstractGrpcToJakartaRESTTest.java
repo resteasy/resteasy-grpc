@@ -26,7 +26,6 @@ import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
-import dev.resteasy.grpc.arrays.ArrayHolder;
 import dev.resteasy.grpc.arrays.ArrayUtility;
 import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;
@@ -81,7 +80,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                         .withoutTransitivity()
                         .asSingleFile())
                 .addClass(Array_proto.class)
-                .addPackage(ArrayHolder.class.getPackage())
+                .addPackage(ArrayUtility.class.getPackage())
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource("web.xml");
         //        ar.as(ZipExporter.class).exportTo(
