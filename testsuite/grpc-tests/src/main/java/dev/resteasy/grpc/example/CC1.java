@@ -699,4 +699,10 @@ public class CC1 {
         }
         throw new RuntimeException("arrayStuff() fails");
     }
+
+    @GET
+    @Path("arrays/stuff/array")
+    public ArrayStuff[] arrayStuffArray(ArrayStuff[] ass) {
+        return ass;
+    }
 }

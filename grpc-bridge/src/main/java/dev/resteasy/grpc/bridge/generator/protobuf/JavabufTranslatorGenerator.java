@@ -342,6 +342,9 @@ public class JavabufTranslatorGenerator {
                 .append("      return clazz.isPrimitive() || toJavabufMap.containsKey(clazz);" + LS)
                 .append("   }" + LS + LS)
                 .append("   public Message translateToJavabuf(Object o) {" + LS)
+                .append("      if (o.getClass().isArray()) {" + LS)
+                .append("         return ArrayUtility.getHolder(this, o);" + LS)
+                .append("      }" + LS)
                 .append("      TranslateToJavabuf ttj = toJavabufMap.get(o.getClass());" + LS)
                 .append("      if (ttj == null) {" + LS)
                 .append("         throw new RuntimeException(o.getClass() + \" is not recognized\");" + LS)
@@ -360,7 +363,7 @@ public class JavabufTranslatorGenerator {
                 .append("   public Object translateFromJavabuf(Message message) {" + LS)
                 .append("      if (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.class.equals(message.getClass())) {" + LS)
                 .append("         try {" + LS)
-                .append("            return ArrayUtility.getArray((Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message);"
+                .append("            return ArrayUtility.getArray(this, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message);"
                         + LS)
                 .append("         } catch (Exception e) {" + LS)
                 .append("            throw new RuntimeException(e);" + LS)

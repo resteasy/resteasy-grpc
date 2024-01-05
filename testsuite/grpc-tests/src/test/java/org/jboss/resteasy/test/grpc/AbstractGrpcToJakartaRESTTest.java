@@ -154,9 +154,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testInterfaceEntity(stub);
         this.testInterfaceReturn(stub);
         this.testArraysInts1(stub);
+        this.testArraysInts1Translator(stub);
         this.testArraysInts2(stub);
         this.testArraysInts5(stub);
         this.testArrayStuff(stub);
+        this.testArrayStuffArray(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1620,6 +1622,26 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev_resteasy_grpc_example___ArrayStuff as2 = response.getDevResteasyGrpcExampleArrayStuffField();
             ArrayStuff expected = new ArrayStuff(true);
             Assert.assertEquals(expected, translator.translateFromJavabuf(as2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
+
+    void testArrayStuffArray(CC1ServiceBlockingStub stub) throws Exception {
+        ArrayStuff[] ass = new ArrayStuff[] { new ArrayStuff(true), new ArrayStuff(false) };
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ass);
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(holder).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.arrayStuffArray(gem);
+            dev_resteasy_grpc_arrays___ArrayHolder holder2 = response
+                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            Assert.assertArrayEquals(ass, (ArrayStuff[]) translator.translateFromJavabuf(holder2));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
