@@ -142,7 +142,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testServletContextInitParam(stub);
         this.testServletContextPath(stub);
         this.testServletInfo(stub);
-        //        this.testServletParams(stub);
+        //this.testServletParams(stub);
         this.testServletPath(stub);
         this.testServletResponse(stub);
         this.testShort(stub);
