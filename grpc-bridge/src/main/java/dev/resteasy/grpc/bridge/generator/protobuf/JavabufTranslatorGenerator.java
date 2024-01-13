@@ -932,7 +932,7 @@ public class JavabufTranslatorGenerator {
     private static void findConstructor(Class<?> clazz, String originalName, StringBuilder sb) throws ClassNotFoundException {
         String className = javabufToJava(clazz.getName(), originalName);
         Class<?> originalClazz = Class.forName(className);
-        Constructor<?>[] cons = originalClazz.getConstructors();
+        Constructor<?>[] cons = originalClazz.getDeclaredConstructors();
         Constructor<?> con = cons[0];
         if (cons.length > 1) {
             for (int i = 1; i < cons.length; i++) {
@@ -970,11 +970,8 @@ public class JavabufTranslatorGenerator {
         } else {
             n = tmp.indexOf("_INNER_");
             if (n >= 0) {
-                tmp = tmp.substring(0, n);
-                n = simpleName.indexOf("_INNER_");
-                if (n >= 0) {
-                    tmp += "$" + simpleName.substring(n + "_INNER_".length());
-                }
+                String tmpPkg = tmp.substring(0, n);
+                tmp = tmpPkg + "$" + tmp.substring(n + "_INNER_".length());
                 tmp = tmp.replace("_", ".");
                 return tmp;
             }
