@@ -513,35 +513,9 @@ Protobuf supports simple arrays with the keyword "repeated". For example,
 
 represents a message with an array of integers, i.e., `int[]` in Java. However, there is no
 built-in support for multidimensional arrays like `int[][]`, so we have to we have to implement
-support explicitly. grpc-bridge-runtime has the class `dev.resteasy.grpc.arrays.ArrayHolder`, which looks like
+support explicitly.
 
-        public class ArrayHolder {
-
-            private boolean[] booleans;
-            private byte[] bytes;
-            private short[] shorts;
-            private int[] ints;
-            private long[] longs;
-            private float[] floats;
-            private double[] doubles;
-            private char[] chars;
-            private Object[] objects;
-
-            private ArrayHolder[] arrayHolders;
-
-            public boolean[] getBooleans() {
-                return booleans;
-            }
-
-            public void setBooleans(boolean[] booleans) {
-                this.booleans = booleans;
-            }
-            ...
-        }
-
-Any one dimensional array like `int[]` is represented explicitly, but a multidimensional array
-like `int[][]` is represented as an array of `ArrayHolders`. Translated into protobuf, `ArrayHolder`
-looks like
+We begin with the protobuf definition of  `dev_resteasy_grpc_arrays___ArrayHolder`:
 
         ...
         message dev_resteasy_grpc_arrays___BooleanArray {
@@ -550,6 +524,10 @@ looks like
         ...
         message dev_resteasy_grpc_arrays___IntArray {
            repeated sfixed32 int_field = 1;
+        }
+        ...
+        message dev_resteasy_grpc_arrays___AnyArray {
+           repeated google.protobuf.Any any_field = 1;
         }
         ...
         message dev_resteasy_grpc_arrays___ArrayHolderArray {
@@ -573,9 +551,15 @@ looks like
               dev_resteasy_grpc_arrays___ArrayHolderArray arrayHolderArray_field = 13;
         }
 
-These are defined in `arrays.proto` in grpc-bridge-runtime.
+It has
 
-For example, suppose we want to create the javabuf analog of
+    * an array definition for each primitive Java type, e.g. `dev_resteasy_grpc_arrays___BooleanArray`
+    * an array definition of arbitrary objects: `dev_resteasy_grpc_arrays___AnyArray`
+    * a recursive field of `dev_resteasy_grpc_arrays___ArrayHolder`s
+    
+The protobuf compiler turns these into javabuf definitions.
+    
+Suppose we want to create the javabuf analog of
 
         int[] is = new int[] { 1, 2 };
 
@@ -599,7 +583,7 @@ The output would be
            int_field: 2
         }
 
-Even worse is
+Rather worse is
 
         int[][] iss = new int[][] { { 1, 2 }, { 3, 4, 5 } };
 
@@ -708,6 +692,27 @@ that we want to call from a gRPC client. We can use `ArrayUtility` as follows:
 
 Note that on the server side, RESTEasy handles the translation behind the scenes with the appropriate `MessageBodyReaderWriter`,
 `JavabufTranslator`, and `ArrayUtility`.
+
+Finally, note that, if an application involves arrays, the generated `JavabufTranslator` can also be used to
+translate arrays. For example, the previous example can be rewritten as
+
+        JavabufTranslator translator = ...
+        
+        void testArrays(ServiceBlockingStub stub) throws Exception {
+           int[][] iss = new int[][] {{1, 2}, {2, 3, 4}};
+           dev_resteasy_grpc_arrays___ArrayHolder ah = (dev_resteasy_grpc_arrays___ArrayHolder) translator.translateToJavabuf(iss);
+           Array_proto.GeneralEntityMessage.Builder builder = Array_proto.GeneralEntityMessage.newBuilder();
+           GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
+           GeneralReturnMessage response;
+           try {
+              response = stub.ints(gem);
+              dev_resteasy_grpc_arrays___ArrayHolder ah2 = response.getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+              Object o = translator.translateFromJavabuf(as);
+              Assert.assertArrayEquals(iss, (int[][]) o);
+           } catch (StatusRuntimeException e) {
+              //
+           }
+        }
 
 ### google.protobuf.Any
 
