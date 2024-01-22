@@ -32,7 +32,7 @@
     <packaging>pom</packaging>
     
     <properties>
-		<protoc-gen-grpc-java.version>1.51.1</protoc-gen-grpc-java.version>
+		<protoc-gen-grpc-java.version>1.61.0</protoc-gen-grpc-java.version>
 	</properties>
 
     <dependencyManagement>
