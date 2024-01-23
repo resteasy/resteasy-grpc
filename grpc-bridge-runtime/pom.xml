@@ -4,7 +4,7 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-parent</artifactId>
-        <version>1.0.0.Alpha4</version>
+        <version>1.0.0.Alpha5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>grpc-bridge-runtime</artifactId>
@@ -89,7 +89,7 @@
         <version>1.6.1</version>
       </extension>
     </extensions>
-		<plugins>
+        <plugins>
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
@@ -112,8 +112,23 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-		
-	</build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <sourcepath>**\/\*.java:${project.build.directory}/generated-sources/protobuf/java</sourcepath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
 
 </project>
