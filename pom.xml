@@ -13,7 +13,7 @@
 
     <groupId>dev.resteasy.grpc</groupId>
     <artifactId>resteasy-grpc-parent</artifactId>
-    <version>1.0.0.Alpha4</version>
+    <version>1.0.0.Alpha5</version>
     <packaging>pom</packaging>
 
     <url>https://resteasy.dev</url>
@@ -133,6 +133,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
@@ -189,7 +193,7 @@
              useful for when we want to test with versions releases that have not yet been synchronized to Maven Central
              from JBoss Nexus.
          -->
-        <!--repository>
+        <repository>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
@@ -202,9 +206,9 @@
             <name>JBoss Public Repository Group</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
             <layout>default</layout>
-        </repository-->
+        </repository>
         <!-- Required for PicketBox, once this is removed from WildFly this can be removed -->
-        <!--repository>
+        <repository>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
@@ -217,6 +221,6 @@
             <name>JBoss Enterprise Maven Repository</name>
             <url>https://maven.repository.redhat.com/ga/</url>
             <layout>default</layout>
-        </repository-->
+        </repository>
     </repositories>
 </project>

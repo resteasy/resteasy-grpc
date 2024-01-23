@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-testsuite</artifactId>
-        <version>1.0.0.Alpha4</version>
+        <version>1.0.0.Alpha5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <properties>
@@ -454,6 +454,19 @@
                         <goals>
                             <goal>compile</goal>
                             <goal>compile-custom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
