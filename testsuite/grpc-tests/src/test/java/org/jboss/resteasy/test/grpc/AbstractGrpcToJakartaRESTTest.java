@@ -32,7 +32,6 @@ import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHold
 import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.example.ArrayStuff;
-import dev.resteasy.grpc.example.CC1JavabufTranslator;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
@@ -67,7 +66,17 @@ import io.grpc.stub.StreamObserver;
  */
 abstract class AbstractGrpcToJakartaRESTTest {
 
-    private static JavabufTranslator translator = new CC1JavabufTranslator();
+    private static JavabufTranslator translator;
+
+    static {
+        Class<?> clazz;
+        try {
+            clazz = Class.forName("dev.resteasy.grpc.example.CC1JavabufTranslator");
+            translator = (JavabufTranslator) clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     static Archive<?> doDeploy(final String deploymentName) throws Exception {
         final var resolver = Maven.resolver()

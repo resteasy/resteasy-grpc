@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-testsuite</artifactId>
-        <version>1.0.0.Alpha3</version>
+        <version>1.0.0.Alpha6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <properties>
@@ -131,6 +131,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
+            <version>6.2.6.Final</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -229,6 +230,11 @@
                     <systemPropertyVariables>
                         <server.config.dir>${jboss.home}/standalone/configuration</server.config.dir>
                     </systemPropertyVariables>
+                    <!--argLine>
+                       -add-opens java.base/java.lang=ALL-UNNAMED
+                       -add-opens java.base/java.util=ALL-UNNAMED
+                    </argLine-->
+                    <argLine>--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>

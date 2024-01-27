@@ -328,7 +328,10 @@ public class ReaderWriterGenerator {
             if (i >= 0) {
                 return classname.substring(i + "_INNER_".length());
             } else {
-                if (primitives.containsKey(classname) && !"gEmpty".equals(classname)) {
+                i = classname.indexOf("_HIDDEN_");
+                if (i >= 0) {
+                    return classname.substring(i + "_HIDDEN_".length());
+                } else if (primitives.containsKey(classname) && !"gEmpty".equals(classname)) {
                     return "java.lang." + classname.substring(1);
                 }
                 return classname;
@@ -340,6 +343,7 @@ public class ReaderWriterGenerator {
         int i = s.indexOf("$");
         int j = s.lastIndexOf("___");
         j = j < 0 ? s.indexOf("_INNER_") : j;
+        j = j < 0 ? s.indexOf("_HIDDEN_") : j;
         j = j < 0 ? s.length() : j;
         String pkg = s.substring(i + 1, j).replace('_', '.');
         return pkg + "." + originalSimpleName(s);

@@ -22,6 +22,7 @@ import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___IntArray;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___LongArray;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ShortArray;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___StringArray;
+import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 
 public class ArrayUtility {
@@ -215,6 +216,22 @@ public class ArrayUtility {
                 return as;
             }
 
+            case "java.lang.Object": {
+                dev_resteasy_grpc_arrays___AnyArray aa = ah.getAnyArrayField();
+                Object[] os = new Object[aa.getAnyFieldCount()];
+                if (os.length == 0) {
+                    return os;
+                }
+                @SuppressWarnings("rawtypes")
+                Class clazz = Utility.extractClassFromAny(aa.getAnyField(0), translator);
+                for (int i = 0; i < os.length; i++) {
+                    @SuppressWarnings("unchecked")
+                    Message m = aa.getAnyField(i).unpack(clazz);
+                    os[i] = translator.translateFromJavabuf(m);
+                }
+                return os;
+            }
+
             default: {
                 if (isArray(ah.getComponentClass())) {
                     if (ah.getArrayHolderArrayField().getArrayHolderFieldCount() == 0) {
@@ -233,6 +250,20 @@ public class ArrayUtility {
                 String className = ah.getComponentClass();
                 if ("".equals(className) || className == null) {
                     return null;
+                }
+                if ("java.lang.Object".equals(className)) {
+                    Object[] os = new Object[aa.getAnyFieldCount()];
+                    if (os.length == 0) {
+                        return os;
+                    }
+                    @SuppressWarnings("rawtypes")
+                    Class clazz = Utility.extractClassFromAny(aa.getAnyField(0), translator);
+                    for (int i = 0; i < os.length; i++) {
+                        @SuppressWarnings("unchecked")
+                        Message m = aa.getAnyField(i).unpack(clazz);
+                        os[i] = translator.translateFromJavabuf(m);
+                    }
+                    return os;
                 }
                 Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
                 Object array = createArray(className, aa.getAnyFieldCount());

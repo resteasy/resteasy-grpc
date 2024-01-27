@@ -28,6 +28,7 @@ import org.jboss.logging.Logger;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.AccessSpecifier;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
@@ -44,17 +45,17 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.TypeSolver;
 import com.github.javaparser.resolution.declarations.ResolvedClassDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
-import com.github.javaparser.resolution.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.reflectionmodel.ReflectionClassDeclaration;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
@@ -240,6 +241,7 @@ public class JavaToProtobufGenerator {
     private static String prefix;
     private static boolean needEmpty = false;
     private static List<ResolvedReferenceTypeDeclaration> resolvedTypes = new CopyOnWriteArrayList<ResolvedReferenceTypeDeclaration>();
+    private static List<String> interfaces = new CopyOnWriteArrayList<String>();
     private static Set<String> entityMessageTypes = new HashSet<String>();
     private static Set<String> returnMessageTypes = new HashSet<String>();
     private static Set<String> jars;
@@ -555,6 +557,13 @@ public class JavaToProtobufGenerator {
         sb.append("   }" + LS + "}" + LS);
     }
 
+    //    private static void createObject(StringBuilder sb) {
+    //        System.out.println("writing java_lang___Object");
+    //        sb.append(LS + "message java_lang___Object {" + LS)
+    //                .append("   google.protobuf.Any google_protobuf_Any_field = 1;" + LS)
+    //                .append("}" + LS);
+    //    }
+
     private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
         Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
         if (path.resolve(args[3] + ".proto").toFile().exists()) {
@@ -661,6 +670,11 @@ public class JavaToProtobufGenerator {
                         String type = rt.asReferenceType().getQualifiedName();
                         if (!visited.contains(type)) {
                             resolvedTypes.add(rrtd);
+                            System.out.println("resolved type: 6 " + rrtd + ", " + rrtd.isInterface());
+                            if (rrtd.isInterface()) {
+                                interfaces.add(rrtd.getQualifiedName());
+                                System.out.println("adding interface 6: " + rrtd + ", q name: " + rrtd.getQualifiedName());
+                            }
                         }
                     }
                 }
@@ -677,14 +691,17 @@ public class JavaToProtobufGenerator {
          * For each class, create a message type with a field for each variable in the class.
          */
         public void visit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb) {
+            for (String s : interfaces) {
+                System.out.println(clazz.getName() + ": " + "interfaces: " + s);
+            }
             Set<String> fieldNames = new HashSet<String>();
             resolvedTypes.remove(clazz);
             if (clazz.isInterface()) {
                 return;
             }
-            if (clazz.getPackageName().startsWith("java")) {
-                return;
-            }
+            //            if (clazz.getPackageName().startsWith("java")) {
+            //                return;
+            //            }
             if (PRIMITIVE_WRAPPER_DEFINITIONS.containsKey(clazz.getClassName())) {
                 return;
             }
@@ -698,12 +715,46 @@ public class JavaToProtobufGenerator {
             visited.add(fqn);
             counter = 1;
 
+            //            // Print java_lang___Object
+            //            System.out.println("fqn1: " + fqn);
+            //            if ("java.lang.Object".equals(fqn)) {
+            //                createObject(sb);
+            //                return;
+            //            }
+
             // Begin protobuf message definition.
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
 
             // Scan all variables in class.
             for (ResolvedFieldDeclaration rfd : clazz.getDeclaredFields()) {
                 String type = null;
+                System.out.println("rfd: clazz: " + clazz.getName() + ", " + rfd.getName() + ", " + rfd.getType().describe());
+                //                if (rfd.getType().isReferenceType() &&
+                //                        rfd.getType().asReferenceType().getTypeDeclaration().isPresent()) {
+                //                    System.out.println(
+                //                            "ref type: " + rfd.getType().asReferenceType().getTypeDeclaration().get().getQualifiedName());
+                //                    String qn = rfd.getType().asReferenceType().getTypeDeclaration().get().getQualifiedName();
+                //                    System.out.println("qn: " + qn);
+                //                    if (interfaces.contains(qn)) {
+                //                        type = "google.protobuf.Any";
+                //                        System.out.println("found interface: " + qn);
+                //                    }
+                //                    type = qn;
+                //                } else
+
+                //                if (interfaces.contains(rfd.getName())) {
+                //                    type = "google.protobuf.Any";
+                //                } else
+                System.out.println(
+                        "is interface: " + rfd.getType().describe() + " " + interfaces.contains(rfd.getType().describe()));
+                System.out.println(
+                        "is interface: " + getRawtype(rfd.getType().describe()) + " "
+                                + interfaces.contains(getRawtype(rfd.getType().describe())));
+                //                if (interfaces.contains(rfd.getType().describe())
+                //                        || interfaces.contains(getRawtype(rfd.getType().describe()))) {
+                //                    type = "google.protobuf.Any";
+                //                    System.out.println("type = Any");
+                //                } else
                 if (TYPE_MAP.containsKey(rfd.getType().describe())) {
                     type = TYPE_MAP.get(rfd.getType().describe());
                 } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rfd.getType().describe())) {
@@ -711,7 +762,11 @@ public class JavaToProtobufGenerator {
                 } else if (rfd.getType() instanceof ResolvedArrayType) {
                     ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
                     ResolvedType ct = rat.getComponentType();
-                    if ("byte".equals(ct.describe())) {
+                    System.out.println("ct: " + ct.describe());
+                    if ("java.lang.Object".equals(ct.describe())) {
+                        System.out.println("found Object array");
+                        type = "repeated google.protobuf.Any";
+                    } else if ("byte".equals(ct.describe())) {
                         type = "bytes";
                     } else if ("char".equals(ct.describe()) || "java.lang.Character".equals(ct.describe())) {
                         type = "string";
@@ -725,7 +780,12 @@ public class JavaToProtobufGenerator {
                                     .getTypeDeclaration().get();
                             fqn = rrtd.getPackageName() + "." + rrtd.getClassName();
                             if (!visited.contains(fqn)) {
-                                resolvedTypes.add(rrtd);
+                                resolvedTypes.add(rrtd.asReferenceType());
+                                System.out.println("resolved type: 1 " + rrtd.asReferenceType() + rrtd.isInterface());
+                                if (rrtd.isInterface()) {
+                                    interfaces.add(rrtd.getQualifiedName());
+                                    System.out.println("adding interface 1: " + rrtd + ", q name: " + rrtd.getQualifiedName());
+                                }
                             }
                         }
                     } else {
@@ -737,6 +797,13 @@ public class JavaToProtobufGenerator {
                             type = "repeated " + PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn);
                         } else if (!visited.contains(fqn)) {
                             resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
+                            System.out.println("resolved type: 2 " + ct.asReferenceType().getTypeDeclaration().get() + ", "
+                                    + ct.asReferenceType().getTypeDeclaration().get());
+                            if (ct.asReferenceType().getTypeDeclaration().get().isInterface()) {
+                                interfaces.add(ct.asReferenceType().getTypeDeclaration().get().getQualifiedName());
+                                System.out.println("adding interface 2: " + ct.asReferenceType().getTypeDeclaration().get()
+                                        + ", q name: " + (ct.asReferenceType().getTypeDeclaration().get().getQualifiedName()));
+                            }
                             type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
                                     .getTypeDeclaration()
                                     .get()));
@@ -744,14 +811,40 @@ public class JavaToProtobufGenerator {
 
                     }
                 } else { // Defined type
+                    /*
+                     * if (rfd.getType().isReferenceType() &&
+                     * rfd.getType().asReferenceType().getTypeDeclaration().isPresent()) {
+                     * System.out.println(
+                     * "ref type: " + rfd.getType().asReferenceType().getTypeDeclaration().get().getQualifiedName());
+                     * String qn = rfd.getType().asReferenceType().getTypeDeclaration().get().getQualifiedName();
+                     * System.out.println("qn: " + qn);
+                     * if (interfaces.contains(qn)) {
+                     * type = "google.protobuf.Any";
+                     * System.out.println("found interface: " + qn);
+                     * }
+                     * type = qn;
+                     */
                     if (rfd.getType().isReferenceType()) {
                         ResolvedReferenceTypeDeclaration rrtd = (ResolvedReferenceTypeDeclaration) rfd.getType()
                                 .asReferenceType().getTypeDeclaration().get();
                         fqn = rrtd.getPackageName() + "." + rrtd.getClassName();
+                        System.out.println("fqn defined: " + fqn);
                         if (!visited.contains(fqn)) {
                             resolvedTypes.add(rrtd);
+                            System.out.println("resolved type: 3 " + rrtd + ", " + rrtd.isInterface());
+                            if (rrtd.isInterface()) {
+                                interfaces.add(rrtd.getQualifiedName());
+                                type = "google.protobuf.Any";
+                                System.out.println("set type: google.protobuf.Any");
+                                System.out.println(
+                                        "adding interface 3: " + clazz.getName() + ": " + rrtd + ", q name: "
+                                                + rrtd.getQualifiedName() + ", "
+                                                + rrtd.getQualifiedName());
+                            } else {
+                                type = fqnifyClass(fqn, isInnerClass(rrtd));
+                            }
                         }
-                        type = fqnifyClass(fqn, isInnerClass(rrtd));
+                        //                        type = fqnifyClass(fqn, isInnerClass(rrtd));
                     } else if (rfd.getType().isTypeVariable()) {
                         type = "bytes ";
                     }
@@ -780,6 +873,11 @@ public class JavaToProtobufGenerator {
                             .get()));
                     if (!visited.contains(fqn)) {
                         resolvedTypes.add(rcd);
+                        System.out.println("resolved type: 4 " + rcd + ", " + rcd.isInterface());
+                        if (rcd.isInterface()) {
+                            interfaces.add(rcd.getQualifiedName());
+                            System.out.println("adding interface 4: " + rcd + ", q name: " + rcd.getQualifiedName());
+                        }
                     }
                     String superClassName = rcd.getName();
                     String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0)))
@@ -801,6 +899,11 @@ public class JavaToProtobufGenerator {
                     fqn = rcd.getPackageName() + "." + rcd.getName();
                     if (!visited.contains(fqn)) {
                         resolvedTypes.add(rcd);
+                        System.out.println("resolved type: 5 " + rcd + ", " + rcd.isInterface());
+                        if (rcd.isInterface()) {
+                            interfaces.add(rcd.getQualifiedName());
+                            System.out.println("adding interface 5: " + rcd + ", q name: " + rcd.getQualifiedName());
+                        }
                     }
                     fqn = fqnifyClass(fqn, isInnerClass(rrt.getTypeDeclaration().get()));
                     String superClassName = rcd.getName();
@@ -849,6 +952,13 @@ public class JavaToProtobufGenerator {
             visited.add(fqn);
             counter = 1;
 
+            // Print java_lang___Object
+            //            System.out.println("fqn2: " + fqn);
+            //            if ("java.lang.Object".equals(fqn)) {
+            //                createObject(sb);
+            //                return;
+            //            }
+
             // Begin protobuf message definition.
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
             // Scan all variables in class.
@@ -856,7 +966,10 @@ public class JavaToProtobufGenerator {
                 ResolvedFieldDeclaration rfd = fd.resolve();
                 ResolvedType type = rfd.getType();
                 String typeName = type.describe();
-                if (TYPE_MAP.containsKey(typeName)) {
+                System.out.println("typeName: " + typeName);
+                if (interfaces.contains(typeName)) {
+                    typeName = "google.protobuf.Any";
+                } else if (TYPE_MAP.containsKey(typeName)) {
                     typeName = TYPE_MAP.get(typeName);
                 } else if (type.isArray()) {
                     ResolvedType ct = type.asArrayType().getComponentType();
@@ -961,6 +1074,13 @@ public class JavaToProtobufGenerator {
                     return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                 }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
+                System.out.println("resolved type: 10 " + rt.asReferenceType().getTypeDeclaration().get() + ", "
+                        + rt.asReferenceType().getTypeDeclaration().get().isInterface());
+                if (rt.asReferenceType().getTypeDeclaration().get().isInterface()) {
+                    interfaces.add(rt.asReferenceType().getTypeDeclaration().get().getQualifiedName());
+                    System.out.println("adding interface 10: " + rt.asReferenceType().getTypeDeclaration().get() + ", q name: "
+                            + rt.asReferenceType().getTypeDeclaration().get().getQualifiedName());
+                }
                 String type = rt.describe();
                 return fqnifyClass(type, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
             }
@@ -1026,6 +1146,14 @@ public class JavaToProtobufGenerator {
                     return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                 }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
+                System.out.println("resolved type: 11 " + rt.asReferenceType().getTypeDeclaration().get()
+                        + rt.asReferenceType().getTypeDeclaration().get().isInterface());
+                if (rt.asReferenceType().getTypeDeclaration().get().isInterface()) {
+                    interfaces.add(rt.asReferenceType().getTypeDeclaration().get().getQualifiedName());
+                    System.out.println("adding interface 11: " + rt.asReferenceType().getTypeDeclaration().get() + ", q name: "
+                            + rt.asReferenceType().getTypeDeclaration().get().getQualifiedName()
+                            + rt.asReferenceType().getTypeDeclaration().get().isInterface());
+                }
                 String type = ((Type) node).resolve().describe();
                 return fqnifyClass(type, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
             }
@@ -1110,27 +1238,46 @@ public class JavaToProtobufGenerator {
         return classType.substring(0, left);
     }
 
-    private static boolean isInnerClass(ResolvedReferenceTypeDeclaration clazz) {
+    private static String isInnerClass(ResolvedReferenceTypeDeclaration clazz) {
+        System.out.println("isInnerClass(1): " + clazz.getClassName() + ", " + clazz.asClass().accessSpecifier());
         try {
             Optional<?> opt = clazz.containerType();
             if (opt.isEmpty()) {
-                return false;
+                return "___";
             }
             ResolvedTypeDeclaration rtd = clazz.containerType().get();
-            return rtd.isClass();
+            if (!rtd.isClass()) {
+                return "___";
+            }
+            if (AccessSpecifier.PUBLIC.equals(clazz.asClass().accessSpecifier())) {
+                System.out.println("isInnerClass(1): return _INNER_");
+                return "_INNER_";
+            }
+            System.out.println("isInnerClass(1): return _HIDDEN_");
+            return "_HIDDEN_";
         } catch (Exception e) {
-            return false;
+            return "___";
         }
     }
 
-    private static boolean isInnerClass(ClassOrInterfaceDeclaration clazz) {
-        return clazz.isNestedType();
+    private static String isInnerClass(ClassOrInterfaceDeclaration clazz) {
+        //        return clazz.isNestedType();
+        System.out.println("isInnerClass(2): " + clazz.getNameAsString() + ", "
+                + clazz.asClassOrInterfaceDeclaration().getAccessSpecifier());
+        if (!clazz.isNestedType()) {
+            return "___";
+        }
+        if (AccessSpecifier.PUBLIC.equals(clazz.asClassOrInterfaceDeclaration().getAccessSpecifier())) {
+            return "_INNER_";
+        }
+        return "_HIDDEN_";
     }
 
-    private static String fqnifyClass(String s, boolean isInnerClass) {
+    private static String fqnifyClass(String s, String separator) {
+        System.out.println("separator: " + separator);
         int l = s.lastIndexOf(".");
         String sPackage = s.substring(0, l).replace(".", "_");
-        String separator = isInnerClass ? "_INNER_" : "___";
+        //        String separator = isInnerClass ? "_INNER_" : "___";
         String className = s.substring(l + 1);
         return sPackage + separator + className;
     }
@@ -1193,5 +1340,10 @@ public class JavaToProtobufGenerator {
         }
         fieldNames.add(name.toLowerCase());
         return name;
+    }
+
+    private static String getRawtype(String name) {
+        int open = name.indexOf('<');
+        return (open < 0) ? name : name.substring(0, open);
     }
 }

@@ -3,6 +3,7 @@ package dev.resteasy.grpc.example;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,6 +45,30 @@ import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 
 @Path("p")
 public class CC1 {
+
+    //    public static class Test {
+    //        int Abc;
+    //        int xYZ;
+    //        int pqr;
+    //        int RST_;
+    //        int cde;
+    //        int cde_;
+    //        int cde__;
+    //        int cde___;
+    //        int cde____;
+    //    }
+    //
+    //    @Path("t")
+    //    @GET
+    //    Test test() {
+    //        return new Test();
+    //    }
+
+    @Path("list")
+    @GET
+    public List list(ArrayList list) {
+        return list;
+    }
 
     @Path("ready")
     @GET
@@ -659,6 +684,9 @@ public class CC1 {
         return intf;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////                  array tests                  ////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
     @GET
     @Path("arrays/int/1")
     public int[] arraysInt1(int[] ints) {
@@ -704,5 +732,34 @@ public class CC1 {
     @Path("arrays/stuff/array")
     public ArrayStuff[] arrayStuffArray(ArrayStuff[] ass) {
         return ass;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////               collection tests                ////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //    @GET
+    //    @Path("list/arraylist")
+    //    public ArrayList<?> listArray(ArrayList<Integer> list) {
+    //        ArrayList<Integer> newList = new ArrayList<Integer>();
+    //        for (int i = 0; i < list.size(); i++) {
+    //            newList.add(list.get(i) + 1);
+    //        }
+    //        return newList;
+    //    }
+
+    @GET
+    @Path("list/arraylist")
+    public ArrayList listArray(ArrayList list) {
+        ArrayList newList = new ArrayList();
+        for (int i = 0; i < list.size(); i++) {
+            newList.add(((int) list.get(i)) + 1);
+        }
+        return newList;
+    }
+
+    @GET
+    @Path("set/hashset")
+    public HashSet hashset(HashSet set) {
+        return set;
     }
 }

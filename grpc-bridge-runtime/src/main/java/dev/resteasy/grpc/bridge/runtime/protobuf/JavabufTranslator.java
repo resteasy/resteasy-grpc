@@ -13,4 +13,10 @@ public interface JavabufTranslator {
     Message translateToJavabuf(Object o);
 
     Class translateToJavabufClass(Class<?> clazz);
+
+    Class translateToJavabufClass(String classname);
+
+    Class translatefromJavabufClass(String classname);
+
+    String getOuterClassname();
 }
