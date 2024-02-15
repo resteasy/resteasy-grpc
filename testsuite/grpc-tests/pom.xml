@@ -11,6 +11,8 @@
     </parent>
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
+	    <maven.compiler.source>17</maven.compiler.source>
+	    <maven.compiler.target>17</maven.compiler.target>
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
         <!-- Provisioning properties -->
         <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
@@ -123,6 +125,7 @@
         <dependency>
             <groupId>dev.resteasy.grpc</groupId>
             <artifactId>grpc-bridge</artifactId>
+            <version>1.0.0.Alpha6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>dev.resteasy.grpc</groupId>
@@ -224,6 +227,15 @@
             </testResource>
         </testResources>
         <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+			  <compilerArgs>
+                  <arg>-J--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</arg>
+               </compilerArgs>
+          </configuration>
+        </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -234,7 +246,7 @@
                        -add-opens java.base/java.lang=ALL-UNNAMED
                        -add-opens java.base/java.util=ALL-UNNAMED
                     </argLine-->
-                    <argLine>--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <argLine>--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -350,6 +362,8 @@
                                 <argument>dev.resteasy.grpc.example</argument>
                                 <argument>dev.resteasy.grpc.example</argument>
                                 <argument>${root.class}</argument>
+                                <!--argument>-Djars=/opt/local/java/jdk-17.0.7/lib/src.zip</argument-->
+                                <!--argument>-Dclasses java.util.HashMap$EntrySet</argument-->
                             </arguments>
                             <systemProperties>
                                 <systemProperty>
@@ -400,6 +414,7 @@
                                     <value>false</value>
                                 </systemProperty>
                             </systemProperties>
+                            <argLine>--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</argLine>
                         </configuration>
                     </execution>
                     <execution>

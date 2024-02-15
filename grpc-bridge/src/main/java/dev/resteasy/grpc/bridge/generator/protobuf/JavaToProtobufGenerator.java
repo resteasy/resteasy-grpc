@@ -356,14 +356,17 @@ public class JavaToProtobufGenerator {
             return;
         }
         prefix = args[3];
+        System.out.println("starting JavaToProtobufGenerator");
         String s = System.getProperty("jars", "default");
         jars = "default".equals(s) || "".equals(s)
                 ? new CopyOnWriteArraySet<String>()
                 : new CopyOnWriteArraySet<String>(Arrays.asList(s.split(",")));
         s = System.getProperty("classes", "default");
+        System.out.println("classes: " + s);
         additionalClasses = "default".equals(s) || "".equals(s)
                 ? new CopyOnWriteArraySet<String>()
                 : new CopyOnWriteArraySet<String>(Arrays.asList(s.split(",")));
+        System.out.println("additionalClasses: " + additionalClasses);
         StringBuilder sb = new StringBuilder();
         protobufHeader(args, sb);
         new JavaToProtobufGenerator().processClasses(args, sb);
@@ -449,6 +452,31 @@ public class JavaToProtobufGenerator {
                     .append("}").append(LS);
         }
     }
+
+    /*
+     * while (!additionalClasses.isEmpty()) {
+     * for (String filename : additionalClasses) {
+     * int n = filename.indexOf(":");
+     * if (n < 0) {
+     * throw new RuntimeException("bad syntax: " + filename);
+     * }
+     * String dir = filename.substring(0, n).trim();
+     * filename = filename.substring(n + 1);
+     * // String classname = filename.substring(filename.lastIndexOf('.') + 1);
+     * String classname = null;
+     * if (filename.contains("$")) {
+     * int p = filename.indexOf('$');
+     * classname = filename.substring(p + 1);
+     * filename = filename.substring(0, p);
+     * }
+     *
+     * filename = dir + "/" + filename.replace(".", "/") + ".java";
+     * CompilationUnit cu = StaticJavaParser.parse(new File(filename));
+     * AdditionalClassVisitor additionalClassVisitor = new AdditionalClassVisitor(dir);
+     * additionalClassVisitor.visit(cu, classname, sb);
+     * }
+     * }
+     */
 
     private static void finishProto(StringBuilder sb) {
         if (needEmpty) {
@@ -712,8 +740,15 @@ public class JavaToProtobufGenerator {
             if (visited.contains(fqn)) {
                 return;
             }
+            System.out.println("ClassVisitor.visit(1): fqn: " + fqn);
             visited.add(fqn);
             counter = 1;
+
+            resolvedTypes.addAll(clazz.internalTypes());
+
+            for (ResolvedReferenceTypeDeclaration rrtd : clazz.internalTypes()) {
+                System.out.println("adding " + rrtd.getClassName());
+            }
 
             //            // Print java_lang___Object
             //            System.out.println("fqn1: " + fqn);
@@ -723,12 +758,21 @@ public class JavaToProtobufGenerator {
             //            }
 
             // Begin protobuf message definition.
+            if (fqn.contains("unsafe")) {
+                System.out.println("unsafe: " + fqn);
+            }
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
 
             // Scan all variables in class.
             for (ResolvedFieldDeclaration rfd : clazz.getDeclaredFields()) {
                 String type = null;
                 System.out.println("rfd: clazz: " + clazz.getName() + ", " + rfd.getName() + ", " + rfd.getType().describe());
+                if ("$assertionsDisabled".equals(rfd.getName())) {
+                    continue;
+                }
+                if (clazz.getName().contains("safe")) {
+                    System.out.println(clazz.getName());
+                }
                 //                if (rfd.getType().isReferenceType() &&
                 //                        rfd.getType().asReferenceType().getTypeDeclaration().isPresent()) {
                 //                    System.out.println(
@@ -755,6 +799,9 @@ public class JavaToProtobufGenerator {
                 //                    type = "google.protobuf.Any";
                 //                    System.out.println("type = Any");
                 //                } else
+                System.out.println("ClassVisitor.visit(): " + rfd.getType().describe());
+                System.out.println(
+                        "ClassVisitor.visit(): ref type: " + rfd.getType().describe() + ", " + rfd.getType().isReferenceType());
                 if (TYPE_MAP.containsKey(rfd.getType().describe())) {
                     type = TYPE_MAP.get(rfd.getType().describe());
                 } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rfd.getType().describe())) {
@@ -790,6 +837,7 @@ public class JavaToProtobufGenerator {
                         }
                     } else {
                         fqn = removeTypeVariables(ct.describe());
+                        System.out.println("ClassVisitor.visit(2): fqn: " + fqn);
                         if (!ct.isReferenceType()) {
                             continue;
                         }
@@ -827,9 +875,9 @@ public class JavaToProtobufGenerator {
                     if (rfd.getType().isReferenceType()) {
                         ResolvedReferenceTypeDeclaration rrtd = (ResolvedReferenceTypeDeclaration) rfd.getType()
                                 .asReferenceType().getTypeDeclaration().get();
-                        fqn = rrtd.getPackageName() + "." + rrtd.getClassName();
-                        System.out.println("fqn defined: " + fqn);
-                        if (!visited.contains(fqn)) {
+                        String fqn2 = rrtd.getPackageName() + "." + rrtd.getClassName();
+                        System.out.println("fqn2 defined: " + fqn2 + ", visited: " + visited.contains(fqn2));
+                        if (!visited.contains(fqn2) || fqn2.equals(fqn)) {
                             resolvedTypes.add(rrtd);
                             System.out.println("resolved type: 3 " + rrtd + ", " + rrtd.isInterface());
                             if (rrtd.isInterface()) {
@@ -841,14 +889,16 @@ public class JavaToProtobufGenerator {
                                                 + rrtd.getQualifiedName() + ", "
                                                 + rrtd.getQualifiedName());
                             } else {
-                                type = fqnifyClass(fqn, isInnerClass(rrtd));
+                                type = fqnifyClass(fqn2, isInnerClass(rrtd));
                             }
                         }
                         //                        type = fqnifyClass(fqn, isInnerClass(rrtd));
                     } else if (rfd.getType().isTypeVariable()) {
-                        type = "bytes ";
+                        //                        type = "bytes ";
+                        type = "google.protobuf.Any";
                     }
                 }
+                System.out.println("ClassVisitor: type: " + type);
                 String fieldName = getFieldName(fieldNames, rfd.getName());
 
                 if (type != null) {
@@ -869,8 +919,15 @@ public class JavaToProtobufGenerator {
                     if (Object.class.getName().equals(rcd.getQualifiedName())) {
                         continue;
                     }
-                    fqn = fqnifyClass(rcd.getPackageName() + "." + rcd.getName(), isInnerClass(rrt.getTypeDeclaration()
-                            .get()));
+                    if (rcd.containerType().isPresent()) {
+                        fqn = fqnifyClass(
+                                rcd.getPackageName() + "." + rcd.containerType().get().getClassName() + "." + rcd.getName(),
+                                isInnerClass(rrt.getTypeDeclaration()
+                                        .get()));
+                    } else {
+                        fqn = fqnifyClass(rcd.getPackageName() + "." + rcd.getName(), isInnerClass(rrt.getTypeDeclaration()
+                                .get()));
+                    }
                     if (!visited.contains(fqn)) {
                         resolvedTypes.add(rcd);
                         System.out.println("resolved type: 4 " + rcd + ", " + rcd.isInterface());
@@ -882,6 +939,7 @@ public class JavaToProtobufGenerator {
                     String superClassName = rcd.getName();
                     String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0)))
                             .concat(superClassName.substring(1)) + "___super";
+                    System.out.println("superClassVariableName: " + fqn + ", " + superClassVariableName);
                     sb.append("  ")
                             .append(fqn)
                             .append(" ")
@@ -941,8 +999,24 @@ public class JavaToProtobufGenerator {
             if (PRIMITIVE_WRAPPER_DEFINITIONS.containsKey(clazz.getName().asString())) {
                 return;
             }
+            List<ClassOrInterfaceDeclaration> list = clazz.findAll(ClassOrInterfaceDeclaration.class);
+            //            for (ClassOrInterfaceDeclaration n : list) {filename
+            //               System.out.println(n.getNameAsString());
+            //            }
+            //            ClassOrInterfaceDeclaration coid = null;
             String packageName = getPackageName(clazz);
             String fqn = packageName + "." + clazz.getNameAsString();
+            //            if (fqn.contains("$")) {
+            //               int n = fqn.indexOf('$');
+            //               fqn = fqn.substring(0, n);
+            //               String innerName = fqn.substring(n + 1);
+            //               for (ClassOrInterfaceDeclaration c : list) {
+            //                  if (c.getNameAsString().equals(innerName)) {
+            //                     clazz = c;
+            //                  }
+            //               }
+            //            }
+            System.out.println("clazz: " + clazz.getNameAsString());
             String filename = dir + ":" + fqn;
             additionalClasses.remove(filename);
 
@@ -960,6 +1034,10 @@ public class JavaToProtobufGenerator {
             //            }
 
             // Begin protobuf message definition.
+            if (fqn.contains("unsafe 2")) {
+                System.out.println("unsafe: " + fqn);
+            }
+
             sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
             // Scan all variables in class.
             for (FieldDeclaration fd : clazz.getFields()) {
@@ -981,16 +1059,52 @@ public class JavaToProtobufGenerator {
                         typeName = "repeated " + typeName;
                     } else {
                         fqn = type.describe();
-                        additionalClasses.add(dir + ":" + fqn);
-                        typeName = "repeated "
-                                + fqnifyClass(fqn, isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
+                        String s = ct.describe();
+                        ResolvedReferenceTypeDeclaration rrtd = ((ResolvedReferenceType) ct).getTypeDeclaration().get();
+                        try {
+                            rrtd.containerType();
+                            resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
+                        } catch (Exception e) {
+                            additionalClasses.add(dir + ":" + fqn);
+                        }
+                        //                        ResolvedReferenceTypeDeclaration rrtdc = rrtd.containerType().orElse(null);
+                        ////                        ResolvedReferenceTypeDeclaration rrtdc = rrtd.containerType().get();
+                        //                        Optional<?> o = rrtdc.containerType();
+
+                        //                        ResolvedReferenceTypeDeclaration rrtd2 = rrtdc.containerType().orElse(null);
+                        //                        s = ct.asReferenceType().getQualifiedName();
+                        //                        String t = ct.asReferenceType().getId();
+                        //                        if (ct.describe().contains("$")) {
+                        //                           resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
+                        //                        } else {
+                        //                           additionalClasses.add(dir + ":" + fqn);
+                        //                        }
+                        ResolvedArrayType rat = type.asArrayType();
+                        if (rat.arrayLevel() > 1) {
+                            typeName = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                        } else {
+                            //                        isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().g);
+                            typeName = "repeated "
+                                    //                                + fqnifyClass(fqn, isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
+                                    + fqnifyClass(fqn,
+                                            isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().get()));
+                        }
                     }
                 } else { // Defined type
-                    fqn = type.describe();
-                    additionalClasses.add(dir + ":" + fqn);
+                    ResolvedReferenceTypeDeclaration rrtd = type.asReferenceType().getTypeDeclaration().get();
+                    try {
+                        rrtd.containerType();
+                        resolvedTypes.add(type.asReferenceType().getTypeDeclaration().get());
+                    } catch (Exception e) {
+                        fqn = type.describe();
+                        additionalClasses.add(dir + ":" + fqn);
+                    }
+                    //                    fqn = type.describe();
+                    //                    additionalClasses.add(dir + ":" + fqn);
                     typeName = fqnifyClass(type.describe(), isInnerClass(type.asReferenceType()
                             .getTypeDeclaration()
                             .get()));
+                    System.out.println("AdditionalClassVisitor: typeName: " + typeName);
                 }
                 if (type != null) {
                     sb.append("  ")
@@ -1239,7 +1353,7 @@ public class JavaToProtobufGenerator {
     }
 
     private static String isInnerClass(ResolvedReferenceTypeDeclaration clazz) {
-        System.out.println("isInnerClass(1): " + clazz.getClassName() + ", " + clazz.asClass().accessSpecifier());
+        //        System.out.println("isInnerClass(1): " + clazz.getClassName() + ", " + clazz.asClass().accessSpecifier());
         try {
             Optional<?> opt = clazz.containerType();
             if (opt.isEmpty()) {
@@ -1274,11 +1388,13 @@ public class JavaToProtobufGenerator {
     }
 
     private static String fqnifyClass(String s, String separator) {
+        System.out.println("fqnifyClass(): in: " + s);
         System.out.println("separator: " + separator);
         int l = s.lastIndexOf(".");
         String sPackage = s.substring(0, l).replace(".", "_");
         //        String separator = isInnerClass ? "_INNER_" : "___";
         String className = s.substring(l + 1);
+        System.out.println("fqnifyClass(): returning: " + sPackage + separator + className);
         return sPackage + separator + className;
     }
 

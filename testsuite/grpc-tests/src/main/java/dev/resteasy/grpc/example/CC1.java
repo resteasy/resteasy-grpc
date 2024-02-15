@@ -3,6 +3,7 @@ package dev.resteasy.grpc.example;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,12 @@ public class CC1 {
     @GET
     public List list(ArrayList list) {
         return list;
+    }
+
+    @Path("set")
+    @GET
+    public Set set(HashSet set) {
+        return set;
     }
 
     @Path("ready")
@@ -761,5 +768,11 @@ public class CC1 {
     @Path("set/hashset")
     public HashSet hashset(HashSet set) {
         return set;
+    }
+
+    @GET
+    @Path("map/hashmap")
+    public HashMap hashmap(HashMap map) {
+        return map;
     }
 }

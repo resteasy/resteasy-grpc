@@ -17,6 +17,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
@@ -54,6 +55,7 @@ import dev.resteasy.grpc.example.CC1_proto.gHeader;
 import dev.resteasy.grpc.example.CC1_proto.gInteger;
 import dev.resteasy.grpc.example.CC1_proto.gNewCookie;
 import dev.resteasy.grpc.example.CC1_proto.gString;
+import dev.resteasy.grpc.example.CC1_proto.java_util___HashMap;
 import dev.resteasy.grpc.example.ExampleApp;
 import dev.resteasy.grpc.example.sub.CC8;
 import io.grpc.StatusRuntimeException;
@@ -92,8 +94,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addPackage(ArrayUtility.class.getPackage())
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource("web.xml");
-        //        ar.as(ZipExporter.class).exportTo(
-        //                new File("/tmp/arrays.war"), true);
+        ar.as(ZipExporter.class).exportTo(
+                new File("/tmp/arrays.war"), true);
         return ar;
     }
 
@@ -168,6 +170,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testArraysInts5(stub);
         this.testArrayStuff(stub);
         this.testArrayStuffArray(stub);
+        this.doCollectionTests(stub);
+    }
+
+    void doCollectionTests(CC1ServiceBlockingStub stub) throws Exception {
+        this.testHashMapInteger(stub);
+        this.testHashMapArrayStuff(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1657,6 +1665,51 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 Assert.fail(writer.toString());
             }
         }
+    }
+
+    ////////////////////////////////
+    ///     Collection tests     ///
+    ////////////////////////////////
+    void testHashMapInteger(CC1ServiceBlockingStub stub) throws Exception {
+        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        map.put(Integer.valueOf(3), "three");
+        map.put(Integer.valueOf(5), "five");
+        java_util___HashMap jbmap = (java_util___HashMap) translator.translateToJavabuf(map);
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setJavaUtilHashMapField(jbmap).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.hashmap(gem);
+            jbmap = response.getJavaUtilHashMapField();
+            Assert.assertEquals(map, (HashMap) translator.translateFromJavabuf(jbmap));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+
+    }
+
+    void testHashMapArrayStuff(CC1ServiceBlockingStub stub) throws Exception {
+        HashMap<Integer, ArrayStuff> map = new HashMap<Integer, ArrayStuff>();
+        map.put(Integer.valueOf(3), new ArrayStuff(false));
+        map.put(Integer.valueOf(5), new ArrayStuff(true));
+        java_util___HashMap jbmap = (java_util___HashMap) translator.translateToJavabuf(map);
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setJavaUtilHashMapField(jbmap).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.hashmap(gem);
+            jbmap = response.getJavaUtilHashMapField();
+            Assert.assertEquals(map, (HashMap) translator.translateFromJavabuf(jbmap));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+
     }
 
     //////////////////////////////

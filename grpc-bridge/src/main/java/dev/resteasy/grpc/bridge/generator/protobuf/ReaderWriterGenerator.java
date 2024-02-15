@@ -132,6 +132,8 @@ public class ReaderWriterGenerator {
                     || "FormMap".equals(clazz.getSimpleName())
                     || "FormValues".equals(clazz.getSimpleName())) {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
+            } else if (clazz.getName().contains("_HIDDEN_")) {
+                sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
             } else {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
                 sb.append("import ").append(originalClassName(clazz.getName())).append(";" + LS);
@@ -269,10 +271,18 @@ public class ReaderWriterGenerator {
             if (primitives.containsKey(simpleName) && !primitives.get(simpleName).equals("ignore")) {
                 insert = " || " + primitives.get(simpleName) + ".class.equals(clazz)";
             }
-            sb.append("if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert)
-                    .append(") {" + LS)
-                    .append("         return ").append(simpleName).append(".parseFrom(is);" + LS)
-                    .append("      } ");
+            if (simpleName.contains("_HIDDEN_")) {
+                sb.append("if (\"").append(javabufToJavaClass(simpleName)).append("\".equals(clazz.getName())")
+                        .append(" || \"" + originalClassName(subclasses[i].getName()) + "\".equals(clazz.getCanonicalName())")
+                        .append(") {" + LS)
+                        .append("         return ").append(simpleName).append(".parseFrom(is);" + LS)
+                        .append("      } ");
+            } else {
+                sb.append("if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert)
+                        .append(") {" + LS)
+                        .append("         return ").append(simpleName).append(".parseFrom(is);" + LS)
+                        .append("      } ");
+            }
         }
         sb.append("else if (clazz.isArray()) {" + LS)
                 .append("         return Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.parseFrom(is);" + LS)
@@ -340,12 +350,16 @@ public class ReaderWriterGenerator {
     }
 
     private static String originalClassName(String s) {
+        System.out.println("originalClassName(feb): s: " + s);
         int i = s.indexOf("$");
         int j = s.lastIndexOf("___");
         j = j < 0 ? s.indexOf("_INNER_") : j;
         j = j < 0 ? s.indexOf("_HIDDEN_") : j;
         j = j < 0 ? s.length() : j;
         String pkg = s.substring(i + 1, j).replace('_', '.');
+        System.out.println("originalClassName(feb): pkg: " + pkg);
+        System.out.println("originalClassName(feb): originalSimpleName(): " + originalSimpleName(s));
+        System.out.println("originalClassName(feb): returning: " + pkg + "." + originalSimpleName(s));
         return pkg + "." + originalSimpleName(s);
     }
 
@@ -357,6 +371,10 @@ public class ReaderWriterGenerator {
         i = s.indexOf("_INNER_");
         if (i >= 0) {
             return s.substring(i + "_INNER_".length());
+        }
+        i = s.indexOf("_HIDDEN_");
+        if (i >= 0) {
+            return s.substring(i + "_HIDDEN_".length());
         }
         return s;
     }
