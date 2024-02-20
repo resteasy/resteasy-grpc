@@ -132,7 +132,7 @@ public class ReaderWriterGenerator {
                     || "FormMap".equals(clazz.getSimpleName())
                     || "FormValues".equals(clazz.getSimpleName())) {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
-            } else if (clazz.getName().contains("_HIDDEN_")) {
+            } else if (clazz.getName().contains("_HIDDEN_") || clazz.getName().endsWith("ELEMENT_WRAPPER")) {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
             } else {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);

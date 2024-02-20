@@ -363,12 +363,15 @@
                                 <argument>dev.resteasy.grpc.example</argument>
                                 <argument>${root.class}</argument>
                                 <!--argument>-Djars=/opt/local/java/jdk-17.0.7/lib/src.zip</argument-->
-                                <!--argument>-Dclasses java.util.HashMap$EntrySet</argument-->
                             </arguments>
                             <systemProperties>
                                 <systemProperty>
                                     <key>exec.cleanupDaemonThreads</key>
                                     <value>false</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <key>classes</key>
+                                    <value>${project.build.sourceDirectory}:dev.resteasy.grpc.example.CC3,${project.build.sourceDirectory}:dev.resteasy.grpc.example.CC5</value>
                                 </systemProperty>
                             </systemProperties>
                         </configuration>

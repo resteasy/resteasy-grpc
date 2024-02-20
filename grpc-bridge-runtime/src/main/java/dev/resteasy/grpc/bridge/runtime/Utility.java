@@ -184,13 +184,17 @@ public final class Utility {
         }
         //        System.out.println("setField(): " + value.getClass());
         //        Class<?> ufai = UnsafeFieldAccessorImpl.class;
+        field.setAccessible(true);
         if (value == null) {
             field.set(object, value);
         } else if (value.getClass().isArray()) {
             if (field.getType().getComponentType().isPrimitive()) {
                 field.set(object, value);
             } else {
+                System.out.println(object);
                 field.set(object, wrapArray(value));
+                System.out.println(object);
+
             }
         } else if (Any.class.equals(value.getClass())) {
             Any any = (Any) value;
@@ -233,5 +237,18 @@ public final class Utility {
             Array.set(array, i, Array.get(o, i));
         }
         return (Object[]) array;
+    }
+
+    public static Field getField(Class<?> clazz, String name) {
+        Class<?> c = clazz;
+        while (c != null) {
+            try {
+                Field field = c.getDeclaredField(name);
+                return field;
+            } catch (Exception e) {
+                c = c.getSuperclass();
+            }
+        }
+        return null;
     }
 }

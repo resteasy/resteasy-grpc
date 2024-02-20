@@ -5,6 +5,8 @@ import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -36,6 +39,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -196,7 +200,7 @@ import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
  * message GeneralEntityMessage {
  *    ServletInfo servletInfo = 1;
  *    string URL = 2;
- *    map<string, gHeader> headers = 3;
+ *    map&lt;string, gHeader&gt; headers = 3;
  *    repeated gCookie cookies = 4;
  *    string httpMethod = 5;
  *    oneof messageType {
@@ -240,7 +244,8 @@ public class JavaToProtobufGenerator {
     private static Set<String> HTTP_VERBS = new HashSet<String>();
     private static String prefix;
     private static boolean needEmpty = false;
-    private static List<ResolvedReferenceTypeDeclaration> resolvedTypes = new CopyOnWriteArrayList<ResolvedReferenceTypeDeclaration>();
+
+    private static Set<ResolvedReferenceTypeDeclaration> resolvedTypes = ConcurrentHashMap.newKeySet();
     private static List<String> interfaces = new CopyOnWriteArrayList<String>();
     private static Set<String> entityMessageTypes = new HashSet<String>();
     private static Set<String> returnMessageTypes = new HashSet<String>();
@@ -254,6 +259,10 @@ public class JavaToProtobufGenerator {
     private static int counter = 1;
     private static boolean isSSE;
     private static String SSE_EVENT_CLASSNAME = "dev_resteasy_grpc_bridge_runtime_sse___SseEvent";
+    private static ClassLoader classLoader;
+    private static StringBuilder wrapperBuilder = new StringBuilder();
+    private static Set<String> repeatedTypes = new HashSet<String>();
+    private static Map<String, String> REPEAT_MAP = new HashMap<String, String>();
 
     static {
         TYPE_MAP.put("boolean", "bool");
@@ -267,6 +276,13 @@ public class JavaToProtobufGenerator {
         TYPE_MAP.put("char", "string");
         TYPE_MAP.put("String", "string");
         TYPE_MAP.put("java.lang.String", "string");
+
+        REPEAT_MAP.put("bool", "gBoolean");
+        REPEAT_MAP.put("int32", "gInteger");
+        REPEAT_MAP.put("int64", "gInteger");
+        REPEAT_MAP.put("float", "gFloat");
+        REPEAT_MAP.put("double", "gDouble");
+        REPEAT_MAP.put("string", "gString");
 
         PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "gBoolean");
         PRIMITIVE_WRAPPER_TYPES_IO.put("byte", "gByte");
@@ -345,7 +361,11 @@ public class JavaToProtobufGenerator {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args == null || (args.length != 4)) {
+        System.out.println("args.length: " + args.length);
+        for (int i = 0; i < args.length; i++) {
+            System.out.println("arg[" + i + "]: " + args[i]);
+        }
+        if (args == null || (args.length < 4)) {
             logger.info("need four args");
             logger.info("  arg[0]: root directory");
             logger.info("  arg[1]: package to be used in .proto file");
@@ -370,8 +390,14 @@ public class JavaToProtobufGenerator {
         StringBuilder sb = new StringBuilder();
         protobufHeader(args, sb);
         new JavaToProtobufGenerator().processClasses(args, sb);
-        while (!resolvedTypes.isEmpty()) {
+        int i = 0;
+        while (!resolvedTypes.isEmpty() && i++ < 100) {
+            System.out.println("resolvedTypes (main(): ");
+            for (ResolvedReferenceTypeDeclaration r : resolvedTypes) {
+                System.out.println("  " + r.getQualifiedName());
+            }
             for (ResolvedReferenceTypeDeclaration rrtd : resolvedTypes) {
+                System.out.println("main(): calling ClassVisitor.visit(): " + rrtd.getQualifiedName());
                 classVisitor.visit(rrtd, sb);
             }
         }
@@ -420,27 +446,28 @@ public class JavaToProtobufGenerator {
         processAdditionalClasses(symbolSolver, sb);
     }
 
-    /****************************************************************************/
-    /******************************
-     * primary methods *****************************
-     * /
-     *****************************************************************************/
+    /*********************************************************************/
+    /*********************** primary methods *****************************/
+    /*********************************************************************/
 
     private static void processAdditionalClasses(JavaSymbolSolver symbolSolver, StringBuilder sb) throws FileNotFoundException {
         StaticJavaParser.getConfiguration().setSymbolResolver(symbolSolver);
-        while (!additionalClasses.isEmpty()) {
-            for (String filename : additionalClasses) {
-                int n = filename.indexOf(":");
-                if (n < 0) {
-                    throw new RuntimeException("bad syntax: " + filename);
-                }
-                String dir = filename.substring(0, n).trim();
-                filename = dir + "/" + filename.substring(n + 1).replace(".", "/") + ".java";
-                CompilationUnit cu = StaticJavaParser.parse(new File(filename));
-                AdditionalClassVisitor additionalClassVisitor = new AdditionalClassVisitor(dir);
-                additionalClassVisitor.visit(cu, sb);
+        //        while (!additionalClasses.isEmpty()) {
+        for (String filename : additionalClasses) {
+            int n = filename.indexOf(":");
+            if (n < 0) {
+                throw new RuntimeException("bad syntax: " + filename);
             }
+            String dir = filename.substring(0, n).trim();
+            filename = dir + "/" + filename.substring(n + 1).replace(".", "/") + ".java";
+            CompilationUnit cu = StaticJavaParser.parse(new File(filename));
+            //                AdditionalClassVisitor additionalClassVisitor = new AdditionalClassVisitor(dir);
+            //                additionalClassVisitor.visit(cu, sb);
+            System.out.println("additional: " + filename);
+            ClassVisitor classVisitor = new ClassVisitor();
+            classVisitor.visit(cu, sb);
         }
+        //        }
         if (isSSE) {
             sb.append(LS)
                     .append("message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {" + LS)
@@ -595,9 +622,33 @@ public class JavaToProtobufGenerator {
     private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
         Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
         if (path.resolve(args[3] + ".proto").toFile().exists()) {
-            return;
+            //            return;
         }
-        Files.writeString(path.resolve(args[3] + ".proto"), sb.toString(), StandardCharsets.UTF_8);
+        String s = sb.toString();
+        System.out.println(s);
+        System.out.println(s.length());
+        counter = 0;
+        wrapperBuilder.append("message ELEMENT_WRAPPER {" + LS)
+                .append("   int64 position = " + ++counter + ";" + LS)
+                .append("   oneof messageType {" + LS);
+        for (String type : repeatedTypes) {
+            String fieldName = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
+            wrapperBuilder
+                    .append("      ")
+                    .append(type)
+                    .append(" ")
+                    .append(fieldName)
+                    .append("_field = ")
+                    .append(++counter)
+                    .append(";" + LS);
+        }
+        wrapperBuilder.append("   }" + LS).append("}" + LS);
+        Files.writeString(path.resolve(args[3] + ".proto"), sb.toString() + wrapperBuilder.toString(), StandardCharsets.UTF_8);
+
+        //        Files.writeString(path.resolve(args[3] + "2" + ".proto"), sb.toString(), StandardCharsets.UTF_8);
+        Path path2 = Path.of("/tmp/CC1.proto");
+        Files.writeString(path2, sb.toString(), StandardCharsets.UTF_8);
+        System.out.println("done");
     }
 
     private static void createProtobufDirectory(String[] args) {
@@ -626,6 +677,17 @@ public class JavaToProtobufGenerator {
 
         public void visit(final ClassOrInterfaceDeclaration subClass, StringBuilder sb) {
             // Don't process gRPC server
+            //            if (classLoader == null) {
+            //               try
+            //               {
+            //                  Class.forName(subClass.getNameAsString()).getClassLoader();
+            //               }
+            //               catch (ClassNotFoundException e)
+            //               {
+            //                  // TODO Auto-generated catch block
+            //                  e.printStackTrace();
+            //               }
+            //            }
             if (subClass.getFullyQualifiedName().orElse("").startsWith("grpc.server")) {
                 return;
             }
@@ -694,6 +756,8 @@ public class JavaToProtobufGenerator {
                             continue;
                         }
                         ReferenceTypeImpl rt = (ReferenceTypeImpl) p.getType().resolve();
+                        System.out.println(rt.toString());
+                        System.out.println(p.getTypeAsString());
                         ResolvedReferenceTypeDeclaration rrtd = rt.getTypeDeclaration().get();
                         String type = rt.asReferenceType().getQualifiedName();
                         if (!visited.contains(type)) {
@@ -715,40 +779,104 @@ public class JavaToProtobufGenerator {
      */
     static class ClassVisitor extends VoidVisitorAdapter<StringBuilder> {
 
+        public void visit(ClassOrInterfaceDeclaration clazz, StringBuilder sb) {
+            System.out.println("visit(class): entering " + clazz.getNameAsString());
+            System.out.println(clazz.toString());
+            visit(clazz.resolve(), sb);
+            System.out.println("visit(class): leaving " + clazz.getNameAsString());
+        }
+
         /**
          * For each class, create a message type with a field for each variable in the class.
          */
         public void visit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb) {
-            for (String s : interfaces) {
-                System.out.println(clazz.getName() + ": " + "interfaces: " + s);
-            }
-            Set<String> fieldNames = new HashSet<String>();
             resolvedTypes.remove(clazz);
+            String fqn = clazz.getQualifiedName();
+            if (visited.contains(fqn)) {
+                //                resolvedTypes.remove(clazz);
+                return;
+            }
+            //            sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
+            System.out.println("visit(): entering: " + clazz.getQualifiedName());
+            counter = 1;
+            doVisit(clazz, sb, true);
+            visited.add(clazz.getQualifiedName());
+            System.out.println("visit(): leaving: " + clazz.getQualifiedName());
+            //            sb.append("}" + LS);
+        }
+
+        private void doVisit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb, boolean start) {
+            System.out.println("doVisit(): entering doVisit(): " + clazz.getQualifiedName());
+
+            //            for (String s : interfaces) {
+            //                System.out.println(clazz.getName() + ": " + "interfaces: " + s);
+            //            }
+            //            for (ResolvedReferenceType rrt : clazz.getAncestors()) {
+            //               System.out.println( rrt.describe() + ": " + (rrt instanceof ResolvedClassDeclaration));
+            //               System.out.println("ClassVisitor: ancestor: " + rrt.getQualifiedName());
+            //               ResolvedReferenceTypeDeclaration rrtd = rrt.getTypeDeclaration().orElse(null);
+            //               if (rrtd != null) {
+            //                  System.out.println(rrtd.isClass());
+            //               }
+            //            }
+            //            ResolvedReferenceTypeDeclaration superClass = getSuperClass(clazz);
+            //            if (superClass != null) {
+            //                System.out.println("doVisit(): calling doVisit(): " + superClass.getQualifiedName());
+            //                doVisit(superClass, sb, false);
+            //                System.out.println("doVisit(): returning from doVisit(): " + superClass.getQualifiedName());
+            //            }
+            Set<String> fieldNames = new HashSet<String>();
+            //            resolvedTypes.remove(clazz);
             if (clazz.isInterface()) {
                 return;
             }
             //            if (clazz.getPackageName().startsWith("java")) {
             //                return;
-            //            }
-            if (PRIMITIVE_WRAPPER_DEFINITIONS.containsKey(clazz.getClassName())) {
+            //            }java_lang___Short
+            //            if (PRIMITIVE_WRAPPER_DEFINITIONS.containsKey(clazz.getClassName())) {
+            if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(clazz.getClassName())) {
                 return;
             }
             if (Response.class.getName().equals(clazz.getQualifiedName())) {
                 return;
             }
             String fqn = clazz.getQualifiedName();
-            if (visited.contains(fqn)) {
-                return;
-            }
+            //            if (visited.contains(fqn)) {
+            //                return;
+            //            }
             System.out.println("ClassVisitor.visit(1): fqn: " + fqn);
-            visited.add(fqn);
-            counter = 1;
+            //            visited.add(fqn);
+            //            counter = 1;
 
-            resolvedTypes.addAll(clazz.internalTypes());
+            //            resolvedTypes.addAll(clazz.internalTypes());
 
-            for (ResolvedReferenceTypeDeclaration rrtd : clazz.internalTypes()) {
-                System.out.println("adding " + rrtd.getClassName());
+            if (start) {
+                sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
             }
+            if (clazz.getClassName().contains("EntryIterator")) {
+                System.out.println("class: " + clazz.getClassName());
+            }
+            if (clazz.getClassName().contains("CC9")) {
+                System.out.println(clazz.getClassName());
+            }
+            ResolvedReferenceTypeDeclaration superClass = getSuperClass(clazz);
+            if (superClass != null) {
+                System.out.println("doVisit(): calling doVisit(): " + superClass.getQualifiedName());
+                doVisit(superClass, sb, false);
+                System.out.println("doVisit(): returning from doVisit(): " + superClass.getQualifiedName());
+            }
+
+            for (ResolvedReferenceTypeDeclaration r : clazz.internalTypes()) {
+                System.out.println("doVisit(): clazz: " + clazz.getClassName() + ", internal: " + r.getClassName());
+                if (!visited.contains(r.getQualifiedName())) {
+                    System.out.println("adding " + r);
+                    resolvedTypes.add(r);
+                }
+            }
+
+            //            for (ResolvedReferenceTypeDeclaration rrtd : clazz.internalTypes()) {
+            //                System.out.println("adding " + rrtd.getClassName());
+            //            }
 
             //            // Print java_lang___Object
             //            System.out.println("fqn1: " + fqn);
@@ -761,17 +889,23 @@ public class JavaToProtobufGenerator {
             if (fqn.contains("unsafe")) {
                 System.out.println("unsafe: " + fqn);
             }
-            sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
-
+            //            if (clazz.getClassName().contains("CC2")) {
+            //                System.out.println(clazz.getClassName());
+            //            }
             // Scan all variables in class.
             for (ResolvedFieldDeclaration rfd : clazz.getDeclaredFields()) {
+
                 String type = null;
                 System.out.println("rfd: clazz: " + clazz.getName() + ", " + rfd.getName() + ", " + rfd.getType().describe());
                 if ("$assertionsDisabled".equals(rfd.getName())) {
                     continue;
                 }
+                if (rfd.getName() != null && rfd.getName().startsWith("this$")) {
+                    continue;
+                }
                 if (clazz.getName().contains("safe")) {
                     System.out.println(clazz.getName());
+                    continue;
                 }
                 //                if (rfd.getType().isReferenceType() &&
                 //                        rfd.getType().asReferenceType().getTypeDeclaration().isPresent()) {
@@ -812,13 +946,15 @@ public class JavaToProtobufGenerator {
                     System.out.println("ct: " + ct.describe());
                     if ("java.lang.Object".equals(ct.describe())) {
                         System.out.println("found Object array");
-                        type = "repeated google.protobuf.Any";
+                        //                        type = "repeated google.protobuf.Any";
+                        type = "repeated " + wrapRepeated("google.protobuf.Any");
                     } else if ("byte".equals(ct.describe())) {
                         type = "bytes";
                     } else if ("char".equals(ct.describe()) || "java.lang.Character".equals(ct.describe())) {
                         type = "string";
                     } else if (ct.isPrimitive()) {
-                        type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
+                        //                        type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
+                        type = "repeated " + wrapRepeated(TYPE_MAP.get(removeTypeVariables(ct.describe())));
                     } else if (ct instanceof ResolvedArrayType) {
                         type = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                         ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
@@ -842,7 +978,8 @@ public class JavaToProtobufGenerator {
                             continue;
                         }
                         if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(fqn)) {
-                            type = "repeated " + PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn);
+                            //                            type = "repeated " + PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn);
+                            type = "repeated " + wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
                         } else if (!visited.contains(fqn)) {
                             resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
                             System.out.println("resolved type: 2 " + ct.asReferenceType().getTypeDeclaration().get() + ", "
@@ -852,9 +989,9 @@ public class JavaToProtobufGenerator {
                                 System.out.println("adding interface 2: " + ct.asReferenceType().getTypeDeclaration().get()
                                         + ", q name: " + (ct.asReferenceType().getTypeDeclaration().get().getQualifiedName()));
                             }
-                            type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                            type = "repeated " + wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
                                     .getTypeDeclaration()
-                                    .get()));
+                                    .get())));
                         }
 
                     }
@@ -877,21 +1014,26 @@ public class JavaToProtobufGenerator {
                                 .asReferenceType().getTypeDeclaration().get();
                         String fqn2 = rrtd.getPackageName() + "." + rrtd.getClassName();
                         System.out.println("fqn2 defined: " + fqn2 + ", visited: " + visited.contains(fqn2));
-                        if (!visited.contains(fqn2) || fqn2.equals(fqn)) {
+                        //                        if (!visited.contains(fqn2) || fqn2.equals(fqn)) {
+                        //                        resolvedTypes.add(rrtd);
+                        System.out.println("resolved type: 3 " + rrtd.getQualifiedName() + ", " + rrtd.isInterface());
+                        System.out.println("resolvedTypes (doVisit(): ");
+                        //                        for (ResolvedReferenceTypeDeclaration r : resolvedTypes) {
+                        //                            System.out.println("  " + r.getQualifiedName());
+                        //                        }
+                        if (rrtd.isInterface() || isAbstract(rrtd)) {
+                            interfaces.add(rrtd.getQualifiedName());
+                            type = "google.protobuf.Any";
+                            System.out.println("set type: google.protobuf.Any");
+                            System.out.println(
+                                    "adding interface 3: " + clazz.getName() + ": " + rrtd + ", q name: "
+                                            + rrtd.getQualifiedName() + ", "
+                                            + rrtd.getQualifiedName());
+                        } else {
+                            type = fqnifyClass(fqn2, isInnerClass(rrtd));
                             resolvedTypes.add(rrtd);
-                            System.out.println("resolved type: 3 " + rrtd + ", " + rrtd.isInterface());
-                            if (rrtd.isInterface()) {
-                                interfaces.add(rrtd.getQualifiedName());
-                                type = "google.protobuf.Any";
-                                System.out.println("set type: google.protobuf.Any");
-                                System.out.println(
-                                        "adding interface 3: " + clazz.getName() + ": " + rrtd + ", q name: "
-                                                + rrtd.getQualifiedName() + ", "
-                                                + rrtd.getQualifiedName());
-                            } else {
-                                type = fqnifyClass(fqn2, isInnerClass(rrtd));
-                            }
                         }
+                        //                        }
                         //                        type = fqnifyClass(fqn, isInnerClass(rrtd));
                     } else if (rfd.getType().isTypeVariable()) {
                         //                        type = "bytes ";
@@ -910,75 +1052,83 @@ public class JavaToProtobufGenerator {
                             .append(counter++)
                             .append(";" + LS);
                 }
+                String s = sb.toString().substring(sb.toString().length() / 2);
+                System.out.println(s);
             }
-
-            // Add field for superclass.
-            for (ResolvedReferenceType rrt : clazz.getAncestors()) {
-                if (rrt.getTypeDeclaration().get() instanceof ReflectionClassDeclaration) {
-                    ReflectionClassDeclaration rcd = (ReflectionClassDeclaration) rrt.getTypeDeclaration().get();
-                    if (Object.class.getName().equals(rcd.getQualifiedName())) {
-                        continue;
-                    }
-                    if (rcd.containerType().isPresent()) {
-                        fqn = fqnifyClass(
-                                rcd.getPackageName() + "." + rcd.containerType().get().getClassName() + "." + rcd.getName(),
-                                isInnerClass(rrt.getTypeDeclaration()
-                                        .get()));
-                    } else {
-                        fqn = fqnifyClass(rcd.getPackageName() + "." + rcd.getName(), isInnerClass(rrt.getTypeDeclaration()
-                                .get()));
-                    }
-                    if (!visited.contains(fqn)) {
-                        resolvedTypes.add(rcd);
-                        System.out.println("resolved type: 4 " + rcd + ", " + rcd.isInterface());
-                        if (rcd.isInterface()) {
-                            interfaces.add(rcd.getQualifiedName());
-                            System.out.println("adding interface 4: " + rcd + ", q name: " + rcd.getQualifiedName());
-                        }
-                    }
-                    String superClassName = rcd.getName();
-                    String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0)))
-                            .concat(superClassName.substring(1)) + "___super";
-                    System.out.println("superClassVariableName: " + fqn + ", " + superClassVariableName);
-                    sb.append("  ")
-                            .append(fqn)
-                            .append(" ")
-                            .append(superClassVariableName)
-                            .append(" = ")
-                            .append(counter++)
-                            .append(";" + LS);
-                    break;
-                } else if (rrt.getTypeDeclaration().get() instanceof JavaParserClassDeclaration) {
-                    JavaParserClassDeclaration jpcd = (JavaParserClassDeclaration) rrt.getTypeDeclaration().get();
-                    ResolvedClassDeclaration rcd = jpcd.asClass();
-                    if (Object.class.getName().equals(rcd.getClassName())) {
-                        continue;
-                    }
-                    fqn = rcd.getPackageName() + "." + rcd.getName();
-                    if (!visited.contains(fqn)) {
-                        resolvedTypes.add(rcd);
-                        System.out.println("resolved type: 5 " + rcd + ", " + rcd.isInterface());
-                        if (rcd.isInterface()) {
-                            interfaces.add(rcd.getQualifiedName());
-                            System.out.println("adding interface 5: " + rcd + ", q name: " + rcd.getQualifiedName());
-                        }
-                    }
-                    fqn = fqnifyClass(fqn, isInnerClass(rrt.getTypeDeclaration().get()));
-                    String superClassName = rcd.getName();
-                    String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0)))
-                            .concat(superClassName.substring(1)) + "___super";
-                    sb.append("  ")
-                            .append(fqn)
-                            .append(" ")
-                            .append(superClassVariableName)
-                            .append(" = ")
-                            .append(counter++)
-                            .append(";" + LS);
-                    break;
-
-                }
+            /*
+             * // Add field for superclass.
+             * for (ResolvedReferenceType rrt : clazz.getAncestors()) {
+             * if (rrt.getTypeDeclaration().get() instanceof ReflectionClassDeclaration) {
+             * ReflectionClassDeclaration rcd = (ReflectionClassDeclaration) rrt.getTypeDeclaration().get();
+             * if (Object.class.getName().equals(rcd.getQualifiedName())) {
+             * continue;
+             * }
+             * if (rcd.containerType().isPresent()) {
+             * fqn = fqnifyClass(
+             * rcd.getPackageName() + "." + rcd.containerType().get().getClassName() + "." + rcd.getName(),
+             * isInnerClass(rrt.getTypeDeclaration()
+             * .get()));
+             * } else {
+             * fqn = fqnifyClass(rcd.getPackageName() + "." + rcd.getName(), isInnerClass(rrt.getTypeDeclaration()
+             * .get()));
+             * }
+             * if (!visited.contains(fqn)) {
+             * resolvedTypes.add(rcd);
+             * System.out.println("resolved type: 4 " + rcd + ", " + rcd.isInterface());
+             * if (rcd.isInterface()) {
+             * interfaces.add(rcd.getQualifiedName());
+             * System.out.println("adding interface 4: " + rcd + ", q name: " + rcd.getQualifiedName());
+             * }
+             * }
+             * String superClassName = rcd.getName();
+             * String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0)))
+             * .concat(superClassName.substring(1)) + "___super";
+             * System.out.println("superClassVariableName: " + fqn + ", " + superClassVariableName);
+             * sb.append("  ")
+             * .append(fqn)
+             * .append(" ")
+             * .append(superClassVariableName)
+             * .append(" = ")
+             * .append(counter++)
+             * .append(";" + LS);
+             * break;
+             * } else if (rrt.getTypeDeclaration().get() instanceof JavaParserClassDeclaration) {
+             * JavaParserClassDeclaration jpcd = (JavaParserClassDeclaration) rrt.getTypeDeclaration().get();
+             * ResolvedClassDeclaration rcd = jpcd.asClass();
+             * if (Object.class.getName().equals(rcd.getClassName())) {
+             * continue;
+             * }
+             * fqn = rcd.getPackageName() + "." + rcd.getName();
+             * if (!visited.contains(fqn)) {
+             * resolvedTypes.add(rcd);
+             * System.out.println("resolved type: 5 " + rcd + ", " + rcd.isInterface());
+             * if (rcd.isInterface()) {
+             * interfaces.add(rcd.getQualifiedName());
+             * System.out.println("adding interface 5: " + rcd + ", q name: " + rcd.getQualifiedName());
+             * }
+             * }
+             * fqn = fqnifyClass(fqn, isInnerClass(rrt.getTypeDeclaration().get()));
+             * String superClassName = rcd.getName();
+             * String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0)))
+             * .concat(superClassName.substring(1)) + "___super";
+             * sb.append("  ")
+             * .append(fqn)
+             * .append(" ")
+             * .append(superClassVariableName)
+             * .append(" = ")
+             * .append(counter++)
+             * .append(";" + LS);
+             * break;
+             *
+             * }
+             * }
+             * sb.append("}" + LS);
+             *
+             */
+            if (start) {
+                sb.append("}" + LS);
             }
-            sb.append("}" + LS);
+            System.out.println("doVisit(): leaving doVisit(): " + clazz.getQualifiedName());
         }
     }
 
@@ -996,9 +1146,12 @@ public class JavaToProtobufGenerator {
          * For each class, create a message type with a field for each variable in the class.
          */
         public void visit(ClassOrInterfaceDeclaration clazz, StringBuilder sb) {
+            TypeDeclaration td = clazz.asTypeDeclaration();
+            clazz.resolve();
             if (PRIMITIVE_WRAPPER_DEFINITIONS.containsKey(clazz.getName().asString())) {
                 return;
             }
+            System.out.println("ancestor: " + clazz.findAncestor(ClassOrInterfaceDeclaration.class));
             List<ClassOrInterfaceDeclaration> list = clazz.findAll(ClassOrInterfaceDeclaration.class);
             //            for (ClassOrInterfaceDeclaration n : list) {filename
             //               System.out.println(n.getNameAsString());
@@ -1056,7 +1209,8 @@ public class JavaToProtobufGenerator {
                     } else if ("class [C".equals(ct.describe()) || "class [Ljava.lang.Character".equals(ct.describe())) {
                         typeName = "string";
                     } else if (ct.isPrimitive()) {
-                        typeName = "repeated " + typeName;
+                        //                        typeName = "repeated " + typeName;
+                        typeName = "repeated " + wrapRepeated(typeName);
                     } else {
                         fqn = type.describe();
                         String s = ct.describe();
@@ -1086,8 +1240,8 @@ public class JavaToProtobufGenerator {
                             //                        isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().g);
                             typeName = "repeated "
                                     //                                + fqnifyClass(fqn, isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
-                                    + fqnifyClass(fqn,
-                                            isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().get()));
+                                    + wrapRepeated(fqnifyClass(fqn,
+                                            isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().get())));
                         }
                     }
                 } else { // Defined type
@@ -1180,6 +1334,7 @@ public class JavaToProtobufGenerator {
                 }
                 // array?
                 ResolvedType rt = p.getType().resolve();
+                //                System.out.println(rt.asReferenceType().getTypeDeclaration().get().asClass().toAst().get().toString());
                 if (isInterface(rt)) {
                     return "google.protobuf.Any";
                 }
@@ -1187,7 +1342,12 @@ public class JavaToProtobufGenerator {
                     //                    return "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
                     return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
                 }
-                resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
+                ResolvedReferenceTypeDeclaration r = rt.asReferenceType().getTypeDeclaration().orElse(null);
+                if (r != null) {
+                    //                resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
+                    System.out.println("r: " + r);
+                    resolvedTypes.add(r);
+                }
                 System.out.println("resolved type: 10 " + rt.asReferenceType().getTypeDeclaration().get() + ", "
                         + rt.asReferenceType().getTypeDeclaration().get().isInterface());
                 if (rt.asReferenceType().getTypeDeclaration().get().isInterface()) {
@@ -1461,5 +1621,99 @@ public class JavaToProtobufGenerator {
     private static String getRawtype(String name) {
         int open = name.indexOf('<');
         return (open < 0) ? name : name.substring(0, open);
+    }
+
+    private static ResolvedReferenceTypeDeclaration getSuperClass(ResolvedReferenceTypeDeclaration clazz) {
+        for (ResolvedReferenceType rrt : clazz.getAncestors()) {
+            System.out.println(rrt.describe() + ": " + (rrt instanceof ResolvedClassDeclaration));
+            System.out.println("ClassVisitor: ancestor: " + rrt.getQualifiedName());
+            ResolvedReferenceTypeDeclaration rrtd = rrt.getTypeDeclaration().orElse(null);
+            if (rrtd != null) {
+                System.out.println(rrtd.isClass());
+                if (rrtd.isClass()) {
+                    return rrtd;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isAbstract(ResolvedReferenceTypeDeclaration rrtd) {
+        System.out.println(rrtd);
+        if (rrtd instanceof ReflectionClassDeclaration) {
+            ReflectionClassDeclaration rcd = (ReflectionClassDeclaration) rrtd;
+            try {
+                Field field = rcd.getClass().getDeclaredField("clazz");
+                field.setAccessible(true);
+                Class<?> clazz = (Class<?>) field.get(rcd);
+                System.out.println(Modifier.isAbstract(clazz.getModifiers()));
+                return Modifier.isAbstract(clazz.getModifiers());
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            System.out.println(rcd.toString());
+            //          System.out.println( rcd.toAst().get());
+        } else if (rrtd instanceof JavaParserClassDeclaration) {
+            JavaParserClassDeclaration jpcd = (JavaParserClassDeclaration) rrtd;
+            System.out.println(jpcd.getWrappedNode());
+            String s = jpcd.getWrappedNode().toString();
+            int n = s.indexOf(rrtd.getClassName());
+            return s.substring(0, n).contains("abstract");
+        } else {
+            System.out.println(rrtd);
+        }
+        //       System.out.println( rcd.toAst().get());
+        //       JavaParserClassDeclaration jpcd = (JavaParserClassDeclaration) rrtd;
+        //       System.out.println(jpcd);
+        //       System.out.println(jpcd.getWrappedNode().toString());
+        return true;
+        //        try {ResolvedClassDeclaration rcd = rrtd.asClass();
+        //            System.out.println(rrtd.getQualifiedName());
+        //            Class<?> clazz = Class.forName(rrtd.getQualifiedName(), true, Thread.currentThread().getContextClassLoader());
+        //            return Modifier.isAbstract(clazz.getModifiers());
+        //        } catch (ClassNotFoundException e) {
+        //            throw new RuntimeException(e);
+        //        }
+        //       try {
+        //          ResolvedClassDeclaration rcd = rrtd.asClass();
+        //          Node definition = rcd.toAst().get();
+        //          String classname = rcd.getName();
+        //          if (classname == null || "".equals(classname)) {
+        //             throw new RuntimeException("expecting class name");
+        //          }
+        //          int n = definition.toString().indexOf(classname);
+        //          return definition.toString().substring(0, n).contains("abstract");
+        //       } catch (Exception e) {
+        //          throw new RuntimeException(e);
+        //       }
+        //       System.out.println(rrtd.getConstructors().size());
+        //       return rrtd.getConstructors().size() == 0;
+    }
+
+    private static String wrapRepeated(String type) {
+        System.out.println("wrapRepeated: " + type);
+        //        String fn = fieldName.contains(".") ? fieldName.substring(fieldName.lastIndexOf('.') + 1) : fieldName;
+        if (REPEAT_MAP.containsKey(type)) {
+            type = REPEAT_MAP.get(type);
+        }
+        repeatedTypes.add(type);
+        //        return type;
+        return "ELEMENT_WRAPPER";
+        //        if (!repeatedTypes.contains(fieldName)) {
+        //            wrapperBuilder.append("message ")
+        //                    .append(fn)
+        //                    .append("___WRAPPER {" + LS)
+        //                    .append("   int64 position = 1;" + LS)
+        //                    .append("   ")
+        //                    .append(fieldName)
+        //                    .append(" ")
+        //                    .append(fn)
+        //                    .append("_field = 2;" + LS)
+        //                    .append("}" + LS + LS);
+        //            repeatedTypes.add(fieldName);
+        //        }
+        //        return fn + "___WRAPPER";
     }
 }

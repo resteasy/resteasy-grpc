@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +23,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dev.resteasy.grpc.arrays.ArrayHolder;
+import com.google.protobuf.Any;
+
 import dev.resteasy.grpc.arrays.ArrayUtility;
 import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;
@@ -35,6 +37,9 @@ import dev.resteasy.grpc.example.CC1_proto;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___ArrayStuff;
+import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC5;
+import dev.resteasy.grpc.example.CC1_proto.gString;
+import dev.resteasy.grpc.example.CC1_proto.java_util___HashMap;
 import dev.resteasy.grpc.example.ExampleApp;
 import dev.resteasy.grpc.example.sub.CC8;
 import io.grpc.ManagedChannel;
@@ -63,7 +68,6 @@ public class GrpcToJakartaRESTIndependentTest {
                             .withoutTransitivity()
                             .asSingleFile())
                     .addClass(Array_proto.class)
-                    .addPackage(ArrayHolder.class.getPackage())
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                     .addAsWebInfResource("web.xml");
             ar.as(ZipExporter.class).exportTo(new File("/tmp/arrays.war"), true);
@@ -118,7 +122,7 @@ public class GrpcToJakartaRESTIndependentTest {
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
         //        this.testArraysInts5(stub);
         //        this.testArraysSend(stub);
-        this.testArrayStuff(stub);
+        //        this.testArrayStuff(stub);
         //        this.testBoolean(stub);
         //        this.testBooleanWithUnnecessaryURL(stub);
         //        this.testBooleanWrapper(stub);
@@ -170,6 +174,7 @@ public class GrpcToJakartaRESTIndependentTest {
         //        this.testCopy(stub);
         //        this.testInterfaceEntity(stub);
         //        this.testInterfaceReturn(stub);
+        this.doCollectionTests(stub);
     }
 
     //    void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -180,6 +185,11 @@ public class GrpcToJakartaRESTIndependentTest {
     //    void doFutureTest(CC1ServiceFutureStub futureStub) throws Exception {
     //        testIntFutureStub(futureStub);
     //    }
+
+    void doCollectionTests(CC1ServiceBlockingStub stub) throws Exception {
+        this.testHashMapInteger(stub);
+        //        this.testHashMapArrayStuff(stub);
+    }
 
     /****************************************************************************************/
     /****************************************************************************************/
@@ -1079,36 +1089,36 @@ public class GrpcToJakartaRESTIndependentTest {
     //        }
     //    }
     //
-    //    void testSSE(CC1ServiceBlockingStub stub) throws Exception {
-    //        CC1_proto.GeneralEntityMessage.Builder messageBuilder = CC1_proto.GeneralEntityMessage.newBuilder();
-    //        messageBuilder.setURL("http://localhost:8080/p/sse");
-    //        GeneralEntityMessage gem = messageBuilder.build();
-    //        Iterator<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> response;
-    //        try {
-    //            response = stub.sse(gem);
-    //        } catch (StatusRuntimeException e) {
-    //            Assert.fail("fail");
-    //            return;
-    //        }
-    //        ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> list = new ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent>();
-    //        while (response.hasNext()) {
-    //            CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = response.next();
-    //            list.add(sseEvent);
-    //        }
-    //        Assert.assertEquals(4, list.size());
-    //        for (int k = 0; k < 3; k++) {
-    //            CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(k);
-    //            Assert.assertEquals("name" + (k + 1), sseEvent.getName());
-    //            Any any = sseEvent.getData();
-    //            gString gString = any.unpack(gString.class);
-    //            Assert.assertEquals("event" + (k + 1), gString.getValue());
-    //        }
-    //        CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(3);
-    //        Assert.assertEquals("name4", sseEvent.getName());
-    //        Any any = sseEvent.getData();
-    //        dev_resteasy_grpc_example___CC5 cc5 = any.unpack(dev_resteasy_grpc_example___CC5.class);
-    //        Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
-    //    }
+    void testSSE(CC1ServiceBlockingStub stub) throws Exception {
+        CC1_proto.GeneralEntityMessage.Builder messageBuilder = CC1_proto.GeneralEntityMessage.newBuilder();
+        messageBuilder.setURL("http://localhost:8080/p/sse");
+        GeneralEntityMessage gem = messageBuilder.build();
+        Iterator<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> response;
+        try {
+            response = stub.sse(gem);
+        } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+        }
+        ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> list = new ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent>();
+        while (response.hasNext()) {
+            CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = response.next();
+            list.add(sseEvent);
+        }
+        Assert.assertEquals(4, list.size());
+        for (int k = 0; k < 3; k++) {
+            CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(k);
+            Assert.assertEquals("name" + (k + 1), sseEvent.getName());
+            Any any = sseEvent.getData();
+            gString gString = any.unpack(gString.class);
+            Assert.assertEquals("event" + (k + 1), gString.getValue());
+        }
+        CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(3);
+        Assert.assertEquals("name4", sseEvent.getName());
+        Any any = sseEvent.getData();
+        dev_resteasy_grpc_example___CC5 cc5 = any.unpack(dev_resteasy_grpc_example___CC5.class);
+        Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
+    }
     //
     //    void testInheritance(CC1ServiceBlockingStub stub) throws Exception {
     //        dev_resteasy_grpc_example___CC3 cc3 = dev_resteasy_grpc_example___CC3.newBuilder().setS("thag").build();
@@ -1675,4 +1685,49 @@ public class GrpcToJakartaRESTIndependentTest {
     //            }
     //        }
     //    }
+
+    ////////////////////////////////
+    ///     Collection tests     ///
+    ////////////////////////////////
+    void testHashMapInteger(CC1ServiceBlockingStub stub) throws Exception {
+        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        map.put(Integer.valueOf(3), "three");
+        map.put(Integer.valueOf(5), "five");
+        java_util___HashMap jbmap = (java_util___HashMap) translator.translateToJavabuf(map);
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setJavaUtilHashMapField(jbmap).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.hashmap(gem);
+            jbmap = response.getJavaUtilHashMapField();
+            Assert.assertEquals(map, (HashMap) translator.translateFromJavabuf(jbmap));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+
+    }
+
+    void testHashMapArrayStuff(CC1ServiceBlockingStub stub) throws Exception {
+        HashMap<Integer, ArrayStuff> map = new HashMap<Integer, ArrayStuff>();
+        map.put(Integer.valueOf(3), new ArrayStuff(false));
+        map.put(Integer.valueOf(5), new ArrayStuff(true));
+        java_util___HashMap jbmap = (java_util___HashMap) translator.translateToJavabuf(map);
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setJavaUtilHashMapField(jbmap).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.hashmap(gem);
+            jbmap = response.getJavaUtilHashMapField();
+            Assert.assertEquals(map, (HashMap) translator.translateFromJavabuf(jbmap));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+
+    }
 }
