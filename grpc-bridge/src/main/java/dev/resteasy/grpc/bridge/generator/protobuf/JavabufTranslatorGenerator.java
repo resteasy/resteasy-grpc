@@ -550,6 +550,8 @@ public class JavabufTranslatorGenerator {
                 .append("                              }" + LS)
                 .append("                           }" + LS)
                 .append("                        } else {" + LS)
+                .append("                           messageBuilder.addRepeatedField(fd, ELEMENT_WRAPPER.newBuilder().setPosition(Array.getLength(array)).build());"
+                        + LS)
                 .append("                           for (int i = 0; i < Array.getLength(array); i++) {" + LS)
                 .append("                              if (Array.get(array, i) != null) {" + LS)
                 //                                        messageBuilder.addRepeatedField(fd, wrapArrayElement(translator.translateToJavabuf(Array.get(array, i)), i));
@@ -759,19 +761,52 @@ public class JavabufTranslatorGenerator {
                 .append("                              }" + LS)
                 .append("                           }" + LS)
                 .append("                        } else {" + LS)
-                .append("                           if (field.get(object) == null) {" + LS)
-                .append("                              Utility.setField(field, object, Array.newInstance(field.getType().getComponentType(), list.size()), INSTANCE);"
+                .append("                           if (fd.getMessageType().getName().endsWith(\"ELEMENT_WRAPPER\")) {" + LS)
+                .append("                              if (field.get(object) == null) {" + LS)
+                .append("                                  int size = (int) ((ELEMENT_WRAPPER) list.get(0)).getPosition();"
                         + LS)
-                .append("                            }" + LS)
-                .append("                            if (fd.getMessageType().getName().endsWith(\"ELEMENT_WRAPPER\")) {" + LS)
-                .append("                                for (int i = 0; i < list.size(); i++) {" + LS)
-                .append("                                   int position = (int) ((ELEMENT_WRAPPER) list.get(i)).getPosition();"
+                .append("                                  Utility.setField(field, object, Array.newInstance(field.getType().getComponentType(), size), INSTANCE);"
                         + LS)
-                .append("                                    Message element = unwrapArrayElement((ELEMENT_WRAPPER) list.get(i));"
+                .append("                              }" + LS)
+                .append("                              for (int i = 1; i < list.size(); i++) {" + LS)
+                .append("                                 int position = (int) ((ELEMENT_WRAPPER) list.get(i)).getPosition();"
                         + LS)
-                .append("                                    Array.set(field.get(object), position, translator.translateFromJavabuf(element));"
+                .append("                                 Message element = unwrapArrayElement((ELEMENT_WRAPPER) list.get(i));"
                         + LS)
-                .append("                                }" + LS)
+                .append("                                 Array.set(field.get(object), position, translator.translateFromJavabuf(element));"
+                        + LS)
+                .append("                              }" + LS)
+
+                /*
+                 * if (fd.getMessageType().getName().endsWith("ELEMENT_WRAPPER")) {
+                 * if (field.get(object) == null) {
+                 * int size = (int) ((ELEMENT_WRAPPER) list.get(0)).getPosition();
+                 * Utility.setField(field, object, Array.newInstance(field.getType().getComponentType(), size), INSTANCE);
+                 * }
+                 * if (field.get(object) == null) {
+                 * Utility.setField(field, object, Array.newInstance(field.getType().getComponentType(), list.size()),
+                 * INSTANCE);
+                 * }
+                 * for (int i = 1; i < list.size(); i++) {
+                 * int position = (int) ((ELEMENT_WRAPPER) list.get(i)).getPosition();
+                 * Message element = unwrapArrayElement((ELEMENT_WRAPPER) list.get(i));
+                 * Array.set(field.get(object), position, translator.translateFromJavabuf(element));
+                 * }
+                 *
+                 */
+                //                .append("                           if (field.get(object) == null) {" + LS)
+                //                .append("                              Utility.setField(field, object, Array.newInstance(field.getType().getComponentType(), list.size()), INSTANCE);"
+                //                        + LS)
+                //                .append("                            }" + LS)
+                //                .append("                            if (fd.getMessageType().getName().endsWith(\"ELEMENT_WRAPPER\")) {" + LS)
+                //                .append("                                for (int i = 0; i < list.size(); i++) {" + LS)
+                //                .append("                                   int position = (int) ((ELEMENT_WRAPPER) list.get(i)).getPosition();"
+                //                        + LS)
+                //                .append("                                    Message element = unwrapArrayElement((ELEMENT_WRAPPER) list.get(i));"
+                //                        + LS)
+                //                .append("                                    Array.set(field.get(object), position, translator.translateFromJavabuf(element));"
+                //                        + LS)
+                //                .append("                                }" + LS)
                 /*
                  * if (fd.getMessageType().getName().endsWith("ELEMENT_WRAPPER")) {
                  * for (int i = 0; i < list.size(); i++) {
