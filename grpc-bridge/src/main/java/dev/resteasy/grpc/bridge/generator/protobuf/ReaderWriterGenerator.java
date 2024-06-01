@@ -115,6 +115,7 @@ public class ReaderWriterGenerator {
                 .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import org.jboss.resteasy.core.ResteasyContext;" + LS);
         for (Class<?> clazz : wrapperClass.getClasses()) {
+            System.out.println("readerWriter: clazz simple name: " + clazz.getSimpleName());
             if (clazz.isInterface() || internalClasses.contains(clazz.getSimpleName())) {
                 continue;
             }
@@ -130,11 +131,16 @@ public class ReaderWriterGenerator {
                     || "gCookie".equals(clazz.getSimpleName())
                     || "gHeader".equals(clazz.getSimpleName())
                     || "FormMap".equals(clazz.getSimpleName())
-                    || "FormValues".equals(clazz.getSimpleName())) {
+                    || "FormValues".equals(clazz.getSimpleName())
+                    || "dev_resteasy_grpc_arrays___ArrayHolder".equals(clazz.getSimpleName())
+                    || "dev_resteasy_grpc_arrays___ArrayHolder___WArray".equals(clazz.getSimpleName())
+                    || clazz.getSimpleName().endsWith("_Array")
+                    || clazz.getSimpleName().endsWith("_wrapper")) {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
             } else if (clazz.getName().contains("_HIDDEN_") || clazz.getName().endsWith("ELEMENT_WRAPPER")) {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
             } else {
+                System.out.println("imports(): clazz: " + clazz.getName());
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
                 sb.append("import ").append(originalClassName(clazz.getName())).append(";" + LS);
             }
@@ -186,7 +192,7 @@ public class ReaderWriterGenerator {
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (type.isArray()) {" + LS)
                 .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
-                .append("            return ArrayUtility.getArray(translator, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message);"
+                .append("            return ArrayUtility.getArray(translator, (dev_resteasy_grpc_arrays___ArrayHolder) message);"
                         + LS)
                 .append("         } else {" + LS)
                 .append("            GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
@@ -285,7 +291,7 @@ public class ReaderWriterGenerator {
             }
         }
         sb.append("else if (clazz.isArray()) {" + LS)
-                .append("         return Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.parseFrom(is);" + LS)
+                .append("         return dev_resteasy_grpc_arrays___ArrayHolder.parseFrom(is);" + LS)
                 .append("      } ");
         if (subclasses.length > 0) {
             sb.append("else {" + LS)

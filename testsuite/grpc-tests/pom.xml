@@ -130,6 +130,7 @@
         <dependency>
             <groupId>dev.resteasy.grpc</groupId>
             <artifactId>grpc-bridge-runtime</artifactId>
+            <version>1.0.0.Alpha6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -342,7 +343,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -388,6 +388,7 @@
                             <arguments>
                                 <argument>${project.basedir}/target/generated-sources/protobuf/java</argument>
                                 <argument>dev.resteasy.grpc.example.${root.class}</argument>
+                                <argument>${root.class}</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>
@@ -457,6 +458,7 @@
                     <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.54.1:exe:${os.detected.classifier}</pluginArtifact>
                     <protoSourceRoot>src/main/proto</protoSourceRoot>
                     <clearOutputDirectory>true</clearOutputDirectory>
+                    <!--includes>${project.basedir}/src/main/proto/**/*</includes-->
                 </configuration>
                 <executions>
                     <execution>
@@ -466,6 +468,25 @@
                             <goal>compile</goal>
                             <goal>compile-custom</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+           <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-file</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.basedir}/src/main/resources/ArrayUtility</sourceFile>
+                            <!--destinationFile>${project.basedir}/src/main/java/dev/resteasy/grpc/arrays/ArrayUtility.java</destinationFile-->
+                            <destinationFile>${project.basedir}/target/generated-sources/protobuf/java/dev/resteasy/grpc/arrays/ArrayUtility.java</destinationFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

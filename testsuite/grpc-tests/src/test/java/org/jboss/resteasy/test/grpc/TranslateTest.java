@@ -4,142 +4,186 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.Message;
 
 import dev.resteasy.grpc.arrays.ArrayUtility;
+//import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___Integer;
+//import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___String;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
+import dev.resteasy.grpc.example.ArrayStuff;
 import dev.resteasy.grpc.example.CC1JavabufTranslator;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays___ArrayHolder;
 import dev.resteasy.grpc.example.CC2;
 
-public class ArrayTest {
+public class TranslateTest {
 
     private JavabufTranslator translator = new CC1JavabufTranslator();
 
     //@Test
+    public void testCC2() {
+        CC2 cc2 = new CC2("ab", 3);
+        Message m = translator.translateToJavabuf(cc2);
+        Object o = translator.translateFromJavabuf(m);
+        Assert.assertEquals(cc2, o);
+    }
+    //
+    //    @Test
+    //    public void testCC4() {
+    //        CC4 cc4 = new CC4("ab", 3);
+    //        Message m = translator.translateToJavabuf(cc4);
+    //        Object o = translator.translateFromJavabuf(m);
+    //        Assert.assertEquals(cc4, o);
+    //    }
+
+    @Test
+    public void testArrayStuff() {
+        ArrayStuff as = new ArrayStuff(true);
+        Message m = translator.translateToJavabuf(as);
+        Object o = translator.translateFromJavabuf(m);
+        Assert.assertEquals(as, o);
+    }
+
+    //@Test
     public void single_boolean_empty() throws Exception {
         boolean[] bs = new boolean[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((boolean[]) array, bs);
     }
 
     //@Test
     public void single_boolean() throws Exception {
         boolean[] bs = new boolean[] { false, true };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((boolean[]) array, bs);
     }
 
     //@Test
     public void single_Boolean_empty() throws Exception {
         Boolean[] Bs = new Boolean[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, Bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(Bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Boolean[]) array, Bs);
     }
 
     //@Test
     public void single_Boolean() throws Exception {
         Boolean[] Bs = new Boolean[] { Boolean.valueOf(true), null, Boolean.valueOf(false) };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, Bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(Bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Boolean[]) array, Bs);
     }
 
     //@Test
     public void single_byte_empty() throws Exception {
         byte[] bs = new byte[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((byte[]) array, bs);
     }
 
     //@Test
     public void single_byte() throws Exception {
         byte[] bs = new byte[] { (byte) 3, (byte) 5 };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((byte[]) array, bs);
     }
 
     //@Test
     public void single_Byte_empty() throws Exception {
         Byte[] bs = new Byte[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Byte[]) array, bs);
     }
 
     //@Test
     public void single_Byte() throws Exception {
         Byte[] bs = new Byte[] { Byte.valueOf((byte) 7), null, Byte.valueOf((byte) 11) };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, bs);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(bs);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Byte[]) array, bs);
     }
 
     //@Test
     public void single_short_empty() throws Exception {
         short[] ss = new short[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ss);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ss);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((short[]) array, ss);
     }
 
     //@Test
     public void single_short() throws Exception {
         short[] ss = new short[] { (short) 13, (short) 17 };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ss);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ss);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((short[]) array, ss);
     }
 
     //@Test
     public void single_Short_empty() throws Exception {
         Short[] ss = new Short[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ss);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ss);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Short[]) array, ss);
     }
 
     //@Test
     public void single_Short() throws Exception {
         Short[] ss = new Short[] { Short.valueOf((short) 19), null, Short.valueOf((short) 23) };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ss);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ss);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Short[]) array, ss);
     }
 
     //@Test
     public void single_int_empty() throws Exception {
         int[] is = new int[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, is);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(is);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((int[]) array, is);
     }
 
     //@Test
     public void single_int() throws Exception {
         int[] is = new int[] { 29, 31 };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, is);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(is);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((int[]) array, is);
     }
 
     //@Test
     public void single_Integer_empty() throws Exception {
         Integer[] is = new Integer[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, is);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(is);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Integer[]) array, is);
     }
 
     //@Test
     public void single_Integer() throws Exception {
         Integer[] is = new Integer[] { Integer.valueOf(37), null, Integer.valueOf(39) };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, is);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(is);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Integer[]) array, is);
     }
 
@@ -147,31 +191,34 @@ public class ArrayTest {
     public void single_long_empty() throws Exception {
         long[] ls = new long[] {};
         dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ls);
-        Object array = ArrayUtility.getArray(translator, holder);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((long[]) array, ls);
     }
 
     //@Test
     public void single_long() throws Exception {
         long[] ls = new long[] { 41, 47 };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ls);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ls);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((long[]) array, ls);
     }
 
     //@Test
     public void single_Long_empty() throws Exception {
         Long[] ls = new Long[] {};
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ls);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ls);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Long[]) array, ls);
     }
 
-    @Test
+    //@Test
     public void single_Long() throws Exception {
         Long[] ls = new Long[] { Long.valueOf(49), null, Long.valueOf(53) };
-        dev_resteasy_grpc_arrays___ArrayHolder holder = ArrayUtility.getHolder(translator, ls);
-        Object array = ArrayUtility.getArray(translator, holder);
+        dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
+                .translateToJavabuf(ls);
+        Object array = translator.translateFromJavabuf(holder);
         Assert.assertArrayEquals((Long[]) array, ls);
     }
 
@@ -608,12 +655,12 @@ public class ArrayTest {
         Assert.assertArrayEquals(ass, (Any[][]) array);
     }
 
-    //    //@Teset
+    //@Teset
     //    public void multiTest_Any() throws Exception {
     //        Any[][] ass = new Any[3][3];
-    //        dev_resteasy_grpc_arrays___Integer___Array.Builder ibuilder = dev_resteasy_grpc_arrays___Integer___Array.newBuilder();
+    //        dev_resteasy_grpc_arrays___intArray.Builder ibuilder = dev_resteasy_grpc_arrays___intArray.newBuilder();
     //        dev_resteasy_grpc_arrays___String.Builder sBuilder = dev_resteasy_grpc_arrays___String.newBuilder();
-    //        dev_resteasy_grpc_arrays___String___WArray.Builder swaBuilder = dev_resteasy_grpc_arrays___String___WArray.newBuilder();
+    //        dev_resteasy_grpc_arrays___StringWArray.Builder swaBuilder = dev_resteasy_grpc_arrays___StringWArray.newBuilder();
     //        ass[0][0] = Any.pack(ibuilder.addIntField(111).build());
     //        ass[0][1] = null;
     //        ass[0][2] = Any.pack(swaBuilder.addStringField(sBuilder.setStringField("aaa").build()).build());

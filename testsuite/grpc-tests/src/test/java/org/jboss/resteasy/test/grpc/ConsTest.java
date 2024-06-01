@@ -1,10 +1,19 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,12 +31,164 @@ import dev.resteasy.grpc.example.CC1;
 import dev.resteasy.grpc.example.CC1JavabufTranslator;
 import dev.resteasy.grpc.example.CC1_proto;
 import dev.resteasy.grpc.example.CC1_proto.java_util___HashMap;
+//import dev.resteasy.grpc.example.CC1_proto.java_util___HashMap;
 import dev.resteasy.grpc.example.CC2;
 
 public class ConsTest {
 
+    static Instrumentation inst;
+
+    public static void premain(String agentArgs, Instrumentation inst) {
+        ConsTest.inst = inst;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(inst.getObjectSize(inst));
+    }
+
+    //    static String squashToCamel(String name) {
+    //        StringBuilder sb = new StringBuilder();
+    //        int from = 0;
+    //        int to = name.indexOf("_");
+    //        while (to >= 0) {
+    //            sb.append(name.substring(from, from + 1).toUpperCase())
+    //                    .append(name.substring(from + 1, to));
+    //            from = to + 1;
+    //            to = name.indexOf("_", from);
+    //        }
+    //        return sb.append(name.substring(from)).toString();
+    //    }
+
+    static String squashToCamel(String name) {
+        StringBuilder sb = new StringBuilder();
+        int from = 0;
+        int to = name.indexOf("_");
+        while (to >= 0) {
+            sb.append(name.substring(from, from + 1).toUpperCase());
+            if (from < to) {
+                sb.append(name.substring(from + 1, to));
+            }
+            from = to + 1;
+            to = name.indexOf("_", from);
+        }
+        System.out.println("squash: " + sb.toString() + name.substring(from));
+        return sb.append(name.substring(from)).toString();
+    }
+
+    static String sq(String name) {
+        StringBuilder sb = new StringBuilder();
+        boolean start = true;
+        for (int i = 0; i < name.length(); i++) {
+            if (name.charAt(i) == '_') {
+                start = true;
+                continue;
+            }
+            sb.append(start ? name.substring(i, i + 1).toUpperCase() : name.substring(i, i + 1));
+            start = false;
+        }
+        return sb.toString();
+    }
+
     @Test
-    //    @Ignore
+    public void testSquash() {
+        String s = sq("dev_resteasy_grpc_arrays___ArrayHolder_Array");
+        System.out.println(s);
+    }
+
+    //    @Test
+    public void testClassloader() throws IOException {
+        java.net.URL url = Thread.currentThread().getContextClassLoader().getResource("dev/resteasy/grpc/arrays/arrays2.proto");
+        //      java.net.URL url = Thread.currentThread().getContextClassLoader().getResource(System.getProperty("user.dir") + "/dev/resteasy/grpc/arrays/arrays.proto");
+        System.out.println("URL: " + url);
+        System.out.println(System.getProperty("user.dir"));
+        Files.createDirectories(Paths.get(System.getProperty("user.dir") + "/a/b/c"));
+        File testFile = new File("testFile");
+        testFile.createNewFile(); // if file already exists will do nothing
+        FileOutputStream oFile = new FileOutputStream(testFile, false);
+    }
+
+    @Test
+    @Ignore
+    public void testStringFormat() {
+        String LS = System.lineSeparator();
+        String s = "message dev_resteasy_grpc_arrays___%1$S {" + LS
+                + "oneof type {" + LS
+                + "   dev_resteasy_grpc_arrays___NONE _field = 1;" + LS
+                + "   %1$S %1$S_field = 2;" + LS
+                + "   }" + LS
+                + "}" + LS
+                + LS
+                + "message dev_resteasy_grpc_arrays___%1$SWArray {" + LS
+                + "   repeated dev_resteasy_grpc_arrays___%1$S %1$S_field = 1;" + LS
+                + "}";
+        System.out.printf(String.format(s, "AAA"));
+    }
+
+    @Test
+    @Ignore
+    public void testSize() {
+        System.out.println(inst.getObjectSize(inst));
+    }
+
+    @Test
+    @Ignore
+    public void testProto() {
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            Path pathIn = Paths.get(System.getProperty("user.dir") + "/src/main/proto/arrays.proto.in");
+            Path pathOut = Paths
+                    .get(System.getProperty("user.dir") + "/src/main/proto/dev/resteasy/grpc/arrays/tmp/arrays.proto.out");
+            System.out.println(System.getProperty("user.dir"));
+            //          File protoFileIn = new File(System.getProperty("user.dir") + "/src/main/proto/arrays.proto.in");
+            File protoFileIn = pathIn.toFile();
+            if (!protoFileIn.exists()) {
+                throw new RuntimeException("Can't find arrays.proto.in");
+            }
+            Files.createDirectories(pathOut);
+            //          File protoFile = new File(System.getProperty("user.dir") + "/src/main/proto/arrays.proto");
+            File protoFile = pathOut.toFile();
+            //          protoFile.createNewFile();
+            //          fis = new FileInputStream(protoFileIn);
+
+            Files.copy(pathIn, pathOut, StandardCopyOption.REPLACE_EXISTING);
+            fos = new FileOutputStream(protoFile, true);
+            System.out.println(fos);
+            fos.write(111);
+            fos.write(112);
+            fos.write(113);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                fos.close();
+                //             fis.close();
+            } catch (Exception e1) {
+                throw new RuntimeException(e1);
+            }
+        }
+    }
+
+    @Test
+    @Ignore
+    public void fileTest() throws Exception {
+        File proto = new File(System.getProperty("user.dir") + "/src/main/proto/arrays.proto");
+        System.out.println(proto.getAbsolutePath());
+        System.out.println(proto.exists());
+        proto.createNewFile();
+        FileInputStream fis = new FileInputStream(proto);
+        int i = fis.read();
+        System.out.println(i);
+        System.out.println(fis.available());
+        FileOutputStream fos = new FileOutputStream(proto, true);
+        fos.write(111);
+        fos.close();
+        System.out.println(fis.available());
+    }
+
+    @Test
+    @Ignore
     public void testHashMap() {
         HashMap<Integer, String> map = new HashMap<Integer, String>();
         map.put(Integer.valueOf(3), "three");

@@ -1,6 +1,7 @@
 syntax = "proto3";
 package dev.resteasy.grpc.arrays;
 import "google/protobuf/any.proto";
+//import "dev/resteasy/grpc/primitives/primitives.proto";
 option java_package = "dev.resteasy.grpc.arrays";
 option java_outer_classname = "Array_proto";
 
@@ -143,10 +144,6 @@ message dev_resteasy_grpc_arrays___String {
       dev_resteasy_grpc_arrays___NONE none_field = 1;
       string String_field = 2;
    }
-}
-
-message dev_resteasy_grpc_arrays___stringArray {
-   repeated string string_field = 1;
 }
 
 message dev_resteasy_grpc_arrays___StringWArray {

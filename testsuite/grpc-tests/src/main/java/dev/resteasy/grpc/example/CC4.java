@@ -8,4 +8,12 @@ public class CC4 {
         this.s = s;
         this.cc5 = cc5;
     }
+
+    public boolean equals(Object o) {
+        if (!CC4.class.equals(o.getClass())) {
+            return false;
+        }
+        CC4 cc4 = (CC4) o;
+        return s.equals(cc4.s) && cc5.k == cc4.cc5.k;
+    }
 }

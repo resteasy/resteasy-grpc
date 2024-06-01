@@ -1,0 +1,611 @@
+syntax = "proto3";
+package dev.resteasy.grpc.example;
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "dev/resteasy/grpc/arrays/arrays.proto";
+import "dev/resteasy/grpc/primitives/primitives.proto";
+option java_package = "dev.resteasy.grpc.example";
+option java_outer_classname = "CC1_proto";
+
+service CC1Service {
+// q/found gEmpty gString GET sync
+  rpc found (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/list java_util___ArrayList google.protobuf.Any GET sync
+  rpc list (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/set java_util___HashSet google.protobuf.Any GET sync
+  rpc set (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/ready gEmpty gString GET sync
+  rpc ready (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/boolean gBoolean gBoolean POST sync
+  rpc getBoolean (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Boolean gBoolean gBoolean POST sync
+  rpc getBooleanWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/byte gByte gByte POST sync
+  rpc getByte (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Byte gByte gByte POST sync
+  rpc getByteWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/short gShort gShort POST sync
+  rpc getShort (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Short gShort gShort POST sync
+  rpc getShortWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/int gInteger gInteger POST sync
+  rpc getInt (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Integer gInteger gInteger POST sync
+  rpc getInteger (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/long gLong gLong POST sync
+  rpc getLong (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Long gLong gLong POST sync
+  rpc getLongWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/float gFloat gFloat POST sync
+  rpc getFloat (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Float gFloat gFloat POST sync
+  rpc getFloatWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/double gDouble gDouble POST sync
+  rpc getDouble (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Double gDouble gDouble POST sync
+  rpc getDoubleWrapper (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/char gCharacter gCharacter POST sync
+  rpc getChar (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/Character gCharacter gCharacter POST sync
+  rpc getCharacter (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/string gString gString POST sync
+  rpc getString (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/constructor gEmpty dev_resteasy_grpc_example___CC9 GET sync
+  rpc constructor (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/response gEmpty google.protobuf.Any GET sync
+  rpc getResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/async/cs gEmpty gString GET completionStage
+  rpc getResponseCompletionStage (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/cc7 gEmpty dev_resteasy_grpc_example___CC7 GET sync
+  rpc getCC7 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/produces gEmpty gString GET sync
+  rpc produces (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/consumes gEmpty gString GET sync
+  rpc consumes (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/path/{p1}/param/{p2} gEmpty gString GET sync
+  rpc pathParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/query gEmpty gString GET sync
+  rpc queryParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/matrix/more gEmpty gString GET sync
+  rpc matrixParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/cookieParams gEmpty gString GET sync
+  rpc cookieParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/headerParams gEmpty gString GET sync
+  rpc headerParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/params/{p1}/list/{p1} gEmpty gString GET sync
+  rpc paramsList (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/params/{p1}/set/{p1} gEmpty gString GET sync
+  rpc paramsSet (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/params/{p1}/sortedset/{p1} gEmpty gString GET sync
+  rpc paramsSortedSet (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/suspend gEmpty google.protobuf.Any GET suspended
+  rpc suspend (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/contextPath gEmpty gString GET sync
+  rpc contextPath (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/inheritance dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2 POST sync
+  rpc inheritance (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/reference dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4 POST sync
+  rpc referenceField (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m3 dev_resteasy_grpc_example___CC4 gString POST sync
+  rpc m3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m4 gInteger gBoolean POST sync
+  rpc m4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m5 gEmpty gString GET sync
+  rpc m5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/m7 gInteger dev_resteasy_grpc_example___CC6 POST sync
+  rpc m7 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletInfo gEmpty gString POST sync
+  rpc testServletInfo (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/server/cookies gEmpty gString GET sync
+  rpc serverCookies (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/server/headers gEmpty gString GET sync
+  rpc serverHeaders (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletPath gEmpty gString GET sync
+  rpc servletPath (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletParams gString gString POST sync
+  rpc servletParams (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/jaxrsResponse gEmpty google.protobuf.Any GET sync
+  rpc jaxrsResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletResponse gEmpty google.protobuf.Any GET sync
+  rpc servletResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/inner gEmpty dev_resteasy_grpc_example_CC1_INNER_InnerClass GET sync
+  rpc inner (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/ gEmpty gString GET sync
+  rpc notSubresourceGet (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/ gEmpty gString POST sync
+  rpc notSubresourcePost (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/locator google.protobuf.Any google.protobuf.Any LOCATOR sync
+  rpc locator (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletContext gEmpty gString GET sync
+  rpc servletContext (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/servletConfig gEmpty gString GET sync
+  rpc servletConfig (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/sse gEmpty dev_resteasy_grpc_bridge_runtime_sse___SseEvent GET sse
+  rpc sse (GeneralEntityMessage) returns (stream dev_resteasy_grpc_bridge_runtime_sse___SseEvent);
+// p/copy gString gString GET sync
+  rpc copy (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/interface/impl dev_resteasy_grpc_example___IntfImpl google.protobuf.Any GET sync
+  rpc intfImpl (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/interface/entity google.protobuf.Any gString GET sync
+  rpc intfEntity (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/interface/return gEmpty google.protobuf.Any GET sync
+  rpc intfReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/int/1 dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
+  rpc arraysInt1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/int/2 dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
+  rpc arraysInt2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/int/5 dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
+  rpc arraysInt5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/stuff dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff GET sync
+  rpc arrayStuff (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/stuff/array dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
+  rpc arrayStuffArray (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/list/arraylist java_util___ArrayList java_util___ArrayList GET sync
+  rpc listArray (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/set/hashset java_util___HashSet java_util___HashSet GET sync
+  rpc hashset (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/map/hashmap java_util___HashMap java_util___HashMap GET sync
+  rpc hashmap (GeneralEntityMessage) returns (GeneralReturnMessage);
+}
+
+message dev_resteasy_grpc_example___CC3 {
+  string s = 1;
+}
+
+message dev_resteasy_grpc_example___CC5 {
+  int32 k = 1;
+}
+
+message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {
+  string comment = 2;
+  string id = 3;
+  string name = 4;
+  google.protobuf.Any data = 5;
+  int64 reconnectDelay = 6;
+}
+
+message dev_resteasy_grpc_example___CC7 {
+  string s = 1;
+  int32 m = 2;
+}
+
+message java_util___ArrayList {
+  int32 modCount = 1;
+  int64 serialVersionUID = 2;
+  int32 DEFAULT_CAPACITY = 3;
+  dev_resteasy_grpc_arrays___ArrayHolder EMPTY_ELEMENTDATA = 4;
+  dev_resteasy_grpc_arrays___ArrayHolder DEFAULTCAPACITY_EMPTY_ELEMENTDATA = 5;
+  dev_resteasy_grpc_arrays___ArrayHolder elementData = 6;
+  int32 size = 7;
+}
+
+message dev_resteasy_grpc_example___CC6 {
+  int32 l = 1;
+  dev_resteasy_grpc_example___CC7 cc7 = 2;
+}
+
+message dev_resteasy_grpc_example___CC2 {
+  string s = 1;
+  int32 j = 2;
+}
+
+message java_util_ArrayList_HIDDEN_ListItr {
+  int32 cursor = 1;
+  int32 lastRet = 2;
+  int32 expectedModCount = 3;
+}
+
+message java_util_AbstractList_HIDDEN_SubList {
+  int32 modCount = 1;
+  google.protobuf.Any root = 2;
+  java_util_AbstractList_HIDDEN_SubList parent = 3;
+  int32 offset = 4;
+  int32 size = 5;
+}
+
+message java_util_ArrayList_HIDDEN_Itr {
+  int32 cursor = 1;
+  int32 lastRet = 2;
+  int32 expectedModCount = 3;
+}
+
+message java_util___HashSet {
+  int64 serialVersionUID = 1;
+  java_util___HashMap map = 2;
+  java_lang___Object PRESENT = 3;
+}
+
+message java_util_AbstractList_HIDDEN_RandomAccessSpliterator {
+  google.protobuf.Any list = 1;
+  int32 index = 2;
+  int32 fence = 3;
+  google.protobuf.Any alist = 4;
+  int32 expectedModCount = 5;
+}
+
+message java_util_AbstractList_HIDDEN_Itr {
+  int32 cursor = 1;
+  int32 lastRet = 2;
+  int32 expectedModCount = 3;
+}
+
+message java_lang___Object {
+}
+
+message java_util___HashMap {
+  google.protobuf.Any keySet = 1;
+  google.protobuf.Any values = 2;
+  int64 serialVersionUID = 3;
+  int32 DEFAULT_INITIAL_CAPACITY = 4;
+  int32 MAXIMUM_CAPACITY = 5;
+  float DEFAULT_LOAD_FACTOR = 6;
+  int32 TREEIFY_THRESHOLD = 7;
+  int32 UNTREEIFY_THRESHOLD = 8;
+  int32 MIN_TREEIFY_CAPACITY = 9;
+  dev_resteasy_grpc_arrays___ArrayHolder table = 10;
+  google.protobuf.Any entrySet = 11;
+  int32 size = 12;
+  int32 modCount = 13;
+  int32 threshold = 14;
+  float loadFactor = 15;
+}
+
+message java_util_ArrayList_HIDDEN_SubList {
+  int32 modCount = 1;
+  java_util___ArrayList root = 2;
+  java_util_ArrayList_HIDDEN_SubList parent = 3;
+  int32 offset = 4;
+  int32 size = 5;
+}
+
+message java_util_HashMap_HIDDEN_Values {
+}
+
+message java_util_HashMap_HIDDEN_KeyIterator {
+  java_util_HashMap_HIDDEN_Node next = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 expectedModCount = 3;
+  int32 index = 4;
+}
+
+message dev_resteasy_grpc_example___CC4 {
+  string s = 1;
+  dev_resteasy_grpc_example___CC5 cc5 = 2;
+}
+
+message dev_resteasy_grpc_example___ArrayStuff {
+  dev_resteasy_grpc_arrays___ArrayHolder boss = 1;
+}
+
+message dev_resteasy_grpc_example_CC1_INNER_InnerClass {
+  int32 i = 1;
+  string s = 2;
+}
+
+message dev_resteasy_grpc_example_CC3_INNER_CC3_Sub {
+  string s = 1;
+}
+
+message java_util_HashMap_HIDDEN_ValueSpliterator {
+  java_util___HashMap map = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 index = 3;
+  int32 fence = 4;
+  int32 est = 5;
+  int32 expectedModCount = 6;
+}
+
+message dev_resteasy_grpc_example___IntfImpl {
+  string s = 1;
+}
+
+message java_util_HashMap_HIDDEN_KeySpliterator {
+  java_util___HashMap map = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 index = 3;
+  int32 fence = 4;
+  int32 est = 5;
+  int32 expectedModCount = 6;
+}
+
+message dev_resteasy_grpc_example___CC9 {
+  bool bo = 1;
+  int32 by = 2;
+  int32 s = 3;
+  int32 i = 4;
+  int64 l = 5;
+  float f = 6;
+  double d = 7;
+  string c = 8;
+  dev_resteasy_grpc_example___CC3 cc3 = 9;
+  bool bb = 10;
+  int32 ss = 11;
+  int32 ii = 12;
+}
+
+message java_util_AbstractMap_HIDDEN_ViewCollection {
+}
+
+message java_util_AbstractMap_INNER_SimpleImmutableEntry {
+  int64 serialVersionUID = 1;
+  google.protobuf.Any key = 2;
+  google.protobuf.Any value = 3;
+}
+
+message java_util_AbstractList_HIDDEN_RandomAccessSubList {
+  int32 modCount = 1;
+  google.protobuf.Any root = 2;
+  java_util_AbstractList_HIDDEN_SubList parent = 3;
+  int32 offset = 4;
+  int32 size = 5;
+}
+
+message java_util_HashMap_HIDDEN_HashIterator {
+  java_util_HashMap_HIDDEN_Node next = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 expectedModCount = 3;
+  int32 index = 4;
+}
+
+message java_util_AbstractMap_INNER_SimpleEntry {
+  int64 serialVersionUID = 1;
+  google.protobuf.Any key = 2;
+  google.protobuf.Any value = 3;
+}
+
+message java_util_AbstractList_HIDDEN_ListItr {
+  int32 cursor = 1;
+  int32 lastRet = 2;
+  int32 expectedModCount = 3;
+}
+
+message java_util_HashMap_HIDDEN_ValueIterator {
+  java_util_HashMap_HIDDEN_Node next = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 expectedModCount = 3;
+  int32 index = 4;
+}
+
+message java_util_HashMap_HIDDEN_Node {
+  int32 hash = 1;
+  google.protobuf.Any key = 2;
+  google.protobuf.Any value = 3;
+  java_util_HashMap_HIDDEN_Node next = 4;
+}
+
+message java_util_HashMap_HIDDEN_TreeNode {
+  int32 hash = 1;
+  google.protobuf.Any key = 2;
+  google.protobuf.Any value = 3;
+  java_util_HashMap_HIDDEN_Node next = 4;
+  java_util_LinkedHashMap_HIDDEN_Entry before = 5;
+  java_util_LinkedHashMap_HIDDEN_Entry after = 6;
+  java_util_HashMap_HIDDEN_TreeNode parent = 7;
+  java_util_HashMap_HIDDEN_TreeNode left = 8;
+  java_util_HashMap_HIDDEN_TreeNode right = 9;
+  java_util_HashMap_HIDDEN_TreeNode prev = 10;
+  bool red = 11;
+}
+
+message java_util_ArrayList_HIDDEN_ArrayListSpliterator {
+  int32 index = 1;
+  int32 fence = 2;
+  int32 expectedModCount = 3;
+}
+
+message java_util_HashMap_HIDDEN_KeySet {
+}
+
+message java_util_HashMap_HIDDEN_EntrySet {
+}
+
+message java_util_HashMap_HIDDEN_EntrySpliterator {
+  java_util___HashMap map = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 index = 3;
+  int32 fence = 4;
+  int32 est = 5;
+  int32 expectedModCount = 6;
+}
+
+message dev_resteasy_grpc_example_ArrayStuff_HIDDEN_Stuff {
+  int32 i = 1;
+}
+
+message java_util_HashMap_HIDDEN_UnsafeHolder {
+}
+
+message java_util_HashMap_HIDDEN_HashMapSpliterator {
+  java_util___HashMap map = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 index = 3;
+  int32 fence = 4;
+  int32 est = 5;
+  int32 expectedModCount = 6;
+}
+
+message java_util_HashMap_HIDDEN_EntryIterator {
+  java_util_HashMap_HIDDEN_Node next = 1;
+  java_util_HashMap_HIDDEN_Node current = 2;
+  int32 expectedModCount = 3;
+  int32 index = 4;
+}
+
+message java_util_LinkedHashMap_HIDDEN_Entry {
+  int32 hash = 1;
+  google.protobuf.Any key = 2;
+  google.protobuf.Any value = 3;
+  java_util_HashMap_HIDDEN_Node next = 4;
+  java_util_LinkedHashMap_HIDDEN_Entry before = 5;
+  java_util_LinkedHashMap_HIDDEN_Entry after = 6;
+}
+
+message gEmpty {}
+message gInteger   {int32  value = 1;}
+message gFloat     {float  value = 1;}
+message gCharacter {string value = 1;}
+message gByte      {int32  value = 1;}
+message gLong      {int64  value = 1;}
+message gString    {string value = 1;}
+message gBoolean   {bool   value = 1;}
+message gDouble    {double value = 1;}
+message gShort     {int32  value = 1;}
+
+message gHeader {
+   repeated string values = 1;
+}
+
+message gCookie {
+   string name = 1;
+   string value = 2;
+   int32  version = 3;
+   string path = 4;
+   string domain = 5;
+}
+
+message gNewCookie {
+   string name = 1;
+   string value = 2;
+   int32  version = 3;
+   string path = 4;
+   string domain = 5;
+   string comment = 6;
+   int32 maxAge = 7;
+   google.protobuf.Timestamp expiry = 8;
+   bool secure = 9;
+   bool httpOnly = 10;
+
+   enum SameSite {
+      NONE   = 0;
+      LAX    = 1;
+      STRICT = 2;
+   }
+
+   SameSite sameSite = 11;
+}
+
+message ServletInfo {
+   string characterEncoding = 1;
+   string clientAddress = 2;
+   string clientHost = 3;
+   int32  clientPort = 4;
+}
+
+message FormValues {
+   repeated string formValues_field = 1;
+}
+
+message FormMap {
+   map<string, FormValues> formMap_field = 1;
+}
+
+message GeneralEntityMessage {
+   ServletInfo servletInfo = 1;
+   string URL = 2;
+   map<string, gHeader> headers = 3;
+   repeated gCookie cookies = 4;
+   string httpMethod = 5;
+   oneof messageType {
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 6;
+      gEmpty gEmpty_field = 7;
+      gByte gByte_field = 8;
+      gString gString_field = 9;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 10;
+      gFloat gFloat_field = 11;
+      gDouble gDouble_field = 12;
+      java_util___HashMap java_util___HashMap_field = 13;
+      gBoolean gBoolean_field = 14;
+      gLong gLong_field = 15;
+      gShort gShort_field = 16;
+      gInteger gInteger_field = 17;
+      java_util___HashSet java_util___HashSet_field = 18;
+      google.protobuf.Any google_protobuf_Any_field = 19;
+      java_util___ArrayList java_util___ArrayList_field = 20;
+      gCharacter gCharacter_field = 21;
+      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 22;
+      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 23;
+      dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder_field = 24;
+      FormMap form_field = 25;
+   }
+}
+
+message GeneralReturnMessage {
+   map<string, gHeader> headers = 1;
+   repeated gNewCookie cookies = 2;
+   gInteger status = 3;
+   oneof messageType {
+      dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 4;
+      gString gString_field = 5;
+      gByte gByte_field = 6;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 7;
+      gEmpty gEmpty_field = 8;
+      gFloat gFloat_field = 9;
+      gDouble gDouble_field = 10;
+      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 11;
+      java_util___HashMap java_util___HashMap_field = 12;
+      gBoolean gBoolean_field = 13;
+      gLong gLong_field = 14;
+      gShort gShort_field = 15;
+      gInteger gInteger_field = 16;
+      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 17;
+      google.protobuf.Any google_protobuf_Any_field = 18;
+      java_util___HashSet java_util___HashSet_field = 19;
+      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 20;
+      java_util___ArrayList java_util___ArrayList_field = 21;
+      gCharacter gCharacter_field = 22;
+      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 23;
+      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 24;
+      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 25;
+      dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder_field = 26;
+   }
+}
+///////////////
+message dev_resteasy_grpc_arrays___ArrayHolder___wrapper {
+   oneof type {
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE none_field = 1;
+      dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___ArrayHolder___WArray {
+   repeated dev_resteasy_grpc_arrays___ArrayHolder___wrapper dev_resteasy_grpc_arrays___ArrayHolder___field = 1;
+}
+
+///////////////
+message java_util_HashMap_HIDDEN_Node___wrapper {
+   oneof type {
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE none_field = 1;
+      java_util_HashMap_HIDDEN_Node java_util_HashMap_HIDDEN_Node_field = 2;
+   }
+}
+
+message java_util_HashMap_HIDDEN_Node___WArray {
+   repeated java_util_HashMap_HIDDEN_Node___wrapper java_util_HashMap_HIDDEN_Node___field = 1;
+}
+
+message dev_resteasy_grpc_arrays___ArrayHolder {
+   string componentClass = 1;
+   oneof messageType {
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray dev_resteasy_grpc_arrays___Any___WArray_field = 2;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array dev_resteasy_grpc_arrays___Boolean___Array_field = 3;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray dev_resteasy_grpc_arrays___Boolean___WArray_field = 4;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array dev_resteasy_grpc_arrays___Byte___Array_field = 5;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray dev_resteasy_grpc_arrays___Byte___WArray_field = 6;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array dev_resteasy_grpc_arrays___Character___Array_field = 7;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray dev_resteasy_grpc_arrays___Character___WArray_field = 8;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array dev_resteasy_grpc_arrays___Double___Array_field = 9;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray dev_resteasy_grpc_arrays___Double___WArray_field = 10;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array dev_resteasy_grpc_arrays___Float___Array_field = 11;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray dev_resteasy_grpc_arrays___Float___WArray_field = 12;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array dev_resteasy_grpc_arrays___Integer___Array_field = 13;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray dev_resteasy_grpc_arrays___Integer___WArray_field = 14;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array dev_resteasy_grpc_arrays___Long___Array_field = 15;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray dev_resteasy_grpc_arrays___Long___WArray_field = 16;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE dev_resteasy_grpc_arrays___NONE_field = 17;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___Array dev_resteasy_grpc_arrays___Short___Array_field = 18;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray dev_resteasy_grpc_arrays___Short___WArray_field = 19;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray dev_resteasy_grpc_arrays___String___WArray_field = 20;
+      dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray_field = 21;
+      java_util_HashMap_HIDDEN_Node___WArray java_util_HashMap_HIDDEN_Node___WArray_field = 22;
+   }
+}

@@ -240,6 +240,15 @@ public final class Utility {
     }
 
     public static Field getField(Class<?> clazz, String name) {
+        if (name.contains("___")) {
+            String n = name.substring(name.indexOf("___") + 3);
+            try {
+                Integer.parseInt(n);
+                name = name.substring(0, name.indexOf("___"));
+            } catch (NumberFormatException nfe) {
+                // ignore
+            }
+        }
         Class<?> c = clazz;
         while (c != null) {
             try {

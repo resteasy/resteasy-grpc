@@ -30,7 +30,6 @@ import com.google.protobuf.Timestamp;
 
 import dev.resteasy.grpc.arrays.ArrayUtility;
 import dev.resteasy.grpc.arrays.Array_proto;
-import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;
 import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.example.ArrayStuff;
@@ -43,6 +42,7 @@ import dev.resteasy.grpc.example.CC1_proto.FormValues;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
 import dev.resteasy.grpc.example.CC1_proto.ServletInfo;
+import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays___ArrayHolder;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___ArrayStuff;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC2;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC3;
@@ -1541,12 +1541,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .newBuilder();
         int[] ints = new int[] { 1, 2, 3 };
         dev_resteasy_grpc_arrays___ArrayHolder ah = ArrayUtility.getHolder(translator, ints);
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysArrayHolderField(ah).build();
         GeneralReturnMessage response;
         try {
             response = stub.arraysInt1(gem);
-            dev_resteasy_grpc_arrays___ArrayHolder as = response
-                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            dev_resteasy_grpc_arrays___ArrayHolder as = response.getDevResteasyGrpcArraysArrayHolderField();
             Object o = ArrayUtility.getArray(as);
             int[] expected = new int[] { 2, 3, 4 };
             Assert.assertArrayEquals(expected, (int[]) o);
@@ -1564,12 +1563,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
         int[] ints = new int[] { 1, 2, 3 };
         dev_resteasy_grpc_arrays___ArrayHolder ah = (dev_resteasy_grpc_arrays___ArrayHolder) translator
                 .translateToJavabuf(ints);
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysArrayHolderField(ah).build();
         GeneralReturnMessage response;
         try {
             response = stub.arraysInt1(gem);
-            dev_resteasy_grpc_arrays___ArrayHolder as = response
-                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            dev_resteasy_grpc_arrays___ArrayHolder as = response.getDevResteasyGrpcArraysArrayHolderField();
             Object o = translator.translateFromJavabuf(as);
             int[] expected = new int[] { 2, 3, 4 };
             Assert.assertArrayEquals(expected, (int[]) o);
@@ -1586,12 +1584,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .newBuilder();
         int[][] intss = new int[][] { { 1, 2 }, { 3, 4 } };
         dev_resteasy_grpc_arrays___ArrayHolder ah = ArrayUtility.getHolder(translator, intss);
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysArrayHolderField(ah).build();
         GeneralReturnMessage response;
         try {
             response = stub.arraysInt2(gem);
-            dev_resteasy_grpc_arrays___ArrayHolder as = response
-                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            dev_resteasy_grpc_arrays___ArrayHolder as = response.getDevResteasyGrpcArraysArrayHolderField();
             Object o = translator.translateFromJavabuf(as);
             int[][] expected = new int[][] { { 2, 3 }, { 4, 5 } };
             Assert.assertArrayEquals(expected, (int[][]) o);
@@ -1608,12 +1605,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .newBuilder();
         int[][][][][] intsssss = new int[][][][][] { { { { { 1, 2, 3 } } } }, { { { { 4, 5 } } } } };
         dev_resteasy_grpc_arrays___ArrayHolder ah = ArrayUtility.getHolder(translator, intsssss);
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(ah).build();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysArrayHolderField(ah).build();
         GeneralReturnMessage response;
         try {
             response = stub.arraysInt5(gem);
-            dev_resteasy_grpc_arrays___ArrayHolder as = response
-                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            dev_resteasy_grpc_arrays___ArrayHolder as = response.getDevResteasyGrpcArraysArrayHolderField();
             Object o = translator.translateFromJavabuf(as);
             int[][][][][] expected = new int[][][][][] { { { { { 2, 3, 4 } } } }, { { { { 5, 6 } } } } };
             Assert.assertArrayEquals(expected, (int[][][][][]) o);
@@ -1651,12 +1647,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
         dev_resteasy_grpc_arrays___ArrayHolder holder = (dev_resteasy_grpc_arrays___ArrayHolder) translator
                 .translateToJavabuf(ass);
         GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField(holder).build();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysArrayHolderField(holder).build();
         GeneralReturnMessage response;
         try {
             response = stub.arrayStuffArray(gem);
-            dev_resteasy_grpc_arrays___ArrayHolder holder2 = response
-                    .getDevResteasyGrpcArraysDevResteasyGrpcArraysArrayHolderField();
+            dev_resteasy_grpc_arrays___ArrayHolder holder2 = response.getDevResteasyGrpcArraysArrayHolderField();
             Assert.assertArrayEquals(ass, (ArrayStuff[]) translator.translateFromJavabuf(holder2));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {

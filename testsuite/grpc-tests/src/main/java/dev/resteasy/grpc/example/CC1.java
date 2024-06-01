@@ -403,7 +403,7 @@ public class CC1 {
     public CC4 referenceField(CC4 cc4) {
         CC5 newCC5 = new CC5(cc4.cc5.k + 1);
         CC4 newCC4 = new CC4("x" + cc4.s + "y", newCC5);
-        //    CC4 newCC4 = new CC4(cc4.s + 1, newCC5);
+        //            CC4 newCC4 = new CC4(cc4.s + 1, newCC5);
         return newCC4;
     }
 

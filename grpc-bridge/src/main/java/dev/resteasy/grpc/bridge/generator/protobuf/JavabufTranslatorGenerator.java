@@ -11,16 +11,16 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.logging.Logger;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;
 
-import dev.resteasy.grpc.arrays.ArrayUtility;
-import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.bridge.runtime.protobuf.AssignFromJavabuf;
 import dev.resteasy.grpc.bridge.runtime.protobuf.AssignToJavabuf;
@@ -123,6 +123,218 @@ public class JavabufTranslatorGenerator {
     private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_TYPES = new HashMap<String, Class<?>>();
     private static final Map<String, String> GET_METHODS = new HashMap<String, String>();
     private static final Map<Class<?>, String> PRIMITIVE_DEFAULTS = new HashMap<Class<?>, String>();
+    private static final Map<String, String> WRAPPER_TO_PRIMITIVE = new HashMap<String, String>();
+    private static final Set<String> NULLABLE_WRAPPERS = new HashSet<String>();
+    private static final Set<String> JAVA_WRAPPER_TYPES = new HashSet<String>();
+    private static final Set<Class<?>> arrayClasses = new HashSet<Class<?>>();
+
+    //    private static final String ArrayWrapperBuilderMethod = "   public void set_%1$s_Array(Object[] array) {%n"
+    //            + "      dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();%n"
+    //            + "      %1$s_Array.Builder ab = %1$s_Array.newBuilder();%n"
+    //            + "      %1$s_wrapper.Builder wb = %1$s_wrapper.newBuilder();%n"
+    //            + "      for (int i = 0; i < Array.getLength(array); i++) {%n"
+    //            + "         if (array[i] == null) {%n"
+    //            + "            wb.clear().setNoneField(Array_proto.dev_resteasy_grpc_arrays___NONE.newBuilder().build());%n"
+    //            + "         } else {%n"
+    //            + "            wb.clear().set%2$sField((%1$s) INSTANCE.translateToJavabuf(array[i]));%n"
+    //            + "         }%n"
+    //            + "         ab.add%2$sWrapperField(wb);%n"
+    //            + "      }%n"
+    //            + "      ahb.set%2$sArrayField(ab);%n"
+    //            + "   }";
+    //dev_resteasy_grpc_arrays___Integer___Array.Builder                 elementBuilder.setJavaUtilHashMapHIDDENNodeField((java_util_HashMap_HIDDEN_Node) INSTANCE.translateToJavabuf(aa[i]));
+
+    //    private static final String ArrayBuilderClass = //dev_resteasy_grpc_arrays___short
+    //            "      public Message assignToJavabuf(Object x) {%n"
+    //                    + "         if (x == null) {%n"
+    //                    + "            return null;%n"
+    //                    + "         }%n"
+    //                    + "         %1$s[] aa = (%1$s[]) x;%n"
+    //                    + "         %2$s___%3$sArray.Builder builder = %2$s___%3$sArray.newBuilder();%n"
+    //                    + "         for (int i = 0; i < aa.length; i++) {%n"
+    //                    + "            builder.add%4$sField(aa[i]);%n"
+    //                    + "            if (aa[i] == null) {%n"
+    //                    + "               builder.addStringField(dev_resteasy_grpc_arrays___NONE);%n"
+    //                    + "            } else {%n"
+    //                    + "               builder.addStringField((%2$s) INSTANCE.translateToJavabuf(aa[i]));%n"
+    //                    + "            }%n"
+    //                    + "         }%n"
+    //                    + "         return builder.build();%n"
+    //                    + "      }%n"
+    //                    + "%n"
+    //                    + "      public void clear() {%n"
+    //                    + "         //%n"
+    //                    + "      }%n"
+    //    //                    + "   }%n%n"
+    //    ;
+    private static final String ArrayPrimitiveBuilderClass = "      public Message assignToJavabuf(Object x) {%n"
+            + "         if (x == null) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         %1$s[] aa = (%1$s[]) x;%n"
+            + "         dev_resteasy_grpc_arrays___%2$s___Array.Builder arrayBuilder = dev_resteasy_grpc_arrays___%2$s___Array.newBuilder();%n"
+            + "         for (int i = 0; i < aa.length; i++) {%n"
+            + "            arrayBuilder.add%3$sField(aa[i]);%n"
+            + "         }%n"
+            + "         return arrayBuilder.build();%n"
+            + "      }%n"
+            + "%n"
+            + "      public void clear() {%n"
+            + "         //%n"
+            + "      }%n";
+
+    private static final String ArrayPrimitiveWrapperBuilderClass = "      public Message assignToJavabuf(Object x) {%n"
+            + "         if (x == null) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         %1$s[] aa = (%1$s[]) x;%n"
+            + "         %2$s___wrapper.Builder elementBuilder = %2$s___wrapper.newBuilder();%n"
+            + "         %2$s___WArray.Builder arrayBuilder = %2$s___WArray.newBuilder();%n"
+            + "         for (int i = 0; i < aa.length; i++) {%n"
+            + "            if (aa[i] == null) {%n"
+            + "               elementBuilder.clear().setNoneField(dev_resteasy_grpc_arrays___NONE.newBuilder());%n"
+            + "            } else {%n"
+            + "               elementBuilder.set%3$sField(aa[i]);%n"
+            + "            }%n"
+            + "            arrayBuilder.clear().add%3$sField(elementBuilder);%n"
+            + "         }%n"
+            + "         return arrayBuilder.build();%n"
+            + "      }%n"
+            + "%n"
+            + "      public void clear() {%n"
+            + "         //%n"
+            + "      }%n";
+
+    private static final String ArrayWrapperBuilderClass = "      public Message assignToJavabuf(Object x) {%n"
+            + "         if (x == null) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         %1$s[] aa = (%1$s[]) x;%n"
+            + "         %2$s___wrapper.Builder elementBuilder = %2$s___wrapper.newBuilder();%n"
+            + "         %2$s___WArray.Builder arrayBuilder = %2$s___WArray.newBuilder();%n"
+            + "         for (int i = 0; i < aa.length; i++) {%n"
+            + "            if (aa[i] == null) {%n"
+            + "               elementBuilder.clear().setNoneField(dev_resteasy_grpc_arrays___NONE.newBuilder());%n"
+            + "            } else {%n"
+            + "               elementBuilder.set%3$sField((%1$s) INSTANCE.translateToJavabuf(aa[i]));%n"
+            + "            }%n"
+            + "            arrayBuilder.clear().add%3$sField(elementBuilder);%n"
+            + "         }%n"
+            + "         return arrayBuilder.build();%n"
+            + "      }%n"
+            + "%n"
+            + "      public void clear() {%n"
+            + "         //%n"
+            + "      }%n";
+
+    private static final String ArrayWrapperBuilderClassForBytes = "      public Message assignToJavabuf(Object x) {%n"
+            + "         if (x == null) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         %1$s[] aa = (%1$s[]) x;%n"
+            + "         %2$s___wrapper.Builder elementBuilder = %2$s___wrapper.newBuilder();%n"
+            + "         %2$s___WArray.Builder arrayBuilder = %2$s___WArray.newBuilder();%n"
+            + "         for (int i = 0; i < aa.length; i++) {%n"
+            + "            if (aa[i] == null) {%n"
+            + "               elementBuilder.clear().setNoneField(dev_resteasy_grpc_arrays___NONE.newBuilder());%n"
+            + "            } else {%n"
+            + "               byte[] bs = new byte[] { aa[i].byteValue() };%n"
+            + "               elementBuilder.clear().setByteField(ByteString.copyFrom(bs));%n"
+            + "            }%n"
+            + "            arrayBuilder.clear().add%1$sField(elementBuilder);%n"
+            + "         }%n"
+            + "         return arrayBuilder.build();%n"
+            + "      }%n"
+            + "%n"
+            + "      public void clear() {%n"
+            + "         //%n"
+            + "      }%n";
+
+    private static final String ArrayWrapperBuilderClassForCharacters = "      public Message assignToJavabuf(Object x) {%n"
+            + "         if (x == null) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         %1$s[] aa = (%1$s[]) x;%n"
+            + "         %2$s___wrapper.Builder elementBuilder = %2$s___wrapper.newBuilder();%n"
+            + "         %2$s___WArray.Builder arrayBuilder = %2$s___WArray.newBuilder();%n"
+            + "         for (int i = 0; i < aa.length; i++) {%n"
+            + "            if (aa[i] == null) {%n"
+            + "               elementBuilder.clear().setNoneField(dev_resteasy_grpc_arrays___NONE.newBuilder());%n"
+            + "            } else {%n"
+            + "               elementBuilder.set%1$sField(String.valueOf(aa[i]));%n"
+            + "            }%n"
+            + "            arrayBuilder.clear().add%1$sField(elementBuilder);%n"
+            + "         }%n"
+            + "         return arrayBuilder.build();%n"
+            + "      }%n"
+            + "%n"
+            + "      public void clear() {%n"
+            + "         //%n"
+            + "      }%n";
+
+    /*
+     * // case "java.lang.Character": {
+     * // Character[] cs = (Character[]) o;
+     * // dev_resteasy_grpc_arrays___CharArray.Builder builder = dev_resteasy_grpc_arrays___CharArray.newBuilder();
+     * // for (int i = 0; i < cs.length; i++) {
+     * // builder.addCharField(String.valueOf(cs[i]));
+     * // }
+     * // return ahBuilder.setCharArrayField(builder).setComponentClass("java.lang.Character").build();
+     * // }
+     *
+     * byte[] bs = new byte[] { aa[i].byteValue() };
+     * elementBuilder.clear().setByteField(ByteString.copyFrom(bs));
+     */
+    /*
+     *
+     * public void set_java_util_HashMap_HIDDEN_Node_Array(Object[] array) {
+     * dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+     * java_util_HashMap_HIDDEN_Node_Array.Builder ab = java_util_HashMap_HIDDEN_Node_Array.newBuilder();
+     * java_util_HashMap_HIDDEN_Node_wrapper.Builder wb = java_util_HashMap_HIDDEN_Node_wrapper.newBuilder();
+     * for (int i = 0; i < Array.getLength(array); i++) {
+     * if (array[i] == null) {
+     * wb.clear().setNoneField(Array_proto.dev_resteasy_grpc_arrays___NONE.newBuilder().build());
+     * } else {
+     * wb.clear().setJavaUtilHashMapHIDDENNodeField((java_util_HashMap_HIDDEN_Node) INSTANCE.translateToJavabuf(array[i]));
+     * }
+     * ab.addJavaUtilHashMapHIDDENNodeWrapperField(wb);
+     * }
+     * ahb.setJavaUtilHashMapHIDDENNodeArrayField(ab);
+     * }
+     *
+     * java_util_HashMap_HIDDEN_Node
+     * JavaUtilHashMapHIDDENNode
+     * public void set_java_util_HashMap_HIDDEN_Node_Array(Object[] array) {
+     * dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+     * java_util_HashMap_HIDDEN_Node_Array.Builder ab = java_util_HashMap_HIDDEN_Node_Array.newBuilder();
+     * java_util_HashMap_HIDDEN_Node_wrapper.Builder wb = java_util_HashMap_HIDDEN_Node_wrapper.newBuilder();
+     * for (int i = 0; i < Array.getLength(array); i++) {
+     * if (array[i] == null) {
+     * wb.clear().setNoneField(Array_proto.dev_resteasy_grpc_arrays___NONE.newBuilder().build());
+     * } else {
+     * wb.clear().setJavaUtilHashMapHIDDENNodeField((java_util_HashMap_HIDDEN_Node) INSTANCE.translateToJavabuf(array[i]));
+     * }
+     * ab.addJavaUtilHashMapHIDDENNodeWrapperField(wb);
+     * }
+     * ahb.setJavaUtilHashMapHIDDENNodeArrayField(ab);
+     * }
+     *
+     * public void set_%1$s_Array(Object[] array) {
+     * dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+     * %1$s_Array.Builder ab = %1$s_Array.newBuilder();
+     * %1$s_wrapper.Builder wb = %1$s_wrapper.newBuilder();
+     * for (int i = 0; i < Array.getLength(array); i++) {
+     * if (array[i] == null) {
+     * wb.clear().setNoneField(Array_proto.dev_resteasy_grpc_arrays___NONE.newBuilder().build());
+     * } else {
+     * wb.clear().set%2$sField((java_util_HashMap_HIDDEN_Node) INSTANCE.translateToJavabuf(array[i]));
+     * }
+     * ab.add%2$sWrapperField(wb);
+     * }
+     * ahb.setJavaUtilHashMapHIDDENNodeArrayField(ab);
+     * }
+     *
+     */
 
     static {
         PRIMITIVE_WRAPPER_TYPES.put("gByte", byte.class);
@@ -153,13 +365,46 @@ public class JavabufTranslatorGenerator {
         PRIMITIVE_DEFAULTS.put(float.class, "0.0f");
         PRIMITIVE_DEFAULTS.put(double.class, "0.0d");
         PRIMITIVE_DEFAULTS.put(char.class, "'\\u0000'");
+
+        WRAPPER_TO_PRIMITIVE.put("Boolean", "boolean");
+        WRAPPER_TO_PRIMITIVE.put("Byte", "byte");
+        WRAPPER_TO_PRIMITIVE.put("Short", "short");
+        WRAPPER_TO_PRIMITIVE.put("Integer", "int");
+        WRAPPER_TO_PRIMITIVE.put("Long", "long");
+        WRAPPER_TO_PRIMITIVE.put("Float", "float");
+        WRAPPER_TO_PRIMITIVE.put("Double", "double");
+        WRAPPER_TO_PRIMITIVE.put("Character", "char");
+        WRAPPER_TO_PRIMITIVE.put("String", "String");
+        WRAPPER_TO_PRIMITIVE.put("Any", "Any");
+
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Boolean");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Byte");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Short");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Integer");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Long");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Float");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Double");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___Character");
+        NULLABLE_WRAPPERS.add("dev_resteasy_grpc_arrays___String");
+
+        JAVA_WRAPPER_TYPES.add("Byte");
+        JAVA_WRAPPER_TYPES.add("Short");
+        JAVA_WRAPPER_TYPES.add("Integer");
+        JAVA_WRAPPER_TYPES.add("Long");
+        JAVA_WRAPPER_TYPES.add("Float");
+        JAVA_WRAPPER_TYPES.add("Double");
+        JAVA_WRAPPER_TYPES.add("Boolean");
+        JAVA_WRAPPER_TYPES.add("Character");
+        JAVA_WRAPPER_TYPES.add("String");
     }
 
     public static void main(String[] args) {
-        if (args == null || args.length != 2) {
+        System.out.println("!!! JavabufTranslatorGenerator !!!");
+        if (args == null || args.length != 3) {
             logger.info("need two args:");
             logger.info("  arg[0]: root directory");
             logger.info("  arg[1]: javabuf wrapper class name");
+            logger.info("  arg[2]: prefix");
             return;
         }
         try {
@@ -167,6 +412,9 @@ public class JavabufTranslatorGenerator {
             String simpleName = index < 0 ? args[1] : args[1].substring(index + 1);
             String translatorClass = simpleName + "JavabufTranslator";
             Class<?>[] wrappedClasses = getWrappedClasses(args);
+            for (Class c : wrappedClasses) {
+                System.out.println("wrappedClass: " + c.getName());
+            }
             StringBuilder sb = new StringBuilder();
             classHeader(args, translatorClass, wrappedClasses, sb);
             classBody(args, wrappedClasses, sb);
@@ -192,10 +440,13 @@ public class JavabufTranslatorGenerator {
         Class<?> wrapperClass = Class.forName(args[1] + "_proto", true, Thread.currentThread()
                 .getContextClassLoader());
         list.add(wrapperClass);
+        getArrayClasses(wrapperClass);
         try {
             Class<?> arrayWrapperClass = Class.forName("dev.resteasy.grpc.arrays.Array_proto", true,
                     Thread.currentThread().getContextClassLoader());
+            System.out.println("getWrapperClasses(): got " + arrayWrapperClass.getName());
             list.add(arrayWrapperClass);
+            getArrayClasses(arrayWrapperClass);
             return list;
         } catch (Exception ignore) {
             // Array_proto class is not available: ignore
@@ -203,15 +454,58 @@ public class JavabufTranslatorGenerator {
         }
     }
 
+    /*
+     * for (Class<?> innerClazz : clazz.getDeclaredClasses()) {
+     * System.out.println("innerClazz: " + innerClazz.getName());
+     * if (innerClazz.getName().endsWith("$Builder")) {
+     * builderClazz = innerClazz;
+     * for (Method m : innerClazz.getDeclaredMethods()) {
+     * if (m.getName().startsWith("set")) {
+     * System.out.println("m set: " + m.getName());
+     * }
+     * }
+     * }
+     * if (innerClazz.getName().endsWith("MessageTypeCase")) {
+     * enumClazz = innerClazz;
+     * }
+     */
+
+    private static void getArrayClasses(Class<?> clazz) {
+        System.out.println("WRAPPER CLASS: " + clazz.getName());
+        List<String> classnames = new ArrayList<String>();
+        for (Class<?> c : clazz.getDeclaredClasses()) {
+            System.out.println("checking WRAPPER CLASS: " + c.getName());
+            if ("dev_resteasy_grpc_arrays___ArrayHolder".equals(c.getSimpleName())) {
+                for (Class<?> c2 : c.getDeclaredClasses()) {
+                    System.out.println("inner: " + c2.getName() + ", " + c2.getSimpleName());
+                    if ("MessageTypeCase".equals(c2.getSimpleName())) {
+                        for (Object o : c2.getEnumConstants()) {
+                            if (o.toString().contains("_FIELD")) {
+                                System.out.println(o.toString().substring(0, o.toString().indexOf("_FIELD")));
+                                classnames.add(o.toString().substring(0, o.toString().indexOf("_FIELD")).toLowerCase());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (Class<?> c : clazz.getDeclaredClasses()) {
+            if (classnames.contains(c.getSimpleName().toLowerCase())) {
+                arrayClasses.add(c);
+                System.out.println("ADDING array class: " + c.getName());
+            }
+        }
+    }
+
     private static void classHeader(String[] args, String translatorClass, Class<?>[] wrappedClasses, StringBuilder sb) {
         sb.append("package ").append(wrappedClasses[0].getPackage().getName()).append(";" + LS + LS);
-        imports(wrappedClasses, sb);
+        imports(wrappedClasses, sb, args);
         sb.append("public class ")
                 .append(translatorClass)
                 .append(" implements JavabufTranslator {" + LS);
     }
 
-    private static void imports(Class<?>[] wrappedClasses, StringBuilder sb) {
+    private static void imports(Class<?>[] wrappedClasses, StringBuilder sb, String[] args) {
         sb.append("import java.lang.reflect.Array;" + LS)
                 .append("import java.lang.reflect.Constructor;" + LS)
                 .append("import java.lang.reflect.Field;" + LS)
@@ -229,7 +523,8 @@ public class JavabufTranslatorGenerator {
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;" + LS)
                 .append("import com.google.protobuf.Internal.IntList;" + LS)
                 .append("import com.google.protobuf.Message;" + LS)
-                .append("import ").append(ArrayUtility.class.getCanonicalName()).append(";" + LS)
+                //                .append("import ").append(ArrayUtility.class.getCanonicalName()).append(";" + LS)
+                .append("import dev.resteasy.grpc.arrays.ArrayUtility;" + LS)
                 .append("import ").append(Utility.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(AssignFromJavabuf.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(AssignToJavabuf.class.getCanonicalName()).append(";" + LS)
@@ -237,17 +532,27 @@ public class JavabufTranslatorGenerator {
                 .append("import ").append(ReturnJavaClass.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(TranslateFromJavabuf.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(TranslateToJavabuf.class.getCanonicalName()).append(";" + LS)
-                .append("import dev.resteasy.grpc.arrays.Array_proto;" + LS)
-                .append("import " + Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.class.getCanonicalName())
-                .append(";" + LS);
+                //                .append("import ").append(args[2]).append(".dev_resteasy_grpc_arrays___ArrayHolder;" + LS)
+                .append("import dev.resteasy.grpc.arrays.Array_proto;" + LS);
+        sb.append("//XXXXXXXX HERE XXXXXXXXX" + LS);
         for (Class<?> clazz : wrappedClasses) {
-            System.out.println("wrapped: " + clazz.getName());
+            System.out.println("wrapped: " + clazz.getName() + ", package: " + clazz.getPackageName());
+            sb.append("//wrapped: " + clazz.getName() + LS);
             if (clazz.isInterface()) {
                 continue;
             }
-            if ("dev.resteasy.grpc.arrays".equals(clazz.getPackageName())) {
+            //            if ("dev.resteasy.grpc.arrays".equals(clazz.getPackageName())) {
+            //                continue;
+            //            }
+            if (clazz.getSimpleName().endsWith("OrBuilder")) {
                 continue;
             }
+            //            if ("dev_resteasy_grpc_arrays___ArrayHolder".equals(clazz.getSimpleName())) {
+            //                continue;
+            //            }
+            //            if (clazz.getName().endsWith("_wrapper") || clazz.getName().endsWith("_Array")) {
+            //                continue;
+            //            }
             //            if (clazz.getName().contains("_HIDDEN_")) {
             //                continue;
             //            }
@@ -255,7 +560,11 @@ public class JavabufTranslatorGenerator {
             if ("gEmpty".equals(simpleName)) {
                 continue;
             }
-            if (PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName)) {
+            String elementType = simpleName.contains("_Array") ? simpleName.substring(0, simpleName.indexOf("_Array")) : "";
+            String wrappedType = simpleName.contains("_wrapper") ? simpleName.substring(0, simpleName.indexOf("_wrapper")) : "";
+            if (PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName)
+                    || PRIMITIVE_WRAPPER_TYPES.containsKey(elementType)
+                    || PRIMITIVE_WRAPPER_TYPES.containsKey(wrappedType)) {
                 sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
             } else if ("GeneralEntityMessage".equals(simpleName)
                     || "GeneralReturnMessage".equals(simpleName)
@@ -266,11 +575,18 @@ public class JavabufTranslatorGenerator {
                     || "FormMap".equals(simpleName)
                     || "FormValues".equals(simpleName)) {
                 continue;
-            } else if (clazz.getName().contains("_HIDDEN_") || clazz.getName().endsWith("ELEMENT_WRAPPER")) {
+            } else if (clazz.getName().contains("_HIDDEN_")
+                    || clazz.getName().endsWith("ELEMENT_WRAPPER")
+                    || "dev_resteasy_grpc_arrays___ArrayHolder".equals(simpleName)
+                    || "dev_resteasy_grpc_arrays___ArrayHolder___WArray".equals(simpleName)
+                    || clazz.getName().endsWith("_Array")
+                    || clazz.getName().endsWith("_wrapper")
+                    || "dev.resteasy.grpc.arrays".equals(clazz.getPackageName())) {
                 sb.append("import ")
                         .append(clazz.getName().replace("$", "."))
                         .append(";" + LS);
             } else {
+                System.out.println("imports: " + clazz.getName() + ", " + originalCanonicalClassName(clazz.getName()));
                 sb.append("import ")
                         .append(originalCanonicalClassName(clazz.getName()))
                         .append(";" + LS);
@@ -285,9 +601,10 @@ public class JavabufTranslatorGenerator {
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) throws Exception {
         privateVariables(sb, args);
         staticInit(wrappedClasses, sb);
-        publicMethods(sb, wrappedClasses[0]);
+        publicMethods(sb, wrappedClasses[0], args);
         privateMethods(sb, wrappedClasses, args);
         for (Class<?> clazz : wrappedClasses) {
+            System.out.println("classBody(): " + clazz.getName());
             if (clazz.isInterface()) {
                 continue;
             }
@@ -297,6 +614,7 @@ public class JavabufTranslatorGenerator {
             }
             createTranslator(args, clazz, sb);
         }
+        createArrayHandlingClasses(sb);
     }
 
     private static void staticInit(Class<?>[] classes, StringBuilder sb) throws ClassNotFoundException {
@@ -334,26 +652,27 @@ public class JavabufTranslatorGenerator {
                     || "FormValues".equals(simpleName)) {
                 continue;
             }
-            if ("dev.resteasy.grpc.arrays".equals(clazz.getPackageName())) {
-                continue;
-            }
+            //            if ("dev.resteasy.grpc.arrays".equals(clazz.getPackageName())) {
+            //                continue;
+            //            }
 
             boolean isAbstract = false;
             if (!PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName)) {
                 try {
-                    String originalName = originalSimpleName(clazz.getName());
-                    String className = javabufToJava(clazz.getName(), originalName, true);
-                    System.out.println("staticInit(): " + clazz + ", " + originalName + ", " + className);
-                    //                    Class<?> c = Class.forName(originalClassName(simpleName), true,
-                    Class<?> c = Class.forName(className, true,
-                            Thread.currentThread().getContextClassLoader());
-                    isAbstract = Modifier.isAbstract(c.getModifiers());
-                    System.out.println("staticInit(): isAbstract: " + isAbstract);
-                    System.out.println("c: " + c.getName());
-                    //                    if (Modifier.isAbstract(c.getModifiers())) {
-                    //                        System.out.println("skipping " + c);
-                    //                        continue;
-                    //                    }
+                    isAbstract = isAbstract(clazz);
+                    //                    String originalName = originalSimpleName(clazz.getName());
+                    //                    String className = javabufToJava(clazz.getName(), originalName, true);
+                    //                    System.out.println("staticInit(): " + clazz + ", " + originalName + ", " + className);
+                    //                    //                    Class<?> c = Class.forName(originalClassName(simpleName), true,
+                    //                    Class<?> c = Class.forName(className, true,
+                    //                            Thread.currentThread().getContextClassLoader());
+                    //                    isAbstract = Modifier.isAbstract(c.getModifiers());
+                    //                    System.out.println("staticInit(): isAbstract: " + isAbstract);
+                    //                    System.out.println("c: " + c.getName());
+                    //                    //                    if (Modifier.isAbstract(c.getModifiers())) {
+                    //                    //                        System.out.println("skipping " + c);
+                    //                    //                        continue;
+                    //                    //                    }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                     continue;
@@ -362,31 +681,45 @@ public class JavabufTranslatorGenerator {
 
             System.out.println("staticInit(): simpleName: " + simpleName + ", originalClassName(simpleName): "
                     + originalClassName(simpleName));
-            sb.append(LS + "      toJavabufMap.put(\"")
-                    .append(originalClassName(simpleName) + "\" , new ")
-                    //                    .append(".class.getName(), new ")
-                    .append(simpleName)
-                    .append("_ToJavabuf());" + LS);
-
-            System.out.println("toJavamap: isAbstract: " + isAbstract);
-            if (!isAbstract) {
-                sb.append("      fromJavabufMap.put(")
-                        .append("\"" + simpleName + "\"")
-                        .append(", new ")
+            if (simpleName.endsWith("___Array")) {
+                sb.append(LS + "      toJavabufMap.put(\"")
+                        .append(originalClassName(simpleName) + ".Array" + "\" , new ")
+                        //                    .append(".class.getName(), new ")
                         .append(simpleName)
-                        .append("_FromJavabuf());" + LS);
+                        .append("_ToJavabuf());" + LS);
+            } else if (simpleName.endsWith("___WArray")) {
+                sb.append(LS + "      toJavabufMap.put(\"")
+                        .append(originalClassName(simpleName) + ".WArray" + "\" , new ")
+                        //                    .append(".class.getName(), new ")
+                        .append(simpleName)
+                        .append("_ToJavabuf());" + LS);
+            } else {
+                sb.append(LS + "      toJavabufMap.put(\"")
+                        .append(originalClassName(simpleName) + "\" , new ")
+                        //                    .append(".class.getName(), new ")
+                        .append(simpleName)
+                        .append("_ToJavabuf());" + LS);
+
+                System.out.println("toJavamap: isAbstract: " + isAbstract);
+                if (!isAbstract) {
+                    sb.append("      fromJavabufMap.put(")
+                            .append("\"" + simpleName + "\"")
+                            .append(", new ")
+                            .append(simpleName)
+                            .append("_FromJavabuf());" + LS);
+                }
+                sb.append("      toJavabufClassMap.put(\"")
+                        //                    .append(originalCanonicalClassName(simpleName) + "\", ")
+                        .append(originalClassName(simpleName) + "\", ")
+                        //                    .append(originalClassName(simpleName) + ".class.getName(), ")
+                        .append(simpleName + ".class);" + LS);
+                sb.append("      fromJavabufClassMap.put(")
+                        .append(simpleName + ".class.getName(), ")
+                        //                    .append(fromJavabufClassValue(originalClassName(clazz.getCanonicalName())) + ");" + LS);
+                        //                    .append(fromJavabufClassValue(originalClassName(simpleName)) + ");" + LS);
+                        .append(getJavabufClassValue(simpleName, false, false) + ");" + LS);
+                //                    .append(originalClassName(simpleName) + ".class);");
             }
-            sb.append("      toJavabufClassMap.put(\"")
-                    //                    .append(originalCanonicalClassName(simpleName) + "\", ")
-                    .append(originalClassName(simpleName) + "\", ")
-                    //                    .append(originalClassName(simpleName) + ".class.getName(), ")
-                    .append(simpleName + ".class);" + LS);
-            sb.append("      fromJavabufClassMap.put(")
-                    .append(simpleName + ".class.getName(), ")
-                    //                    .append(fromJavabufClassValue(originalClassName(clazz.getCanonicalName())) + ");" + LS);
-                    //                    .append(fromJavabufClassValue(originalClassName(simpleName)) + ");" + LS);
-                    .append(getJavabufClassValue(simpleName, false, false) + ");" + LS);
-            //                    .append(originalClassName(simpleName) + ".class);");
         }
         sb.append(LS);
         for (Class<?> clazz2 : classes) {
@@ -410,7 +743,20 @@ public class JavabufTranslatorGenerator {
         sb.append("   }" + LS + LS);
     }
 
-    private static void publicMethods(StringBuilder sb, Class<?> clazz) {
+    private static boolean isAbstract(Class<?> clazz) throws ClassNotFoundException {
+        if (clazz.getName().endsWith("___Array") || clazz.getName().endsWith("___WArray")) {
+            return false;
+        }
+        String originalName = originalSimpleName(clazz.getName());
+        String className = javabufToJava(clazz.getName(), originalName, true);
+        System.out.println("staticInit(): " + clazz + ", " + originalName + ", " + className);
+        //                    Class<?> c = Class.forName(originalClassName(simpleName), true,
+        Class<?> c = Class.forName(className, true,
+                Thread.currentThread().getContextClassLoader());
+        return Modifier.isAbstract(c.getModifiers());
+    }
+
+    private static void publicMethods(StringBuilder sb, Class<?> clazz, String[] args) {
         sb.append("   public boolean handlesToJavabuf(Class<?> clazz) {" + LS)
                 .append("      return clazz.isPrimitive() || toJavabufMap.containsKey(clazz.getName());" + LS)
                 .append("   }" + LS + LS)
@@ -419,13 +765,32 @@ public class JavabufTranslatorGenerator {
                 .append("   }" + LS + LS)
                 .append("   public Message translateToJavabuf(Object o) {" + LS)
                 .append("      if (o.getClass().isArray()) {" + LS)
-                .append("         return ArrayUtility.getHolder(this, o);" + LS)
+                //                .append("         return ArrayUtility.getHolder(this, o);" + LS)
+                .append("         return arrayToJavabuf(o);" + LS)
                 .append("      }" + LS)
                 .append("      TranslateToJavabuf ttj = toJavabufMap.get(o.getClass().getName());" + LS)
                 .append("      if (ttj == null) {" + LS)
                 .append("         throw new RuntimeException(o.getClass() + \" is not recognized\");" + LS)
                 .append("      }" + LS)
                 .append("      ttj.clear();" + LS)
+                .append("      return ttj.assignToJavabuf(o);" + LS)
+                .append("   }" + LS + LS)
+                .append("   public Message arrayToJavabuf(Object o) {" + LS)
+                .append("      if (o.getClass().getComponentType().isArray()) {" + LS)
+                .append("         return new dev_resteasy_grpc_arrays___ArrayHolder___WArray_ToJavabuf().assignToJavabuf(o);"
+                        + LS)
+                .append("      }" + LS)
+                .append("      if (o.getClass().getComponentType().isPrimitive()) {" + LS)
+                .append("         String name = o.getClass().getComponentType().getSimpleName();" + LS)
+                .append("         name = name.substring(0, 1).toUpperCase() + name.substring(1);" + LS)
+                .append("         TranslateToJavabuf ttj = toJavabufMap.get(\"dev.resteasy.grpc.arrays.\" + name + \".Array\");"
+                        + LS)
+                .append("         return ttj.assignToJavabuf(o);" + LS)
+                .append("      }" + LS)
+                .append("      String name = o.getClass().getComponentType().getSimpleName();" + LS)
+                .append("      name = name.substring(0, 1).toUpperCase() + name.substring(1);" + LS)
+                .append("      TranslateToJavabuf ttj = toJavabufMap.get(\"dev.resteasy.grpc.arrays.\" + name + \".WArray\");"
+                        + LS)
                 .append("      return ttj.assignToJavabuf(o);" + LS)
                 .append("   }" + LS + LS)
                 .append("   @SuppressWarnings(\"rawtypes\")" + LS)
@@ -446,9 +811,10 @@ public class JavabufTranslatorGenerator {
                 .append("      return \"").append(clazz.getDeclaringClass().getName()).append("\";" + LS)
                 .append("   }" + LS + LS)
                 .append("   public Object translateFromJavabuf(Message message) {" + LS)
-                .append("      if (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.class.equals(message.getClass())) {" + LS)
+                .append("      if (" + args[2]
+                        + "_proto.dev_resteasy_grpc_arrays___ArrayHolder.class.equals(message.getClass())) {" + LS)
                 .append("         try {" + LS)
-                .append("            return ArrayUtility.getArray(this, (Array_proto.dev_resteasy_grpc_arrays___ArrayHolder) message);"
+                .append("            return ArrayUtility.getArray(this, (dev_resteasy_grpc_arrays___ArrayHolder) message);"
                         + LS)
                 .append("         } catch (Exception e) {" + LS)
                 .append("            throw new RuntimeException(e);" + LS)
@@ -550,15 +916,16 @@ public class JavabufTranslatorGenerator {
                 .append("                              }" + LS)
                 .append("                           }" + LS)
                 .append("                        } else {" + LS)
-                .append("                           messageBuilder.addRepeatedField(fd, ELEMENT_WRAPPER.newBuilder().setPosition(Array.getLength(array)).build());"
-                        + LS)
-                .append("                           for (int i = 0; i < Array.getLength(array); i++) {" + LS)
-                .append("                              if (Array.get(array, i) != null) {" + LS)
-                //                                        messageBuilder.addRepeatedField(fd, wrapArrayElement(translator.translateToJavabuf(Array.get(array, i)), i));
-                .append("                                 messageBuilder.addRepeatedField(fd, wrapArrayElement(translator.translateToJavabuf(Array.get(array, i)), i));"
-                        + LS)
-                .append("                              }" + LS)
-                .append("                           }" + LS)
+                .append("                           /* insert array handling */" + LS)
+                //                .append("                           messageBuilder.addRepeatedField(fd, ELEMENT_WRAPPER.newBuilder().setPosition(Array.getLength(array)).build());"
+                //                        + LS)
+                //                .append("                           for (int i = 0; i < Array.getLength(array); i++) {" + LS)
+                //                .append("                              if (Array.get(array, i) != null) {" + LS)
+                //                //                                        messageBuilder.addRepeatedField(fd, wrapArrayElement(translator.translateToJavabuf(Array.get(array, i)), i));
+                //                .append("                                 messageBuilder.addRepeatedField(fd, wrapArrayElement(translator.translateToJavabuf(Array.get(array, i)), i));"
+                //                        + LS)
+                //                .append("                              }" + LS)
+                //                .append("                           }" + LS)
                 .append("                        }" + LS)
                 .append("                    }" + LS)
                 //                .append("                  } else if" + LS)
@@ -745,7 +1112,7 @@ public class JavabufTranslatorGenerator {
                 .append("                        if (message.getField(fd).getClass().getPackage().getName().startsWith(\"com.google.protobuf\")) {"
                         + LS)
                 .append("                           if (field.get(object) == null) {" + LS)
-                .append("                              Utility.setField(field, object, getArray(field, list.size()), INSTANCE);"
+                .append("                 /* FIX             Utility.setField(field, object, getArray(field, list.size()), INSTANCE); */"
                         + LS)
                 .append("                           }" + LS)
                 .append("                           if ((short.class.equals(field.getType().getComponentType())" + LS)
@@ -762,6 +1129,7 @@ public class JavabufTranslatorGenerator {
                 .append("                           }" + LS)
                 .append("                        } else {" + LS)
                 .append("                           if (fd.getMessageType().getName().endsWith(\"ELEMENT_WRAPPER\")) {" + LS)
+                .append("        /*     FIX " + LS)
                 .append("                              if (field.get(object) == null) {" + LS)
                 .append("                                  int size = (int) ((ELEMENT_WRAPPER) list.get(0)).getPosition();"
                         + LS)
@@ -776,6 +1144,7 @@ public class JavabufTranslatorGenerator {
                 .append("                                 Array.set(field.get(object), position, translator.translateFromJavabuf(element));"
                         + LS)
                 .append("                              }" + LS)
+                .append("      TO HERE */" + LS)
 
                 /*
                  * if (fd.getMessageType().getName().endsWith("ELEMENT_WRAPPER")) {
@@ -841,7 +1210,7 @@ public class JavabufTranslatorGenerator {
                 //                .append("                        ArrayUtility.assignArray(field, object, obj);" + LS)
                 .append("                        Utility.setField(field, object, obj, INSTANCE);" + LS)
                 .append("                     }" + LS)
-                .append("                  } else if (JavaType.MESSAGE.equals(fd.getJavaType()) && Array_proto.dev_resteasy_grpc_arrays___ArrayHolder.class.getSimpleName().equals(fd.getMessageType().getName())) {"
+                .append("                  } else if (JavaType.MESSAGE.equals(fd.getJavaType()) && dev_resteasy_grpc_arrays___ArrayHolder.class.getSimpleName().equals(fd.getMessageType().getName())) {"
                         + LS)
                 .append("                     dev_resteasy_grpc_arrays___ArrayHolder submessage = (dev_resteasy_grpc_arrays___ArrayHolder) message.getField(fd);"
                         + LS)
@@ -1149,6 +1518,25 @@ public class JavabufTranslatorGenerator {
     //  }
     //  sb.append("    }" + LS);
     //}
+    /*
+     * java_util_HashMap_HIDDEN_Node j_u
+     * JavaUtilHashMapHIDDENNode
+     * JavaUtilHashMapHIDDENNode
+     * dev_resteasy_grpc_arrays___ArrayHolder_Array: devresteasygrpcarraysArrayHolderArray
+     */
+    static String squashToCamel(String name) {
+        StringBuilder sb = new StringBuilder();
+        boolean start = true;
+        for (int i = 0; i < name.length(); i++) {
+            if (name.charAt(i) == '_') {
+                start = true;
+                continue;
+            }
+            sb.append(start ? name.substring(i, i + 1).toUpperCase() : name.substring(i, i + 1));
+            start = false;
+        }
+        return sb.toString();
+    }
 
     static String squashName(String name) {
         StringBuilder sb = new StringBuilder();
@@ -1223,18 +1611,35 @@ public class JavabufTranslatorGenerator {
                 || "ServletInfo".equals(clazz.getSimpleName())
                 || "gNewCookie".equals(clazz.getSimpleName())
                 || "FormMap".equals(clazz.getSimpleName())
-                || "FormValues".equals(clazz.getSimpleName())) {
+                || "FormValues".equals(clazz.getSimpleName())
+                || "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___NONE".equals(clazz.getName())
+                || "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Any".equals(clazz.getName())
+                || "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___String".equals(clazz.getName())) {
             return;
         }
-        if ("dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___ArrayHolder".equals(clazz.getName())) {
+        if (NULLABLE_WRAPPERS.contains(clazz.getSimpleName())) {
+            return;
+        }
+        System.out.println("createTranslatorToJavabuf(0): " + clazz.getName());
+        //        if (("dev.resteasy.grpc.arrays." + args[2] + "_proto$dev_resteasy_grpc_arrays___ArrayHolder").equals(clazz.getName())) {
+        if ((args[1] + "_proto$dev_resteasy_grpc_arrays___ArrayHolder").equals(clazz.getName())) {
+            System.out.println("calling createArrayHolderTranslatorToJavabuf()");
             createArrayHolderTranslatorToJavabuf(args, sb);
             return;
         }
-        if ("dev.resteasy.grpc.arrays".equals(clazz.getPackage().getName())) {
+        //        if ("dev.resteasy.grpc.arrays".equals(clazz.getPackage().getName())) {
+        //            return;
+        //        }
+        //        if (clazz.getName().endsWith("_wrapper") || clazz.getName().endsWith("_Array")) {
+        if (clazz.getName().endsWith("_wrapper")) {
             return;
         }
-        sb.append("   static class ")
+        sb.append("   public static class ")
                 .append(fqnify(clazz.getSimpleName())).append("_ToJavabuf implements TranslateToJavabuf {" + LS);
+        System.out.println("createTranslatorToJavabuf(0): " + clazz.getName() + fqnify(clazz.getSimpleName()));
+        if (clazz.getName().contains("String")) {
+            System.out.println("STRING" + clazz.getName());
+        }
         if (PRIMITIVE_WRAPPER_TYPES.containsKey(clazz.getSimpleName())) {
             String simpleJavabufName = clazz.getSimpleName();
             String simpleJavaName = simpleJavabufName.substring(1);
@@ -1260,8 +1665,179 @@ public class JavabufTranslatorGenerator {
                     .append("      public void clear() {" + LS)
                     .append("         //" + LS)
                     .append("      }" + LS);
+        } else if (clazz.getName().endsWith("___Array") || clazz.getName().endsWith("___WArray")) {
+            /*
+             * public interface TranslateToJavabuf {
+             * Message assignToJavabuf(Object obj);
+             * void clear();
+             * }
+             */
+            /*
+             * static class dev_resteasy_grpc_arrays___shortArray_ToJavabuf implements TranslateToJavabuf {
+             * public Message assignToJavabuf(Object x) {
+             * if (x == null) {
+             * return null;
+             * }
+             * short[] ss = (short[]) x;
+             * dev_resteasy_grpc_arrays___shortArray.Builder builder = dev_resteasy_grpc_arrays___shortArray.newBuilder();
+             * for (int i = 0; i < ss.length; i++) {
+             * builder.addShortField(ss[i]);
+             * }
+             * return builder.build();
+             * }
+             *
+             * public void clear() {
+             * //
+             * }
+             * } dev_resteasy_grpc_arrays___ArrayHolder___WArray -> dev_resteasy_grpc_arrays
+             */
+            System.out.println("\nSimpleName: " + clazz.getSimpleName());
+            String javabufComponentClass = null;
+            boolean isWrapper;
+            if (clazz.getSimpleName().contains("___WArray")) {
+                javabufComponentClass = clazz.getSimpleName().substring(0, clazz.getSimpleName().lastIndexOf("___WArray"));
+                isWrapper = true;
+            } else {
+                javabufComponentClass = clazz.getSimpleName().substring(0, clazz.getSimpleName().lastIndexOf("___Array"));
+                isWrapper = false;
+            }
+            //ArrayBuilderClass 1: dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___String___WArray, dev_resteasy_grpc_arrays___String___
+
+            /*
+             * ArrayBuilderClass 1:
+             * dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Integer___WArray,
+             * dev_resteasy_grpc_arrays___Integer___WArray
+             * dev_resteasy_grpc_arrays___Integer
+             *
+             * %1: Integer
+             * %2: dev_resteasy_grpc_arrays___Integer
+             * %3: int
+             * private static final String ArrayWrapperBuilderClass = //
+             * "      public Message assignToJavabuf(Object x) {%n"
+             * + "         if (x == null) {%n"
+             * + "            return null;%n"
+             * + "         }%n"
+             * + "         %1$s[] aa = (%1$s[]) x;%n"
+             * + "         %2$s.Builder elementBuilder = %2$s.newBuilder();%n"
+             * + "         %2$s___WArray.Builder arrayBuilder = %2$s___WArray.newBuilder();%n"
+             * + "         for (int i = 0; i < aa.length; i++) {%n"
+             * + "            if (aa[i] == null) {%n"
+             * + "               elementBuilder.clear().setNoneField(dev_resteasy_grpc_arrays___NONE.newBuilder());%n"
+             * + "            } else {%n"
+             * + "               elementBuilder.set%3$sField(aa[i]);%n"
+             * + "            }%n"
+             * + "            arrayBuilder.clear().add%1$sField(elementBuilder);%n"
+             * + "         }%n"
+             * + "         return arrayBuilder.build();%n"
+             * + "      }%n"
+             * + "%n"
+             * + "      public void clear() {%n"
+             * + "         //%n"
+             * + "      }%n"
+             * ;
+             * ArrayBuilderClass 1:
+             * dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Integer___WArray, [clazz.getName()]
+             * dev_resteasy_grpc_arrays___Integer___WArray [clazz.getSimpleName()]
+             * dev_resteasy_grpc_arrays___Integer [clazz.getSimpleName().substring(0,
+             * clazz.getSimpleName().lastIndexOf("___WArray"));]
+             *
+             * %1: Integer [javaComponentClass]
+             * %2: dev_resteasy_grpc_arrays___Integer [javabufComponentClass]
+             * %3: int
+             *
+             * ArrayBuilderClass 1:
+             * dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___int___Array, [clazz.getName()]
+             * dev_resteasy_grpc_arrays___int___Array, [clazz.getSimpleName()]
+             * dev_resteasy_grpc_arrays___int [clazz.getSimpleName().substring(0,
+             * clazz.getSimpleName().lastIndexOf("___WArray"));]
+             */
+            System.out
+                    .println("ArrayBuilderClass 1: " + clazz.getName() + ", " + clazz.getSimpleName() + ", "
+                            + javabufComponentClass);
+            //            String javaComponentClass = javabufComponentClass.substring(javabufComponentClass.lastIndexOf("___"));
+            //            String javaComponentClass = "jCC";
+            System.out.println("ArrayBuilderClass 2: " + clazz.getName() + ", " + javabufComponentClass);
+            //            String javaComponentClass = javabufComponentClass.substring(0, javabufComponentClass.lastIndexOf("___"));
+            String javaComponentClass = javabufComponentClass;
+            if (javabufComponentClass.startsWith("dev_resteasy_grpc_arrays___")
+                    && !"dev_resteasy_grpc_arrays___ArrayHolder".equals(javabufComponentClass)) {
+                javaComponentClass = javabufComponentClass.substring(javabufComponentClass.lastIndexOf("___") + 3);
+            }
+            /*
+             * dev_resteasy_grpc_arrays___ArrayHolder___WArray
+             *
+             * java_util_HashMap_HIDDEN_Node, java_util_HashMap_HIDDEN_Node, JavaUtilHashMapHIDDENNode
+             * ArrayHolder, dev_resteasy_grpc_arrays___ArrayHolder, DevResteasyGrpcArraysArrayHolder
+             * Any, dev_resteasy_grpc_arrays___Any, DevResteasyGrpcArraysAny
+             * String, dev_resteasy_grpc_arrays___String, DevResteasyGrpcArraysString
+             * Character, dev_resteasy_grpc_arrays___Character, Char
+             * Character, dev_resteasy_grpc_arrays___Character, Char
+             * Double, dev_resteasy_grpc_arrays___Double, Double
+             * Double, dev_resteasy_grpc_arrays___Double, Double
+             * Float, dev_resteasy_grpc_arrays___Float, Float
+             * Float, dev_resteasy_grpc_arrays___Float, Float
+             * Long, dev_resteasy_grpc_arrays___Long, Long
+             * Long, dev_resteasy_grpc_arrays___Long, Long
+             * Integer, dev_resteasy_grpc_arrays___Integer, Int
+             * Integer, dev_resteasy_grpc_arrays___Integer, Int
+             * Short, dev_resteasy_grpc_arrays___Short, Short
+             * Short, dev_resteasy_grpc_arrays___Short, Short
+             * Byte, dev_resteasy_grpc_arrays___Byte, Byte
+             * Byte, dev_resteasy_grpc_arrays___Byte, Byte
+             * Boolean, dev_resteasy_grpc_arrays___Boolean, Boolean
+             * Boolean, dev_resteasy_grpc_arrays___Boolean, Boolean
+             *
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Boolean", "Boolean");
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Byte", "Byte");
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Short", "Short");
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Integer", "Int");
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Long", "Long");
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Float", "Float");
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Double", "Double");
+             * WRAPPER_TO_PRIMITIVE_CAMEL.put("Character", "Char");
+             * ArrayBuilderClass 3:
+             * dev_resteasy_grpc_arrays, [javaComponentClass]
+             * dev.resteasy.grpc.example.CC1_proto$dev_resteasy_grpc_arrays___ArrayHolder___WArray, [class]
+             * dev_resteasy_grpc_arrays, [javabufComponentClass]
+             * DevResteasyGrpcArrays [methodClass]
+             *
+             *
+             */
+            //            String methodClass = (WRAPPER_TO_PRIMITIVE_CAMEL.containsKey(javaComponentClass))
+            //                    ? WRAPPER_TO_PRIMITIVE_CAMEL.get(javaComponentClass)
+            //                    : squashToCamel(javabufComponentClass);
+            String methodClass = squashToCamel(javabufComponentClass);
+            /*
+             * dev.resteasy.grpc.example.CC1_proto$java_util_HashMap_HIDDEN_Node___Array,
+             * va_util_HashMap_HIDDEN_Node,
+             * java_util_HashMap_HIDDEN_Node,
+             * JavaUtilHashMapHIDDENNode
+             */
+            System.out.println("ArrayBuilderClass 3: "
+                    + javaComponentClass + ", "
+                    + clazz.getName() + ", "
+                    + javabufComponentClass + ", "
+                    + methodClass);
+            if ("Byte".equals(javaComponentClass)) {
+                System.out.println("ArrayBuilderClass: Byte");
+                sb.append(String.format(ArrayWrapperBuilderClassForBytes, javaComponentClass, javabufComponentClass));
+            } else if ("Character".equals(javaComponentClass)) {
+                sb.append(String.format(ArrayWrapperBuilderClassForCharacters, javaComponentClass, javabufComponentClass));
+            } else if (JAVA_WRAPPER_TYPES.contains(javaComponentClass)) {
+                if (isWrapper) {
+                    sb.append(String.format(ArrayPrimitiveWrapperBuilderClass, javaComponentClass, javabufComponentClass,
+                            javaComponentClass));
+                } else {
+                    String primitiveClass = WRAPPER_TO_PRIMITIVE.get(javaComponentClass);
+                    methodClass = primitiveClass.substring(0, 1).toUpperCase() + primitiveClass.substring(1);
+                    sb.append(String.format(ArrayPrimitiveBuilderClass, primitiveClass, javaComponentClass, methodClass));
+                }
+            } else {
+                sb.append(String.format(ArrayWrapperBuilderClass, javaComponentClass, javabufComponentClass, methodClass));
+            }
         } else {
             String classname = null;
+            //clazz: class dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___NONE, enclosing: class dev.resteasy.grpc.arrays.Array_proto, public: true, simple: dev_resteasy_grpc_arrays___NONE
             System.out.println("clazz: " + clazz + ", enclosing: " + clazz.getEnclosingClass() + ", public: "
                     + Modifier.isPublic(clazz.getModifiers()) + ", simple: " + clazz.getSimpleName());
             if (clazz.getEnclosingClass() == null || Modifier.isPublic(clazz.getModifiers())) {
@@ -1270,6 +1846,8 @@ public class JavabufTranslatorGenerator {
                 Class<?> enclosingClass = clazz.getEnclosingClass();
                 classname = "Utility.getHiddenClass(" + enclosingClass.getName() + ", " + clazz.getSimpleName() + ")";
             }
+            System.out.println("getJavabufClassValue(clazz.getSimpleName(), false, false): " + clazz.getSimpleName()
+                    + getJavabufClassValue(clazz.getSimpleName(), false, false));
             sb.append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName())
                     .append(".getDescriptor();" + LS)
                     //                    .append("      private static ").append(fqnify(clazz.getSimpleName())).append(".Builder builder = ")
@@ -1328,7 +1906,8 @@ public class JavabufTranslatorGenerator {
 
     private static void createArrayHolderTranslatorToJavabuf(String[] args, StringBuilder sb) {
         sb.append("//////// ArrayHolder to Javabuf  ////////" + LS + LS);
-        sb.append("   static class dev_resteasy_grpc_arrays___ArrayHolder_ToJavabuf implements TranslateToJavabuf {" + LS + LS)
+        sb.append("   public static class dev_resteasy_grpc_arrays___ArrayHolder_ToJavabuf implements TranslateToJavabuf {" + LS
+                + LS)
                 .append("      public Message assignToJavabuf(Object obj) {" + LS)
                 .append("         return ArrayUtility.getHolder(translator, obj);" + LS)
                 .append("      }" + LS + LS)
@@ -1344,7 +1923,13 @@ public class JavabufTranslatorGenerator {
             return;
         }
         String originalName = originalSimpleName(clazz.getName());
-        if ("dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___ArrayHolder".equals(clazz.getName())) {
+        //dev.resteasy.grpc.example.CC1_proto$dev_resteasy_grpc_arrays___ArrayHolder
+        System.out.println("createTranslatorFromJavabuf(): clazz: " + clazz.getName());
+        System.out.println("createTranslatorFromJavabuf(): dev.resteasy.grpc.arrays." + args[2]
+                + "proto$dev_resteasy_grpc_arrays___ArrayHolder.equals(clazz.getName())");
+        //        if (("dev.resteasy.grpc.arrays." + args[2] + "proto$dev_resteasy_grpc_arrays___ArrayHolder").equals(clazz.getName())) {
+        if ((args[1] + "_proto$dev_resteasy_grpc_arrays___ArrayHolder").equals(clazz.getName())) {
+            System.out.println("createTranslatorFromJavabuf() calling createArrayHolderTranslatorFromJavabuf()");
             createArrayHolderTranslatorFromJavabuf(args, sb);
             return;
         }
@@ -1366,7 +1951,7 @@ public class JavabufTranslatorGenerator {
             return;
         }
         if (PRIMITIVE_WRAPPER_TYPES.containsKey(originalName)) {
-            sb.append("   static class ")
+            sb.append("   public static class ")
                     .append(fqnify(clazz.getSimpleName())).append("_FromJavabuf implements TranslateFromJavabuf {" + LS)
                     .append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName())
                     .append(".getDescriptor();" + LS);
@@ -1412,7 +1997,7 @@ public class JavabufTranslatorGenerator {
                 return;
             }
             System.out.println("createTranslatorFromJavabuf(2.4):");
-            sb.append("   static class ")
+            sb.append("   public static class ")
                     .append(fqnify(clazz.getSimpleName())).append("_FromJavabuf implements TranslateFromJavabuf {" + LS)
                     .append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName())
                     .append(".getDescriptor();" + LS);
@@ -1496,10 +2081,22 @@ public class JavabufTranslatorGenerator {
         sb.append("   }" + LS + LS);
     }
 
+    private static void createArrayHandlingClasses(StringBuilder sb) {
+        for (Class<?> c : arrayClasses) {
+            String componentClass = c.getSimpleName().substring(0, c.getSimpleName().lastIndexOf("_WArray"));
+            String squash = squashToCamel(c.getSimpleName());
+            System.out.println("createArrayHandlingClasses(): " + c.getSimpleName() + ", " + squash
+                    + ", " + componentClass);
+            //            sb.append(String.format(ArrayWrapperBuilderMethod, componentClass, squashToCamel(componentClass)));
+            //            sb.append(LS + LS);
+        }
+    }
+
     private static void createArrayHolderTranslatorFromJavabuf(String[] args, StringBuilder sb) {
+        System.out.println("entering createArrayHolderTranslatorFromJavabuf()");
         String prefix = args[1].substring(args[1].lastIndexOf('.') + 1);
         sb.append("//////// ArrayHolder from Javabuf" + LS + LS)
-                .append("   static class dev_resteasy_grpc_arrays___ArrayHolder_FromJavabuf implements TranslateFromJavabuf {"
+                .append("   public static class dev_resteasy_grpc_arrays___ArrayHolder_FromJavabuf implements TranslateFromJavabuf {"
                         + LS)
                 .append("      public Object assignFromJavabuf(Message message) {" + LS)
                 .append("         try {" + LS)
@@ -1606,6 +2203,11 @@ public class JavabufTranslatorGenerator {
         //        if (i >= 0) {
         //            s = s.substring(i + 1);
         //        }
+        if (s.endsWith("___Array")) {
+            s = s.substring(0, s.length() - 8);
+        } else if (s.endsWith("___WArray")) {
+            s = s.substring(0, s.length() - 9);
+        }
         int j = s.lastIndexOf("___");
         if (j >= 0) {
             String pkg = s.substring(0, j).replace('_', '.');
@@ -1707,6 +2309,7 @@ public class JavabufTranslatorGenerator {
             }
         }
     }
+    //staticInit(): class dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Long___Array, Array, dev.resteasy.grpc.arrays...Long.Array
 
     private static String javabufToJava(String javabufName, String simpleName, boolean canonical) {
         System.out.println("javabufToJava(): javabufName: " + javabufName + ", simpleName: " + simpleName);
@@ -1781,7 +2384,9 @@ public class JavabufTranslatorGenerator {
                     //                return "getReturnNonPublicJavaClass(\"" + clazz.getCanonicalName() + "\")";
                     return "getReturnNonPublicJavaClass(\"" + clazz.getName() + "\").getJavaClass()";
                 } catch (Exception e) {
-                    return "";
+                    System.out.println("getJavabufClassValue(exception): " + e.getClass() + ", " + e.getMessage());
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
                 //               }
             }
@@ -1815,5 +2420,40 @@ public class JavabufTranslatorGenerator {
         }
         Class<?> clazz = Class.forName(javaName);
         return !Modifier.isPublic(clazz.getModifiers());
+    }
+
+    /*
+     * public void set_java_util_HashMap_HIDDEN_Node_Array(Object[] array) {
+     * dev_resteasy_grpc_arrays___ArrayHolder.Builder ahb = dev_resteasy_grpc_arrays___ArrayHolder.newBuilder();
+     * java_util_HashMap_HIDDEN_Node_Array.Builder ab = java_util_HashMap_HIDDEN_Node_Array.newBuilder();
+     * CC1_proto.java_util_HashMap_HIDDEN_Node_wrapper.Builder wb = java_util_HashMap_HIDDEN_Node_wrapper.newBuilder();
+     * for (int i = 0; i < Array.getLength(array); i++) {
+     * if (array[i] == null) {
+     * wb.clear().setNoneField(Array_proto.dev_resteasy_grpc_arrays___NONE.newBuilder().build());
+     * } else {
+     * wb.clear().setJavaUtilHashMapHIDDENNodeField((java_util_HashMap_HIDDEN_Node) INSTANCE.translateToJavabuf(array[i]));
+     * }
+     * ab.addJavaUtilHashMapHIDDENNodeWrapperField(wb);
+     * }
+     * ahb.setJavaUtilHashMapHIDDENNodeArrayField(ab);
+     * }
+     */
+    /*
+     * for (Class<?> innerClazz : clazz.getDeclaredClasses()) {
+     * System.out.println("innerClazz: " + innerClazz.getName());
+     * if (innerClazz.getName().endsWith("$Builder")) {
+     * builderClazz = innerClazz;
+     * for (Method m : innerClazz.getDeclaredMethods()) {
+     * if (m.getName().startsWith("set")) {
+     * System.out.println("m set: " + m.getName());
+     * }
+     * }
+     * }
+     * if (innerClazz.getName().endsWith("MessageTypeCase")) {
+     * enumClazz = innerClazz;
+     * }
+     */
+    private static void createArrayHolderBuilderMethods(StringBuilder sb) {
+
     }
 }

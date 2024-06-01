@@ -2,14 +2,17 @@ package dev.resteasy.grpc.bridge.generator.protobuf;
 
 import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -259,10 +264,52 @@ public class JavaToProtobufGenerator {
     private static int counter = 1;
     private static boolean isSSE;
     private static String SSE_EVENT_CLASSNAME = "dev_resteasy_grpc_bridge_runtime_sse___SseEvent";
-    private static ClassLoader classLoader;
-    private static StringBuilder wrapperBuilder = new StringBuilder();
-    private static Set<String> repeatedTypes = new HashSet<String>();
+    //    private static StringBuilder wrapperBuilder = new StringBuilder();
+    private static List<String> basicRepeatedTypes = new ArrayList<String>();
+    private static SortedSet<String> repeatedTypes = new TreeSet<String>();
     private static Map<String, String> REPEAT_MAP = new HashMap<String, String>();
+
+    /*
+     * private static String arrayDef = "message dev_resteasy_grpc_arrays___%1$s {%n"
+     * + "   oneof type {%n"
+     * + "      dev_resteasy_grpc_arrays___NONE _field = 1;%n"
+     * + "      %1$s %1$s_field = 2;%n"
+     * + "   }%n"
+     * + "}%n"
+     * + "%n"
+     * + "message dev_resteasy_grpc_arrays___%1$sArray {%n"
+     * + "   repeated dev_resteasy_grpc_arrays___%1$s %1$s_field = 1;%n"
+     * + "}";
+     */
+    //    private static String arrayDef = "message dev_resteasy_grpc_arrays___%1$s_wrapper {%n"
+    /*
+     * message dev_resteasy_grpc_arrays___Short {
+     * oneof type {
+     * dev_resteasy_grpc_arrays___NONE none_field = 1;
+     * int32 short_field = 2;
+     * }
+     * }
+     *
+     * message dev_resteasy_grpc_arrays___shortArray {
+     * repeated int32 short_field = 1;
+     * }
+     *
+     * message dev_resteasy_grpc_arrays___ShortWArray {
+     * repeated dev_resteasy_grpc_arrays___Short Short_field = 1;
+     * }
+     */
+    private static String arrayDef = "///////////////%n"
+            + "message %1$s___wrapper {%n"
+            + "   oneof type {%n"
+            + "      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE none_field = 1;%n"
+            + "      %1$s %1$s_field = 2;%n"
+            + "   }%n"
+            + "}%n%n"
+            //            + "message dev_resteasy_grpc_arrays___%1$s_Array {%n"
+            //            + "   repeated dev_resteasy_grpc_arrays___%1$s_wrapper %1$s_wrapper_field = 1;%n"
+            + "message %1$s___WArray {%n"
+            + "   repeated %1$s___wrapper %1$s___field = 1;%n"
+            + "}%n%n";
 
     static {
         TYPE_MAP.put("boolean", "bool");
@@ -358,6 +405,27 @@ public class JavaToProtobufGenerator {
         HTTP_VERBS.add("PATCH");
         HTTP_VERBS.add("POST");
         HTTP_VERBS.add("PUT");
+
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
+        basicRepeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray");
+        basicRepeatedTypes.add("dev_resteasy_grpc_arrays___ArrayHolder___WArray");
     }
 
     public static void main(String[] args) throws IOException {
@@ -412,6 +480,7 @@ public class JavaToProtobufGenerator {
         sb.append("import \"google/protobuf/any.proto\";" + LS);
         sb.append("import \"google/protobuf/timestamp.proto\";" + LS);
         sb.append("import \"dev/resteasy/grpc/arrays/arrays.proto\";" + LS);
+        sb.append("import \"dev/resteasy/grpc/primitives/primitives.proto\";" + LS);
         sb.append("option java_package = \"" + args[2] + "\";" + LS);
         sb.append("option java_outer_classname = \"" + args[3] + "_proto\";" + LS);
     }
@@ -619,36 +688,62 @@ public class JavaToProtobufGenerator {
     //                .append("}" + LS);
     //    }
 
+    /*
+     * Path pathIn = Paths.get(System.getProperty("user.dir") + "/src/main/proto/arrays.proto.in");
+     * Path pathOut = Paths.get(System.getProperty("user.dir") +
+     * "/src/main/proto/dev/resteasy/grpc/arrays/tmp/arrays.proto.out");
+     * File protoFileIn = pathIn.toFile();
+     * if (!protoFileIn.exists()) {
+     * throw new RuntimeException("Can't find arrays.proto.in");
+     * }
+     * Files.createDirectories(pathOut);
+     * // File protoFile = new File(System.getProperty("user.dir") + "/src/main/proto/arrays.proto");
+     * File protoFile = pathOut.toFile();
+     * // protoFile.createNewFile();
+     * // fis = new FileInputStream(protoFileIn);
+     *
+     *
+     * Files.copy(pathIn, pathOut, StandardCopyOption.REPLACE_EXISTING);
+     * fos = new FileOutputStream(protoFile, true);
+     * System.out.println(fos);
+     * fos.write(111); fos.write(112); fos.write(113);
+     *
+     */
+
     private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
         Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
         if (path.resolve(args[3] + ".proto").toFile().exists()) {
             //            return;
         }
-        String s = sb.toString();
-        System.out.println(s);
-        System.out.println(s.length());
+        //        String s = sb.toString();
+        //        System.out.println(s);
+        //        System.out.println(s.length());
         counter = 0;
-        wrapperBuilder.append("message ELEMENT_WRAPPER {" + LS)
-                .append("   int64 position = " + ++counter + ";" + LS)
-                .append("   oneof messageType {" + LS);
-        for (String type : repeatedTypes) {
-            String fieldName = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
-            wrapperBuilder
-                    .append("      ")
-                    .append(type)
-                    .append(" ")
-                    .append(fieldName)
-                    .append("_field = ")
-                    .append(++counter)
-                    .append(";" + LS);
-        }
-        wrapperBuilder.append("   }" + LS).append("}" + LS);
-        Files.writeString(path.resolve(args[3] + ".proto"), sb.toString() + wrapperBuilder.toString(), StandardCharsets.UTF_8);
+        //        wrapperBuilder.append("message ELEMENT_WRAPPER {" + LS)
+        //                .append("   int64 position = " + ++counter + ";" + LS)
+        //                .append("   oneof messageType {" + LS);
+        //        for (String type : repeatedTypes) {
+        //            String fieldName = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
+        //            wrapperBuilder
+        //                    .append("      ")
+        //                    .append(type)
+        //                    .append(" ")
+        //                    .append(fieldName)
+        //                    .append("_field = ")
+        //                    .append(++counter)
+        //                    .append(";" + LS);
+        //        }
+        //        wrapperBuilder.append("   }" + LS).append("}" + LS);
+        createArrayDefs(args, sb);
+        //        Files.writeString(path.resolve(args[3] + ".proto"), sb.toString() + wrapperBuilder.toString(), StandardCharsets.UTF_8);
+        Files.writeString(path.resolve(args[3] + ".proto"), sb.toString(), StandardCharsets.UTF_8);
 
         //        Files.writeString(path.resolve(args[3] + "2" + ".proto"), sb.toString(), StandardCharsets.UTF_8);
         Path path2 = Path.of("/tmp/CC1.proto");
         Files.writeString(path2, sb.toString(), StandardCharsets.UTF_8);
+        //        createArrayDefs(args);
         System.out.println("done");
+
     }
 
     private static void createProtobufDirectory(String[] args) {
@@ -661,6 +756,140 @@ public class JavaToProtobufGenerator {
             }
         }
     }
+
+    private static void createArrayDefs(String[] args, StringBuilder wrapperBuilder) {
+        FileOutputStream fos = null;
+        BufferedWriter writer = null;
+        try {
+            //           Path pathIn = Paths.get(System.getProperty("user.dir") + "/src/main/proto/arrays.proto.in");
+            //            Path pathIn = Paths.get(args[0] + "/src/main/resources/arrays.proto.in");
+            //            Path dirOut = Paths
+            //                    .get(args[0] + "/src/main/proto/dev/resteasy/grpc/arrays/tmp/");
+            //            Files.createDirectories(dirOut);
+            //            Path pathOut = Paths.get(args[0] + "/src/main/proto/dev/resteasy/grpc/arrays/arrays.proto");
+            //            //           Path pathOut = Paths
+            //            //                   .get(System.getProperty("user.dir") + "/src/main/proto/dev/resteasy/grpc/arrays/tmp/arrays.proto.out");
+            //            File protoFileIn = pathIn.toFile();
+            //            if (!protoFileIn.exists()) {
+            //                throw new RuntimeException("Can't find arrays.proto.in");
+            //            }
+            //            //           Files.createDirectories(pathOut);
+            //            //            Files.copy(pathIn, pathOut, StandardCopyOption.REPLACE_EXISTING);
+            //            //            Files.copy(pathIn, pathOut);
+            //            repeatedTypes.add("dev_resteasy_grpc_arrays___ArrayHolder");
+            //            repeatedTypes.add("ArrayHolder");
+            repeatedTypes.add("dev_resteasy_grpc_arrays___ArrayHolder");
+            for (String type : repeatedTypes) {
+                System.out.println("array type xxx: " + type);
+                if ("google.protobuf.Any".equals(type)) {
+                    continue;
+                }
+                String typeName = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
+                wrapperBuilder.append(String.format(arrayDef, typeName));
+            }
+            SortedSet<String> holderTypes = new TreeSet<String>(basicRepeatedTypes);
+            //            holderTypes.add("dev_resteasy_grpc_arrays___ArrayHolder");
+            for (String ht : holderTypes) {
+                System.out.println("ht: " + ht);
+            }
+            for (String rt : repeatedTypes) {
+                if ("google.protobuf.Any".equals(rt)) {
+                    continue;
+                }
+                holderTypes.add(String.format("%1$s___WArray", rt));
+            }
+            counter = 0;
+            wrapperBuilder.append("message dev_resteasy_grpc_arrays___ArrayHolder {" + LS)
+                    .append("   string componentClass = " + ++counter + ";" + LS)
+                    .append("   oneof messageType {" + LS);
+            //            repeatedTypes.addAll(basicRepeatedTypes);
+            //            for (String brt : basicRepeatedTypes) {
+            //                //                repeatedTypes.add(String.format("dev_resteasy_grpc_arrays___%1$s_wrapper", brt));
+            //                repeatedTypes.add(brt);
+            //                System.out.println("added to repeatedTypes: " + brt);
+            //            }
+            //            for (String type : repeatedTypes) {
+            //            for (String type : holderTypes) {
+            //                String fieldName = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
+            //                wrapperBuilder.append("      ")
+            //                        .append(type)
+            //                        .append(" ")
+            //                        .append(fieldName)
+            //                        .append("_field = ")
+            //                        .append(++counter)
+            //                        .append(";" + LS);
+            //            }
+            for (String type : holderTypes) {
+                String typeName = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
+                wrapperBuilder.append("      ")
+                        .append(type)
+                        .append(" ")
+                        .append(typeName)
+                        .append("_field = ")
+                        .append(++counter)
+                        .append(";" + LS);
+                System.out.println("holderType: " + type + ", " + typeName);
+            }
+            wrapperBuilder.append("   }" + LS).append("}" + LS);
+            //            File protoFile = pathOut.toFile();
+            //          fos = new FileOutputStream(protoFile, true);
+            //            writer = new BufferedWriter(new FileWriter(protoFile, true));
+            /*
+             * syntax = "proto3";
+             * package dev.resteasy.grpc.arrays;
+             * import "google/protobuf/any.proto";
+             * option java_package = "dev.resteasy.grpc.arrays";
+             * option java_outer_classname = "Array_proto";
+             */
+            //            writer.append("syntax = \"proto3\";" + LS);
+            //            writer.append("package dev.resteasy.grpc.arrays;" + LS);
+            //            writer.append("import \"google/protobuf/any.proto\";" + LS);
+            //            writer.append("option java_package = \"dev.resteasy.grpc.arrays\";" + LS);
+            //            writer.append("option java_outer_classname = \"Array_proto\";" + LS);
+            //            writer.append(wrapperBuilder.toString());
+            //            writer.close();
+            //            System.out.println("wrote: " + pathOut);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                //            fos.close();
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /*
+     * message dev_resteasy_grpc_arrays___Double {
+     * oneof type {
+     * dev_resteasy_grpc_arrays___NONE none_field = 1;
+     * double double_field = 2;
+     * }
+     * }
+     *
+     * message dev_resteasy_grpc_arrays___DoubleWArray {
+     * repeated dev_resteasy_grpc_arrays___Double Double_field = 1;
+     * }
+     *
+     * private static void createArrayDef(String className, StringBuilder sb) {
+     * String s = "message dev_resteasy_grpc_arrays___$1 {" + LS
+     * + "oneof type {" + LS
+     * + "   dev_resteasy_grpc_arrays___NONE _field = 1;" + LS
+     * + "   $1 $1_field = 2;" + LS
+     * + "   }" + LS
+     * + "}" + LS
+     * + LS
+     * + "message dev_resteasy_grpc_arrays___$1WArray {" + LS
+     * + "   repeated dev_resteasy_grpc_arrays___$1 $1_field = 1;" + LS
+     * + "}";
+     *
+     * sb.append();
+     * }
+     */
 
     /****************************************************************************/
     /*********************************
@@ -947,16 +1176,19 @@ public class JavaToProtobufGenerator {
                     if ("java.lang.Object".equals(ct.describe())) {
                         System.out.println("found Object array");
                         //                        type = "repeated google.protobuf.Any";
-                        type = "repeated " + wrapRepeated("google.protobuf.Any");
+                        //                        type = "repeated " + wrapRepeated("google.protobuf.Any");
+                        type = wrapRepeated("google.protobuf.Any");
                     } else if ("byte".equals(ct.describe())) {
                         type = "bytes";
                     } else if ("char".equals(ct.describe()) || "java.lang.Character".equals(ct.describe())) {
                         type = "string";
                     } else if (ct.isPrimitive()) {
                         //                        type = "repeated " + TYPE_MAP.get(removeTypeVariables(ct.describe()));
-                        type = "repeated " + wrapRepeated(TYPE_MAP.get(removeTypeVariables(ct.describe())));
+                        //                        type = "repeated " + wrapRepeated(TYPE_MAP.get(removeTypeVariables(ct.describe())));
+                        type = wrapRepeated(TYPE_MAP.get(removeTypeVariables(ct.describe())));
                     } else if (ct instanceof ResolvedArrayType) {
-                        type = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                        //                        type = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                        type = "dev_resteasy_grpc_arrays___ArrayHolder";
                         ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
                         if (bat.isReference()) {
                             ResolvedReferenceTypeDeclaration rrtd = (ResolvedReferenceTypeDeclaration) bat.asReferenceType()
@@ -979,7 +1211,8 @@ public class JavaToProtobufGenerator {
                         }
                         if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(fqn)) {
                             //                            type = "repeated " + PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn);
-                            type = "repeated " + wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
+                            //                            type = "repeated " + wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
+                            type = wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
                         } else if (!visited.contains(fqn)) {
                             resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
                             System.out.println("resolved type: 2 " + ct.asReferenceType().getTypeDeclaration().get() + ", "
@@ -989,7 +1222,10 @@ public class JavaToProtobufGenerator {
                                 System.out.println("adding interface 2: " + ct.asReferenceType().getTypeDeclaration().get()
                                         + ", q name: " + (ct.asReferenceType().getTypeDeclaration().get().getQualifiedName()));
                             }
-                            type = "repeated " + wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                            //                            type = "repeated " + wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                            //                                    .getTypeDeclaration()
+                            //                                    .get())));
+                            type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
                                     .getTypeDeclaration()
                                     .get())));
                         }
@@ -1052,8 +1288,8 @@ public class JavaToProtobufGenerator {
                             .append(counter++)
                             .append(";" + LS);
                 }
-                String s = sb.toString().substring(sb.toString().length() / 2);
-                System.out.println(s);
+                //                String s = sb.toString().substring(sb.toString().length() / 2);
+                //                System.out.println(s);
             }
             /*
              * // Add field for superclass.
@@ -1210,7 +1446,8 @@ public class JavaToProtobufGenerator {
                         typeName = "string";
                     } else if (ct.isPrimitive()) {
                         //                        typeName = "repeated " + typeName;
-                        typeName = "repeated " + wrapRepeated(typeName);
+                        //                        typeName = "repeated " + wrapRepeated(typeName);
+                        typeName = wrapRepeated(typeName);
                     } else {
                         fqn = type.describe();
                         String s = ct.describe();
@@ -1235,13 +1472,16 @@ public class JavaToProtobufGenerator {
                         //                        }
                         ResolvedArrayType rat = type.asArrayType();
                         if (rat.arrayLevel() > 1) {
-                            typeName = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                            //                            typeName = "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                            typeName = "dev_resteasy_grpc_arrays___ArrayHolder";
                         } else {
                             //                        isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().g);
-                            typeName = "repeated "
-                                    //                                + fqnifyClass(fqn, isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
-                                    + wrapRepeated(fqnifyClass(fqn,
-                                            isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().get())));
+                            //                            typeName = "repeated "
+                            //                                    //                                + fqnifyClass(fqn, isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
+                            //                                    + wrapRepeated(fqnifyClass(fqn,
+                            //                                            isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().get())));
+                            typeName = wrapRepeated(fqnifyClass(fqn,
+                                    isInnerClass(rat.getComponentType().asReferenceType().getTypeDeclaration().get())));
                         }
                     }
                 } else { // Defined type
@@ -1340,7 +1580,8 @@ public class JavaToProtobufGenerator {
                 }
                 if (rt.isArray()) {
                     //                    return "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
-                    return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                    //                    return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                    return "dev_resteasy_grpc_arrays___ArrayHolder";
                 }
                 ResolvedReferenceTypeDeclaration r = rt.asReferenceType().getTypeDeclaration().orElse(null);
                 if (r != null) {
@@ -1417,7 +1658,7 @@ public class JavaToProtobufGenerator {
                 }
                 if (rt.isArray()) {
                     //                    return "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
-                    return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder";
+                    return "dev_resteasy_grpc_arrays___ArrayHolder";
                 }
                 resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
                 System.out.println("resolved type: 11 " + rt.asReferenceType().getTypeDeclaration().get()
@@ -1700,7 +1941,8 @@ public class JavaToProtobufGenerator {
         }
         repeatedTypes.add(type);
         //        return type;
-        return "ELEMENT_WRAPPER";
+        //        return "ELEMENT_WRAPPER";
+        return "dev_resteasy_grpc_arrays___ArrayHolder";
         //        if (!repeatedTypes.contains(fieldName)) {
         //            wrapperBuilder.append("message ")
         //                    .append(fn)

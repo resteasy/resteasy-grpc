@@ -1,0 +1,15 @@
+syntax = "proto3";
+package dev.resteasy.grpc.primitives;
+option java_package = "dev.resteasy.grpc.primitives";
+option java_outer_classname = "Primitives_proto";
+
+message gEmpty {}
+message gInteger   {int32  value = 1;}
+message gFloat     {float  value = 1;}
+message gCharacter {string value = 1;}
+message gByte      {int32  value = 1;}
+message gLong      {int64  value = 1;}
+message gString    {string value = 1;}
+message gBoolean   {bool   value = 1;}
+message gDouble    {double value = 1;}
+message gShort     {int32  value = 1;}

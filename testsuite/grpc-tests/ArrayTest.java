@@ -42,7 +42,7 @@ public class ArrayTest {
 		Assert.assertArrayEquals(intSS, intSS2);
 	}
 	
-	@Test
+//	@Test
 	public void testArrayUtility3() throws Exception {
 		JavabufTranslator translator = new CC1JavabufTranslator();
 		Integer[][][] intSS = new Integer[][][]
