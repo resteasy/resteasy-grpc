@@ -23,7 +23,7 @@ message dev_resteasy_grpc_arrays___Boolean___Array {
 }
 
 message dev_resteasy_grpc_arrays___Boolean___WArray {
-   repeated dev_resteasy_grpc_arrays___Boolean___wrapper Boolean_field = 1;
+   repeated dev_resteasy_grpc_arrays___Boolean___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -39,7 +39,7 @@ message dev_resteasy_grpc_arrays___Byte___Array {
 }
 
 message dev_resteasy_grpc_arrays___Byte___WArray {
-   repeated dev_resteasy_grpc_arrays___Byte___wrapper Byte_field = 1;
+   repeated dev_resteasy_grpc_arrays___Byte___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -55,7 +55,7 @@ message dev_resteasy_grpc_arrays___Short___Array {
 }
 
 message dev_resteasy_grpc_arrays___Short___WArray {
-   repeated dev_resteasy_grpc_arrays___Short___wrapper Short_field = 1;
+   repeated dev_resteasy_grpc_arrays___Short___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -71,7 +71,7 @@ message dev_resteasy_grpc_arrays___Integer___Array {
 }
 
 message dev_resteasy_grpc_arrays___Integer___WArray {
-   repeated dev_resteasy_grpc_arrays___Integer___wrapper Integer_field = 1;
+   repeated dev_resteasy_grpc_arrays___Integer___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -87,7 +87,7 @@ message dev_resteasy_grpc_arrays___Long___Array {
 }
 
 message dev_resteasy_grpc_arrays___Long___WArray {
-   repeated dev_resteasy_grpc_arrays___Long___wrapper Long_field = 1;
+   repeated dev_resteasy_grpc_arrays___Long___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -103,7 +103,7 @@ message dev_resteasy_grpc_arrays___Float___Array {
 }
 
 message dev_resteasy_grpc_arrays___Float___WArray {
-   repeated dev_resteasy_grpc_arrays___Float___wrapper Float_field = 1;
+   repeated dev_resteasy_grpc_arrays___Float___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -119,7 +119,7 @@ message dev_resteasy_grpc_arrays___Double___Array {
 }
 
 message dev_resteasy_grpc_arrays___Double___WArray {
-   repeated dev_resteasy_grpc_arrays___Double___wrapper Double_field = 1;
+   repeated dev_resteasy_grpc_arrays___Double___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -135,7 +135,7 @@ message dev_resteasy_grpc_arrays___Character___Array {
 }
 
 message dev_resteasy_grpc_arrays___Character___WArray {
-   repeated dev_resteasy_grpc_arrays___Character___wrapper Character_field = 1;
+   repeated dev_resteasy_grpc_arrays___Character___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -147,7 +147,7 @@ message dev_resteasy_grpc_arrays___String___wrapper {
 }
 
 message dev_resteasy_grpc_arrays___String___WArray {
-   repeated dev_resteasy_grpc_arrays___String___wrapper String_field = 1;
+   repeated dev_resteasy_grpc_arrays___String___wrapper wrapper_field = 1;
 }
 
 //=====
@@ -159,6 +159,6 @@ message dev_resteasy_grpc_arrays___Any___wrapper {
 }
 
 message dev_resteasy_grpc_arrays___Any___WArray {
-   repeated dev_resteasy_grpc_arrays___Any___wrapper any_field = 1;
+   repeated dev_resteasy_grpc_arrays___Any___wrapper wrapper_field = 1;
 }
 
