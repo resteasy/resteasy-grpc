@@ -1,87 +1,86 @@
 package dev.resteasy.grpc.lists.sets;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class S1 implements Set<String> {
 
+    private List<String> list = new ArrayList<String>();
+
     @Override
     public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+        return list.size();
     }
 
     @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        return false;
+        return list.isEmpty();
     }
 
     @Override
     public boolean contains(Object o) {
-        // TODO Auto-generated method stub
-        return false;
+        return list.contains(o);
     }
 
     @Override
     public Iterator<String> iterator() {
-        // TODO Auto-generated method stub
-        return null;
+        return list.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        // TODO Auto-generated method stub
-        return null;
+        return list.toArray();
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        // TODO Auto-generated method stub
-        return null;
+        return list.toArray(a);
     }
 
     @Override
     public boolean add(String e) {
-        // TODO Auto-generated method stub
-        return false;
+        return list.add(e);
     }
 
     @Override
     public boolean remove(Object o) {
-        // TODO Auto-generated method stub
-        return false;
+        return list.remove(o);
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        // TODO Auto-generated method stub
-        return false;
+        return list.containsAll(c);
     }
 
     @Override
     public boolean addAll(Collection<? extends String> c) {
-        // TODO Auto-generated method stub
-        return false;
+        return list.addAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        // TODO Auto-generated method stub
-        return false;
+        return list.retainAll(c);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        // TODO Auto-generated method stub
-        return false;
+        return list.removeAll(c);
     }
 
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
-
+        list.clear();
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof S1)) {
+            return false;
+        }
+        S1 s1 = (S1) other;
+        return list.equals(s1.list);
+    }
 }

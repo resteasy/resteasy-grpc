@@ -19,6 +19,9 @@
 
 package dev.resteasy.grpc.bridge.runtime.protobuf;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import com.google.protobuf.Message;
 
 /**
@@ -45,10 +48,15 @@ public interface TranslateFromJavabuf {
     /**
      * Copies the contents of a {@code com.google.protobuf.Message} into a new instance of the target class.
      */
-    Object assignFromJavabuf(Message message);
+    Object assignFromJavabuf(Message message) throws Exception;
+
+    /**
+     * Parses from an {@java.lang.InputStream} and passes the result to assignFromJavabuf();
+     */
+    Object parseFromJavabuf(InputStream is) throws IOException;
 
     /**
      * Copies the contents of a {@code com.google.protobuf.Message} into {@code obj}, an instance of the target class.
      */
-    void assignExistingFromJavabuf(Message message, Object obj);
+    void assignExistingFromJavabuf(Message message, Object obj) throws Exception;
 }

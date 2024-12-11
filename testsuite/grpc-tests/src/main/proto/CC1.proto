@@ -3,16 +3,153 @@ package dev.resteasy.grpc.example;
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 import "dev/resteasy/grpc/arrays/arrays.proto";
-import "dev/resteasy/grpc/primitives/primitives.proto";
 option java_package = "dev.resteasy.grpc.example";
 option java_outer_classname = "CC1_proto";
 
 service CC1Service {
 // q/found gEmpty gString GET sync
   rpc found (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/list java_util___ArrayList google.protobuf.Any GET sync
-  rpc list (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/set java_util___HashSet google.protobuf.Any GET sync
+// d1/integer dev_resteasy_grpc_lists_sets___D10 dev_resteasy_grpc_lists_sets___D10 POST sync
+  rpc d1Integer (GeneralEntityMessage) returns (GeneralReturnMessage);
+// d1/raw dev_resteasy_grpc_lists_sets___D1 dev_resteasy_grpc_lists_sets___D1 POST sync
+  rpc d1Raw (GeneralEntityMessage) returns (GeneralReturnMessage);
+// d2 dev_resteasy_grpc_lists_sets___D2 dev_resteasy_grpc_lists_sets___D2 POST sync
+  rpc d2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// d3 dev_resteasy_grpc_lists_sets___D3 dev_resteasy_grpc_lists_sets___D3 POST sync
+  rpc d3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// d4 dev_resteasy_grpc_lists_sets___D4 dev_resteasy_grpc_lists_sets___D4 POST sync
+  rpc d4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// d5 dev_resteasy_grpc_lists_sets___D5 dev_resteasy_grpc_lists_sets___D5 POST sync
+  rpc d5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// d6 dev_resteasy_grpc_lists_sets___D61 dev_resteasy_grpc_lists_sets___D61 POST sync
+  rpc d6 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/variable java_util___Set2 java_util___Set2 POST sync
+  rpc setTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/wildcard java_util___Set2 java_util___Set2 POST sync
+  rpc setTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/string java_util___Set3 java_util___Set3 POST sync
+  rpc setTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/object java_util___Set2 java_util___Set2 POST sync
+  rpc setTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/notype java_util___Set java_util___Set POST sync
+  rpc setTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/variable java_util___HashSet4 java_util___HashSet4 POST sync
+  rpc hashSetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/wildcard java_util___HashSet4 java_util___HashSet4 POST sync
+  rpc hashSetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/string java_util___HashSet5 java_util___HashSet5 POST sync
+  rpc hashSetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/object java_util___HashSet4 java_util___HashSet4 POST sync
+  rpc hashSetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/notype java_util___HashSet java_util___HashSet POST sync
+  rpc hashSetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/set/variable java_util___Set6 java_util___Set6 POST sync
+  rpc setSetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/set/wildcard java_util___Set6 java_util___Set6 POST sync
+  rpc setSetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/set/string java_util___Set7 java_util___Set7 POST sync
+  rpc setSetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/set/object java_util___Set6 java_util___Set6 POST sync
+  rpc setSetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/set/notype java_util___Set8 java_util___Set8 POST sync
+  rpc setSetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/hashset/variable java_util___Set9 java_util___Set9 POST sync
+  rpc setHashsetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/hashset/wildcard java_util___Set9 java_util___Set9 POST sync
+  rpc setHashsetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/hashset/string java_util___Set10 java_util___Set10 POST sync
+  rpc setHashsetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/hashset/object java_util___Set9 java_util___Set9 POST sync
+  rpc setHashsetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/hashset/notype java_util___Set11 java_util___Set11 POST sync
+  rpc setHashsetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/set/variable java_util___HashSet12 java_util___HashSet12 POST sync
+  rpc hashsetSetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/set/wildcard java_util___HashSet12 java_util___HashSet12 POST sync
+  rpc hashsetSetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/set/string java_util___HashSet13 java_util___HashSet13 POST sync
+  rpc hashsetSetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/set/object java_util___HashSet12 java_util___HashSet12 POST sync
+  rpc hashsetSetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/set/notype java_util___HashSet14 java_util___HashSet14 POST sync
+  rpc hashsetSetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/hashset/variable java_util___HashSet15 java_util___HashSet15 POST sync
+  rpc hashsetHashsetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/hashset/wildcard java_util___HashSet15 java_util___HashSet15 POST sync
+  rpc hashsetHashsetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/hashset/string java_util___HashSet16 java_util___HashSet16 POST sync
+  rpc hashsetHashsetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/hashset/object java_util___HashSet15 java_util___HashSet15 POST sync
+  rpc hashsetHashsetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// hashset/hashset/notype java_util___HashSet17 java_util___HashSet17 POST sync
+  rpc hashsetHashsetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/list/variable java_util___Set18 java_util___Set18 POST sync
+  rpc setListTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/list/wildcard java_util___Set18 java_util___Set18 POST sync
+  rpc setListTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/list/string java_util___Set19 java_util___Set19 POST sync
+  rpc setListTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/list/object java_util___Set18 java_util___Set18 POST sync
+  rpc setListTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/list/notype java_util___Set20 java_util___Set20 POST sync
+  rpc setListTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/arraylist/variable java_util___Set21 java_util___Set21 POST sync
+  rpc setArraylistTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/arraylist/wildcard java_util___Set21 java_util___Set21 POST sync
+  rpc setArraylistTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/arraylist/string java_util___Set22 java_util___Set22 POST sync
+  rpc setArraylistTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/arraylist/object java_util___Set21 java_util___Set21 POST sync
+  rpc setArraylistTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// set/arraylist/notype java_util___Set23 java_util___Set23 POST sync
+  rpc setArraylistTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/set/variable java_util___ArrayList24 java_util___ArrayList24 POST sync
+  rpc arraylistSetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/set/wildcard java_util___ArrayList24 java_util___ArrayList24 POST sync
+  rpc arraylistSetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/set/string java_util___ArrayList25 java_util___ArrayList25 POST sync
+  rpc arraylistSetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/set/object java_util___ArrayList24 java_util___ArrayList24 POST sync
+  rpc arraylistSetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/set/notype java_util___ArrayList26 java_util___ArrayList26 POST sync
+  rpc arraylistSetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/hashset/variable java_util___ArrayList27 java_util___ArrayList27 POST sync
+  rpc arraylistHashsetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/hashset/wildcard java_util___ArrayList27 java_util___ArrayList27 POST sync
+  rpc arraylistHashsetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/hashset/string java_util___ArrayList28 java_util___ArrayList28 POST sync
+  rpc arraylistHashsetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/hashset/object java_util___ArrayList27 java_util___ArrayList27 POST sync
+  rpc arraylistHashsetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/hashset/notype java_util___ArrayList29 java_util___ArrayList29 POST sync
+  rpc arraylistHashsetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/set/list/variable java_util___List30 java_util___List30 POST sync
+  rpc listSetListTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/set/list/wildcard java_util___List30 java_util___List30 POST sync
+  rpc listSetListTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/set/list/string java_util___List31 java_util___List31 POST sync
+  rpc listSetListTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/set/list/object java_util___List30 java_util___List30 POST sync
+  rpc listListListTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/hashset/list/variable java_util___List32 java_util___List32 POST sync
+  rpc listHashsetListTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/hashset/list/wildcard java_util___List32 java_util___List32 POST sync
+  rpc listHashsetListTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/hashset/list/string java_util___List33 java_util___List33 POST sync
+  rpc listHashsetListTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/hashset/list/object java_util___List32 java_util___List32 POST sync
+  rpc listHashsetListTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/l3/s3/set/variable java_util___List34 java_util___List34 POST sync
+  rpc listL3S3SetTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/l3/s3/set/wildcard java_util___List34 java_util___List34 POST sync
+  rpc listL3S3SetTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/l3/s3/set/string java_util___List35 java_util___List35 POST sync
+  rpc listL3S3SetTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/l3/s3/set/object java_util___List34 java_util___List34 POST sync
+  rpc listL3S3SetTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/l3/s3/set/raw java_util___List36 java_util___List36 POST sync
+  rpc listL3S3SetTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/set java_util___HashSet java_util___Set GET sync
   rpc set (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/ready gEmpty gString GET sync
   rpc ready (GeneralEntityMessage) returns (GeneralReturnMessage);
@@ -108,8 +245,6 @@ service CC1Service {
   rpc jaxrsResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/servletResponse gEmpty google.protobuf.Any GET sync
   rpc servletResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/inner gEmpty dev_resteasy_grpc_example_CC1_INNER_InnerClass GET sync
-  rpc inner (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/ gEmpty gString GET sync
   rpc notSubresourceGet (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/ gEmpty gString POST sync
@@ -126,62 +261,338 @@ service CC1Service {
   rpc copy (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/interface/impl dev_resteasy_grpc_example___IntfImpl google.protobuf.Any GET sync
   rpc intfImpl (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/interface/entity google.protobuf.Any gString GET sync
+// p/interface/entity dev_resteasy_grpc_example___Intf gString GET sync
   rpc intfEntity (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/interface/return gEmpty google.protobuf.Any GET sync
+// p/interface/return gEmpty dev_resteasy_grpc_example___Intf GET sync
   rpc intfReturn (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/arrays/int/1 dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
+// p/arrays/int/1 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array GET sync
   rpc arraysInt1 (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/arrays/int/2 dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
+// p/arrays/float/1 dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array GET sync
+  rpc arraysFloat1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/arrays/int/2 dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray GET sync
   rpc arraysInt2 (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/arrays/int/5 dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
+// p/arrays/int/5 dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray GET sync
   rpc arraysInt5 (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/arrays/stuff dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff GET sync
-  rpc arrayStuff (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/arrays/stuff/array dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder GET sync
-  rpc arrayStuffArray (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/list/arraylist java_util___ArrayList37 java_util___ArrayList38 GET sync
+  rpc listArray0 (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/list/arraylist java_util___ArrayList java_util___ArrayList GET sync
   rpc listArray (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/set/hashset java_util___HashSet java_util___HashSet GET sync
   rpc hashset (GeneralEntityMessage) returns (GeneralReturnMessage);
-// p/map/hashmap java_util___HashMap java_util___HashMap GET sync
-  rpc hashmap (GeneralEntityMessage) returns (GeneralReturnMessage);
-}
-
-message dev_resteasy_grpc_example___CC3 {
-  string s = 1;
-}
-
-message dev_resteasy_grpc_example___CC5 {
-  int32 k = 1;
+// list/variable java_util___List39 java_util___List39 POST sync
+  rpc listTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/wildcard java_util___List39 java_util___List39 POST sync
+  rpc listTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/string java_util___List40 java_util___List40 POST sync
+  rpc listTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/object java_util___List39 java_util___List39 POST sync
+  rpc listTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/notype java_util___List java_util___List POST sync
+  rpc listTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/variable java_util___ArrayList38 java_util___ArrayList38 POST sync
+  rpc arrayListTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/wildcard java_util___ArrayList38 java_util___ArrayList38 POST sync
+  rpc arrayListTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/string java_util___ArrayList41 java_util___ArrayList41 POST sync
+  rpc arrayListTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/object java_util___ArrayList38 java_util___ArrayList38 POST sync
+  rpc arrayListTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/notype java_util___ArrayList java_util___ArrayList POST sync
+  rpc arrayListTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/list/variable java_util___List42 java_util___List42 POST sync
+  rpc listListTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/list/wildcard java_util___List42 java_util___List42 POST sync
+  rpc listListTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/list/string java_util___List43 java_util___List43 POST sync
+  rpc listListTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/list/object java_util___List42 java_util___List42 POST sync
+  rpc listListTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/list/notype java_util___List44 java_util___List44 POST sync
+  rpc listListTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/arraylist/variable java_util___List45 java_util___List45 POST sync
+  rpc listArraylistTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/arraylist/wildcard java_util___List45 java_util___List45 POST sync
+  rpc listArraylistTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/arraylist/string java_util___List46 java_util___List46 POST sync
+  rpc listArraylistTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/arraylist/object java_util___List45 java_util___List45 POST sync
+  rpc listArraylistTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// list/arraylist/notype java_util___List47 java_util___List47 POST sync
+  rpc listArraylistTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/list/variable java_util___ArrayList48 java_util___ArrayList48 POST sync
+  rpc arraylistListTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/list/wildcard java_util___ArrayList48 java_util___ArrayList48 POST sync
+  rpc arraylistListTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/list/string java_util___ArrayList49 java_util___ArrayList49 POST sync
+  rpc arraylistListTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/list/object java_util___ArrayList48 java_util___ArrayList48 POST sync
+  rpc arraylistListTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/list/notype java_util___ArrayList50 java_util___ArrayList50 POST sync
+  rpc arraylistListTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/arraylist/variable java_util___ArrayList51 java_util___ArrayList51 POST sync
+  rpc arraylistArraylistTest1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/arraylist/wildcard java_util___ArrayList51 java_util___ArrayList51 POST sync
+  rpc arraylistArraylistTest2 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/arraylist/string java_util___ArrayList52 java_util___ArrayList52 POST sync
+  rpc arraylistArraylistTest3 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/arraylist/object java_util___ArrayList51 java_util___ArrayList51 POST sync
+  rpc arraylistArraylistTest4 (GeneralEntityMessage) returns (GeneralReturnMessage);
+// arraylist/arraylist/notype java_util___ArrayList53 java_util___ArrayList53 POST sync
+  rpc arraylistArraylistTest5 (GeneralEntityMessage) returns (GeneralReturnMessage);
 }
 
 message dev_resteasy_grpc_bridge_runtime_sse___SseEvent {
-  string comment = 2;
-  string id = 3;
-  string name = 4;
-  google.protobuf.Any data = 5;
-  int64 reconnectDelay = 6;
+  string comment = 1;
+  string id = 2;
+  string name = 3;
+  google.protobuf.Any data = 4;
+  int64 reconnectDelay = 5;
 }
 
-message dev_resteasy_grpc_example___CC7 {
+// List: java.util.ArrayList<java.util.ArrayList<java.lang.String>>
+message java_util___ArrayList52 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.String>
+  repeated java_util___ArrayList41 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set>
+message java_util___Set8 {
+  string classname = 1;
+  //java.util.Set
+  repeated java_util___Set data = 2;
+}
+
+message dev_resteasy_grpc_example___IntfImpl {
   string s = 1;
-  int32 m = 2;
 }
 
+message dev_resteasy_grpc_lists_sets___D6 {
+  google.protobuf.Any t = 1;
+}
+
+// List: java.util.ArrayList<java.lang.String>
+message java_util___ArrayList41 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+// List: java.util.List<java.util.List>
+message java_util___List44 {
+  string classname = 1;
+  //java.util.List
+  repeated java_util___List data = 2;
+}
+
+message dev_resteasy_grpc_lists_sets___D10 {
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___ArrayList54 l04 = 1;
+  //java.util.ArrayList<java.util.List<java.lang.Object>>
+  java_util___ArrayList48 l11 = 2;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  java_util___List55 l22 = 3;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List56 l32 = 4;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List57 l44 = 5;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___ArrayList58 l14 = 6;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___List59 l24 = 7;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
+  java_util___ArrayList60 l02 = 8;
+  //java.util.ArrayList<java.util.List<java.lang.Float>>
+  java_util___ArrayList61 l10 = 9;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+  java_util___ArrayList62 l03 = 10;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 l01 = 11;
+  //java.util.List<java.util.List<java.lang.Float>>
+  java_util___List63 l30 = 12;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___ArrayList64 l13 = 13;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  java_util___List65 l23 = 14;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 at = 15;
+  //java.util.List
+  java_util___List l50 = 16;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List66 l42 = 17;
+  //java.util.List<java.util.ArrayList<java.lang.Float>>
+  java_util___List67 l40 = 18;
+  //java.util.List<java.util.List<java.lang.Object>>
+  java_util___List42 l31 = 19;
+  //java.util.ArrayList<java.lang.Integer>
+  java_util___ArrayList37 l00 = 20;
+  //java.util.List<java.lang.Integer>
+  java_util___List68 l20 = 21;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List69 l43 = 22;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___ArrayList70 l12 = 23;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List71 l33 = 24;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List72 l34 = 25;
+  //java.util.ArrayList
+  java_util___ArrayList l51 = 26;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 27;
+  //java.util.List<java.util.ArrayList<java.lang.Object>>
+  java_util___List45 l41 = 28;
+}
+
+// List: java.util.List<java.util.List<java.lang.String>>
+message java_util___List43 {
+  string classname = 1;
+  //java.util.List<java.lang.String>
+  repeated java_util___List40 data = 2;
+}
+
+// Set: java.util.Set<java.util.HashSet>
+message java_util___Set11 {
+  string classname = 1;
+  //java.util.HashSet
+  repeated java_util___HashSet data = 2;
+}
+
+// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___List69 {
+  string classname = 1;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___ArrayList62 data = 2;
+}
+
+// Set: java.util.Set<java.util.ArrayList<java.lang.Object>>
+message java_util___Set21 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.Object>
+  repeated java_util___ArrayList38 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.HashSet<java.lang.Object>>
+message java_util___HashSet15 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.Object>
+  repeated java_util___HashSet4 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<java.lang.String>>
+message java_util___Set7 {
+  string classname = 1;
+  //java.util.Set<java.lang.String>
+  repeated java_util___Set3 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<java.util.List<java.lang.Object>>>
+message java_util___List32 {
+  string classname = 1;
+  //java.util.HashSet<java.util.List<java.lang.Object>>
+  repeated java_util___HashSet73 data = 2;
+}
+
+// List: java.util.List<java.lang.Object>
+message java_util___List39 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+// Set: java.util.Set
+message java_util___Set {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+// Set: java.util.HashSet<java.util.HashSet>
+message java_util___HashSet17 {
+  string classname = 1;
+  //java.util.HashSet
+  repeated java_util___HashSet data = 2;
+}
+
+// List: java.util.ArrayList<java.lang.Float>
+message java_util___ArrayList74 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
+}
+
+// List: java.util.ArrayList<java.util.ArrayList>
+message java_util___ArrayList53 {
+  string classname = 1;
+  //java.util.ArrayList
+  repeated java_util___ArrayList data = 2;
+}
+
+// Set: java.util.Set<java.util.List>
+message java_util___Set20 {
+  string classname = 1;
+  //java.util.List
+  repeated java_util___List data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>>
+message java_util___List34 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>
+  repeated dev_resteasy_grpc_lists_sets___L375 data = 2;
+}
+
+// Set: java.util.Set<java.util.HashSet<java.lang.Object>>
+message java_util___Set9 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.Object>
+  repeated java_util___HashSet4 data = 2;
+}
+
+// Set: java.util.Set<java.lang.Object>
+message java_util___Set2 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+// List: java.util.ArrayList<java.util.ArrayList<java.lang.Object>>
+message java_util___ArrayList51 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.Object>
+  repeated java_util___ArrayList38 data = 2;
+}
+
+// List: java.util.ArrayList
 message java_util___ArrayList {
-  int32 modCount = 1;
-  int64 serialVersionUID = 2;
-  int32 DEFAULT_CAPACITY = 3;
-  dev_resteasy_grpc_arrays___ArrayHolder EMPTY_ELEMENTDATA = 4;
-  dev_resteasy_grpc_arrays___ArrayHolder DEFAULTCAPACITY_EMPTY_ELEMENTDATA = 5;
-  dev_resteasy_grpc_arrays___ArrayHolder elementData = 6;
-  int32 size = 7;
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
 }
 
-message dev_resteasy_grpc_example___CC6 {
-  int32 l = 1;
-  dev_resteasy_grpc_example___CC7 cc7 = 2;
+// Set: dev.resteasy.grpc.lists.sets.S1
+message dev_resteasy_grpc_lists_sets___S1 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+message dev_resteasy_grpc_lists_sets___D61 {
+  string t = 1;
+}
+
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___List56 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___List55 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+message java_util___List76 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
+  repeated dev_resteasy_grpc_lists_sets___S377 data = 2;
 }
 
 message dev_resteasy_grpc_example___CC2 {
@@ -189,83 +600,724 @@ message dev_resteasy_grpc_example___CC2 {
   int32 j = 2;
 }
 
-message java_util_ArrayList_HIDDEN_ListItr {
-  int32 cursor = 1;
-  int32 lastRet = 2;
-  int32 expectedModCount = 3;
-}
-
-message java_util_AbstractList_HIDDEN_SubList {
-  int32 modCount = 1;
-  google.protobuf.Any root = 2;
-  java_util_AbstractList_HIDDEN_SubList parent = 3;
-  int32 offset = 4;
-  int32 size = 5;
-}
-
-message java_util_ArrayList_HIDDEN_Itr {
-  int32 cursor = 1;
-  int32 lastRet = 2;
-  int32 expectedModCount = 3;
-}
-
+// Set: java.util.HashSet
 message java_util___HashSet {
-  int64 serialVersionUID = 1;
-  java_util___HashMap map = 2;
-  java_lang___Object PRESENT = 3;
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
 }
 
-message java_util_AbstractList_HIDDEN_RandomAccessSpliterator {
-  google.protobuf.Any list = 1;
-  int32 index = 2;
-  int32 fence = 3;
-  google.protobuf.Any alist = 4;
-  int32 expectedModCount = 5;
+// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___ArrayList70 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___List55 data = 2;
 }
 
-message java_util_AbstractList_HIDDEN_Itr {
-  int32 cursor = 1;
-  int32 lastRet = 2;
-  int32 expectedModCount = 3;
+// Set: java.util.Set<java.util.Set<java.lang.Object>>
+message java_util___Set6 {
+  string classname = 1;
+  //java.util.Set<java.lang.Object>
+  repeated java_util___Set2 data = 2;
 }
 
-message java_lang___Object {
+message dev_resteasy_grpc_example___CC9 {
+  bool bb = 1;
+  string c = 2;
+  int32 by = 3;
+  dev_resteasy_grpc_example___CC3 cc3 = 4;
+  bool bo = 5;
+  int32 i = 6;
+  int32 ii = 7;
+  int32 ss = 8;
+  int64 l = 9;
+  double d = 10;
+  int32 s = 11;
+  float f = 12;
 }
 
-message java_util___HashMap {
-  google.protobuf.Any keySet = 1;
-  google.protobuf.Any values = 2;
-  int64 serialVersionUID = 3;
-  int32 DEFAULT_INITIAL_CAPACITY = 4;
-  int32 MAXIMUM_CAPACITY = 5;
-  float DEFAULT_LOAD_FACTOR = 6;
-  int32 TREEIFY_THRESHOLD = 7;
-  int32 UNTREEIFY_THRESHOLD = 8;
-  int32 MIN_TREEIFY_CAPACITY = 9;
-  dev_resteasy_grpc_arrays___ArrayHolder table = 10;
-  google.protobuf.Any entrySet = 11;
-  int32 size = 12;
-  int32 modCount = 13;
-  int32 threshold = 14;
-  float loadFactor = 15;
+// Set: java.util.HashSet<java.lang.Object>
+message java_util___HashSet4 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
 }
 
-message java_util_ArrayList_HIDDEN_SubList {
-  int32 modCount = 1;
-  java_util___ArrayList root = 2;
-  java_util_ArrayList_HIDDEN_SubList parent = 3;
-  int32 offset = 4;
-  int32 size = 5;
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___List78 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_Values {
+message dev_resteasy_grpc_example___CC3 {
+  string s = 1;
 }
 
-message java_util_HashMap_HIDDEN_KeyIterator {
-  java_util_HashMap_HIDDEN_Node next = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 expectedModCount = 3;
-  int32 index = 4;
+// List: java.util.ArrayList<java.util.HashSet<java.lang.Object>>
+message java_util___ArrayList27 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.Object>
+  repeated java_util___HashSet4 data = 2;
+}
+
+// Set: java.util.Set<java.util.ArrayList>
+message java_util___Set23 {
+  string classname = 1;
+  //java.util.ArrayList
+  repeated java_util___ArrayList data = 2;
+}
+
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+message java_util___ArrayList62 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3
+message dev_resteasy_grpc_lists_sets___S3 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+// List: java.util.List<java.lang.String>
+message java_util___List40 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
+message dev_resteasy_grpc_lists_sets___S377 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S1>
+message java_util___List55 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
+message dev_resteasy_grpc_lists_sets___D2 {
+  //java.util.HashSet<java.util.Set<java.lang.Object>>
+  java_util___HashSet12 s11 = 1;
+  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___Set80 s34 = 2;
+  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___Set81 s33 = 3;
+  //java.util.HashSet
+  java_util___HashSet s51 = 4;
+  //java.util.Set<java.util.Set<java.lang.Object>>
+  java_util___Set6 s31 = 5;
+  //java.util.Set<java.util.HashSet<java.lang.Object>>
+  java_util___Set9 s41 = 6;
+  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___Set82 s43 = 7;
+  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___Set83 s42 = 8;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  java_util___HashSet84 s03 = 9;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+  java_util___Set85 s22 = 10;
+  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___Set86 s44 = 11;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___HashSet87 s04 = 12;
+  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___HashSet88 s12 = 13;
+  //java.util.Set
+  java_util___Set s50 = 14;
+  //java.util.HashSet<java.lang.Integer>
+  java_util___HashSet89 s00 = 15;
+  //java.util.Set<java.util.HashSet<java.lang.Float>>
+  java_util___Set90 s40 = 16;
+  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___Set91 s32 = 17;
+  //java.util.HashSet<java.util.Set<java.lang.Float>>
+  java_util___HashSet92 s10 = 18;
+  //java.util.Set<java.util.Set<java.lang.Float>>
+  java_util___Set93 s30 = 19;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+  java_util___HashSet94 s02 = 20;
+  //java.util.Set<java.lang.Object>
+  java_util___Set2 s21 = 21;
+  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___HashSet95 s14 = 22;
+  //java.util.Set<java.lang.Integer>
+  java_util___Set96 s20 = 23;
+  //java.util.HashSet<java.lang.Object>
+  java_util___HashSet4 s01 = 24;
+  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___HashSet97 s13 = 25;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
+  java_util___Set98 s23 = 26;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___Set99 s24 = 27;
+}
+
+message dev_resteasy_grpc_lists_sets___D3 {
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___HashSet100 l14 = 1;
+  //java.util.HashSet<java.util.List<java.lang.Object>>
+  java_util___HashSet73 l11 = 2;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List71 l33 = 3;
+  //java.util.List<java.util.HashSet<java.lang.Float>>
+  java_util___List101 l40 = 4;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  java_util___HashSet84 l03 = 5;
+  //java.util.HashSet<java.util.Set<java.lang.Float>>
+  java_util___HashSet92 l10 = 6;
+  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List102 l42 = 7;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+  java_util___HashSet94 l02 = 8;
+  //java.util.List<java.util.List<java.lang.Float>>
+  java_util___List63 l30 = 9;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List56 l32 = 10;
+  //java.util.List<java.lang.Integer>
+  java_util___List68 l20 = 11;
+  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List103 l43 = 12;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___List59 l24 = 13;
+  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List104 l44 = 14;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___HashSet87 l04 = 15;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List72 l34 = 16;
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___HashSet105 l23 = 17;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  java_util___List55 l22 = 18;
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___HashSet106 l12 = 19;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 20;
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___HashSet105 l13 = 21;
+  //java.util.HashSet<java.lang.Integer>
+  java_util___HashSet89 l00 = 22;
+  //java.util.List<java.util.List<java.lang.Object>>
+  java_util___List42 l31 = 23;
+  //java.util.List<java.util.HashSet<java.lang.Object>>
+  java_util___List107 l41 = 24;
+  //java.util.HashSet<java.lang.Object>
+  java_util___HashSet4 l01 = 25;
+}
+
+// List: java.util.ArrayList<java.util.Set<java.lang.Object>>
+message java_util___ArrayList24 {
+  string classname = 1;
+  //java.util.Set<java.lang.Object>
+  repeated java_util___Set2 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.Set<java.lang.Object>>
+message java_util___HashSet12 {
+  string classname = 1;
+  //java.util.Set<java.lang.Object>
+  repeated java_util___Set2 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>>
+message java_util___List35 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>
+  repeated dev_resteasy_grpc_lists_sets___L3108 data = 2;
+}
+
+message dev_resteasy_grpc_lists_sets___D1 {
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___ArrayList70 l12 = 1;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List69 l43 = 2;
+  //java.util.List<java.lang.Integer>
+  java_util___List68 l20 = 3;
+  //java.util.List<java.util.ArrayList<java.lang.Float>>
+  java_util___List67 l40 = 4;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___ArrayList54 l04 = 5;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List72 l34 = 6;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
+  java_util___ArrayList60 l02 = 7;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+  java_util___ArrayList62 l03 = 8;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 l01 = 9;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List57 l44 = 10;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___ArrayList58 l14 = 11;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 12;
+  //java.util.ArrayList<java.util.List<java.lang.Object>>
+  java_util___ArrayList48 l11 = 13;
+  //java.util.List<java.util.List<java.lang.Float>>
+  java_util___List63 l30 = 14;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 at = 15;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  java_util___List65 l23 = 16;
+  //java.util.ArrayList<java.util.List<java.lang.Float>>
+  java_util___ArrayList61 l10 = 17;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List66 l42 = 18;
+  //java.util.List
+  java_util___List l50 = 19;
+  //java.util.List<java.util.ArrayList<java.lang.Object>>
+  java_util___List45 l41 = 20;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List56 l32 = 21;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___ArrayList64 l13 = 22;
+  //java.util.List<java.util.List<java.lang.Object>>
+  java_util___List42 l31 = 23;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List71 l33 = 24;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___List59 l24 = 25;
+  //java.util.ArrayList<java.lang.Integer>
+  java_util___ArrayList37 l00 = 26;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  java_util___List55 l22 = 27;
+  //java.util.ArrayList
+  java_util___ArrayList l51 = 28;
+}
+
+// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+message java_util___HashSet100 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+  repeated java_util___List76 data = 2;
+}
+
+// List: java.util.List<java.lang.Float>
+message java_util___List109 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
+}
+
+// Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+message java_util___HashSet95 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+  repeated java_util___Set110 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.Set<java.lang.String>>
+message java_util___HashSet13 {
+  string classname = 1;
+  //java.util.Set<java.lang.String>
+  repeated java_util___Set3 data = 2;
+}
+
+// Set: java.util.Set<java.util.List<java.lang.String>>
+message java_util___Set19 {
+  string classname = 1;
+  //java.util.List<java.lang.String>
+  repeated java_util___List40 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___ArrayList64 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___List65 data = 2;
+}
+
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___Set111 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+message java_util___List59 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
+  repeated dev_resteasy_grpc_lists_sets___S3112 data = 2;
+}
+
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___List72 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___List78 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+message dev_resteasy_grpc_lists_sets___S379 {
+  string classname = 1;
+  //java.lang.Long
+  repeated int64 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S2>
+message java_util___List65 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+message java_util___ArrayList58 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+  repeated java_util___List76 data = 2;
+}
+
+// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___List66 {
+  string classname = 1;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___ArrayList60 data = 2;
+}
+
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
+message java_util___ArrayList60 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___Set80 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___Set111 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___HashSet97 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___Set98 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___List104 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___HashSet113 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3
+message dev_resteasy_grpc_lists_sets___L3 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<java.util.List<java.lang.String>>>
+message java_util___List33 {
+  string classname = 1;
+  //java.util.HashSet<java.util.List<java.lang.String>>
+  repeated java_util___HashSet114 data = 2;
+}
+
+message dev_resteasy_grpc_example___CC6 {
+  dev_resteasy_grpc_example___CC7 cc7 = 1;
+  int32 l = 2;
+}
+
+// List: java.util.List<java.util.ArrayList<java.lang.Object>>
+message java_util___List45 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.Object>
+  repeated java_util___ArrayList38 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.List<java.lang.String>>
+message java_util___HashSet114 {
+  string classname = 1;
+  //java.util.List<java.lang.String>
+  repeated java_util___List40 data = 2;
+}
+
+message dev_resteasy_grpc_example___CC7 {
+  string s = 1;
+  int32 m = 2;
+}
+
+// List: java.util.ArrayList<java.util.HashSet>
+message java_util___ArrayList29 {
+  string classname = 1;
+  //java.util.HashSet
+  repeated java_util___HashSet data = 2;
+}
+
+// List: java.util.List<java.util.Set<java.util.List<java.lang.String>>>
+message java_util___List31 {
+  string classname = 1;
+  //java.util.Set<java.util.List<java.lang.String>>
+  repeated java_util___Set19 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.Set<java.lang.Float>>
+message java_util___HashSet92 {
+  string classname = 1;
+  //java.util.Set<java.lang.Float>
+  repeated java_util___Set115 data = 2;
+}
+
+// List: java.util.List<java.util.ArrayList<java.lang.String>>
+message java_util___List46 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.String>
+  repeated java_util___ArrayList41 data = 2;
+}
+
+// List: java.util.List<java.util.List<java.lang.Object>>
+message java_util___List42 {
+  string classname = 1;
+  //java.util.List<java.lang.Object>
+  repeated java_util___List39 data = 2;
+}
+
+// List: java.util.ArrayList<java.lang.Integer>
+message java_util___ArrayList37 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+
+// List: java.util.List<java.util.ArrayList>
+message java_util___List47 {
+  string classname = 1;
+  //java.util.ArrayList
+  repeated java_util___ArrayList data = 2;
+}
+
+// List: java.util.ArrayList<java.util.List<java.lang.Float>>
+message java_util___ArrayList61 {
+  string classname = 1;
+  //java.util.List<java.lang.Float>
+  repeated java_util___List109 data = 2;
+}
+
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+message java_util___HashSet94 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
+// List: java.util.ArrayList<java.lang.Object>
+message java_util___ArrayList38 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+message dev_resteasy_grpc_lists_sets___D4 {
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
+  dev_resteasy_grpc_lists_sets___L3116 l02 = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.Set<java.lang.Float>>
+  dev_resteasy_grpc_lists_sets___L3117 l10 = 2;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+  java_util___List118 l34 = 3;
+  //java.util.List<java.lang.Integer>
+  java_util___List68 l20 = 4;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
+  dev_resteasy_grpc_lists_sets___L3119 l01 = 5;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>>
+  dev_resteasy_grpc_lists_sets___L3120 l14 = 6;
+  //java.util.List<java.util.List<java.lang.Object>>
+  java_util___List42 l31 = 7;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
+  dev_resteasy_grpc_lists_sets___L3121 l03 = 8;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+  dev_resteasy_grpc_lists_sets___L3122 l13 = 9;
+  //java.util.List<java.util.List<java.lang.Float>>
+  java_util___List63 l30 = 10;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+  java_util___List123 l32 = 11;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
+  java_util___List124 l23 = 12;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Object>>
+  java_util___List125 l41 = 13;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 14;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+  java_util___List126 l44 = 15;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
+  java_util___List127 l24 = 16;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+  java_util___List128 l33 = 17;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
+  dev_resteasy_grpc_lists_sets___L3129 l00 = 18;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>>
+  java_util___List130 l42 = 19;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+  dev_resteasy_grpc_lists_sets___L3131 l12 = 20;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
+  java_util___List132 l22 = 21;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>>
+  java_util___List133 l43 = 22;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.String>>
+  dev_resteasy_grpc_lists_sets___L3134 l04 = 23;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
+  java_util___List127 l40 = 24;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<java.lang.Object>>
+  dev_resteasy_grpc_lists_sets___L3135 l11 = 25;
+}
+
+// List: java.util.ArrayList<java.util.List<java.lang.Object>>
+message java_util___ArrayList48 {
+  string classname = 1;
+  //java.util.List<java.lang.Object>
+  repeated java_util___List39 data = 2;
+}
+
+// Set: java.util.HashSet<java.lang.String>
+message java_util___HashSet5 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L1>
+message java_util___List132 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L1
+  repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
+}
+
+// List: java.util.List<java.util.List<java.lang.Float>>
+message java_util___List63 {
+  string classname = 1;
+  //java.util.List<java.lang.Float>
+  repeated java_util___List109 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.List>
+message java_util___ArrayList50 {
+  string classname = 1;
+  //java.util.List
+  repeated java_util___List data = 2;
+}
+
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+message java_util___ArrayList54 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.String>
+  repeated dev_resteasy_grpc_lists_sets___S3136 data = 2;
+}
+
+// Set: java.util.Set<java.util.HashSet<java.lang.String>>
+message java_util___Set10 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.String>
+  repeated java_util___HashSet5 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___Set81 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___Set98 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.HashSet<java.lang.String>>
+message java_util___ArrayList28 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.String>
+  repeated java_util___HashSet5 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___List103 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___HashSet84 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+message java_util___List126 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
+  repeated dev_resteasy_grpc_lists_sets___L3137 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S2
+message dev_resteasy_grpc_lists_sets___S2 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.String>
+message dev_resteasy_grpc_lists_sets___L3138 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>>
+message java_util___List36 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>
+  repeated dev_resteasy_grpc_lists_sets___L3139 data = 2;
+}
+
+// List: java.util.List
+message java_util___List {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+// List: java.util.List<java.lang.Integer>
+message java_util___List68 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<java.lang.Float>>
+message java_util___Set93 {
+  string classname = 1;
+  //java.util.Set<java.lang.Float>
+  repeated java_util___Set115 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.Set>
+message java_util___HashSet14 {
+  string classname = 1;
+  //java.util.Set
+  repeated java_util___Set data = 2;
+}
+
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+message java_util___Set85 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.Set>
+message java_util___ArrayList26 {
+  string classname = 1;
+  //java.util.Set
+  repeated java_util___Set data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
+message dev_resteasy_grpc_lists_sets___S3112 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
 }
 
 message dev_resteasy_grpc_example___CC4 {
@@ -273,171 +1325,473 @@ message dev_resteasy_grpc_example___CC4 {
   dev_resteasy_grpc_example___CC5 cc5 = 2;
 }
 
-message dev_resteasy_grpc_example___ArrayStuff {
-  dev_resteasy_grpc_arrays___ArrayHolder boss = 1;
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
+message dev_resteasy_grpc_lists_sets___L3119 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
 }
 
-message dev_resteasy_grpc_example_CC1_INNER_InnerClass {
-  int32 i = 1;
-  string s = 2;
+// List: java.util.ArrayList<java.util.List<java.lang.String>>
+message java_util___ArrayList49 {
+  string classname = 1;
+  //java.util.List<java.lang.String>
+  repeated java_util___List40 data = 2;
 }
 
-message dev_resteasy_grpc_example_CC3_INNER_CC3_Sub {
-  string s = 1;
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+message java_util___HashSet87 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.String>
+  repeated dev_resteasy_grpc_lists_sets___S3136 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_ValueSpliterator {
-  java_util___HashMap map = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 index = 3;
-  int32 fence = 4;
-  int32 est = 5;
-  int32 expectedModCount = 6;
+// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___Set83 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___HashSet94 data = 2;
 }
 
-message dev_resteasy_grpc_example___IntfImpl {
-  string s = 1;
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___List71 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___List65 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_KeySpliterator {
-  java_util___HashMap map = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 index = 3;
-  int32 fence = 4;
-  int32 est = 5;
-  int32 expectedModCount = 6;
+// List: java.util.ArrayList<java.util.Set<java.lang.String>>
+message java_util___ArrayList25 {
+  string classname = 1;
+  //java.util.Set<java.lang.String>
+  repeated java_util___Set3 data = 2;
 }
 
-message dev_resteasy_grpc_example___CC9 {
-  bool bo = 1;
-  int32 by = 2;
-  int32 s = 3;
-  int32 i = 4;
-  int64 l = 5;
-  float f = 6;
-  double d = 7;
-  string c = 8;
-  dev_resteasy_grpc_example___CC3 cc3 = 9;
-  bool bb = 10;
-  int32 ss = 11;
-  int32 ii = 12;
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+message java_util___List128 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
+  repeated java_util___List124 data = 2;
 }
 
-message java_util_AbstractMap_HIDDEN_ViewCollection {
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+message dev_resteasy_grpc_lists_sets___L3131 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
+  repeated java_util___List132 data = 2;
 }
 
-message java_util_AbstractMap_INNER_SimpleImmutableEntry {
-  int64 serialVersionUID = 1;
-  google.protobuf.Any key = 2;
-  google.protobuf.Any value = 3;
+// Set: java.util.Set<java.util.ArrayList<java.lang.String>>
+message java_util___Set22 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.String>
+  repeated java_util___ArrayList41 data = 2;
 }
 
-message java_util_AbstractList_HIDDEN_RandomAccessSubList {
-  int32 modCount = 1;
-  google.protobuf.Any root = 2;
-  java_util_AbstractList_HIDDEN_SubList parent = 3;
-  int32 offset = 4;
-  int32 size = 5;
+// Set: java.util.HashSet<java.util.HashSet<java.lang.String>>
+message java_util___HashSet16 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.String>
+  repeated java_util___HashSet5 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_HashIterator {
-  java_util_HashMap_HIDDEN_Node next = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 expectedModCount = 3;
-  int32 index = 4;
+// List: java.util.List<java.util.Set<java.util.List<java.lang.Object>>>
+message java_util___List30 {
+  string classname = 1;
+  //java.util.Set<java.util.List<java.lang.Object>>
+  repeated java_util___Set18 data = 2;
 }
 
-message java_util_AbstractMap_INNER_SimpleEntry {
-  int64 serialVersionUID = 1;
-  google.protobuf.Any key = 2;
-  google.protobuf.Any value = 3;
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Object>>
+message java_util___List125 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
+  repeated dev_resteasy_grpc_lists_sets___L3119 data = 2;
 }
 
-message java_util_AbstractList_HIDDEN_ListItr {
-  int32 cursor = 1;
-  int32 lastRet = 2;
-  int32 expectedModCount = 3;
+// Set: java.util.Set<java.util.List<java.lang.Object>>
+message java_util___Set18 {
+  string classname = 1;
+  //java.util.List<java.lang.Object>
+  repeated java_util___List39 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_ValueIterator {
-  java_util_HashMap_HIDDEN_Node next = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 expectedModCount = 3;
-  int32 index = 4;
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
+message dev_resteasy_grpc_lists_sets___L3137 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___L3140 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_Node {
-  int32 hash = 1;
-  google.protobuf.Any key = 2;
-  google.protobuf.Any value = 3;
-  java_util_HashMap_HIDDEN_Node next = 4;
+// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___Set86 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___HashSet113 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_TreeNode {
-  int32 hash = 1;
-  google.protobuf.Any key = 2;
-  google.protobuf.Any value = 3;
-  java_util_HashMap_HIDDEN_Node next = 4;
-  java_util_LinkedHashMap_HIDDEN_Entry before = 5;
-  java_util_LinkedHashMap_HIDDEN_Entry after = 6;
-  java_util_HashMap_HIDDEN_TreeNode parent = 7;
-  java_util_HashMap_HIDDEN_TreeNode left = 8;
-  java_util_HashMap_HIDDEN_TreeNode right = 9;
-  java_util_HashMap_HIDDEN_TreeNode prev = 10;
-  bool red = 11;
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>
+message dev_resteasy_grpc_lists_sets___L3139 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.util.Set>
+  repeated dev_resteasy_grpc_lists_sets___S3141 data = 2;
 }
 
-message java_util_ArrayList_HIDDEN_ArrayListSpliterator {
-  int32 index = 1;
-  int32 fence = 2;
-  int32 expectedModCount = 3;
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.String>
+message dev_resteasy_grpc_lists_sets___S3136 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
 }
 
-message java_util_HashMap_HIDDEN_KeySet {
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
+message dev_resteasy_grpc_lists_sets___L3121 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L2
+  repeated dev_resteasy_grpc_lists_sets___L2 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_EntrySet {
+// Set: java.util.Set<java.lang.String>
+message java_util___Set3 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
 }
 
-message java_util_HashMap_HIDDEN_EntrySpliterator {
-  java_util___HashMap map = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 index = 3;
-  int32 fence = 4;
-  int32 est = 5;
-  int32 expectedModCount = 6;
+message dev_resteasy_grpc_lists_sets___D5 {
+  dev_resteasy_grpc_lists_sets___D3 d3 = 1;
+  dev_resteasy_grpc_lists_sets___D1 d1 = 2;
+  dev_resteasy_grpc_lists_sets___D4 d4 = 3;
+  dev_resteasy_grpc_lists_sets___D2 d2 = 4;
 }
 
-message dev_resteasy_grpc_example_ArrayStuff_HIDDEN_Stuff {
-  int32 i = 1;
+// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___List57 {
+  string classname = 1;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___ArrayList142 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_UnsafeHolder {
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+message java_util___HashSet84 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
 }
 
-message java_util_HashMap_HIDDEN_HashMapSpliterator {
-  java_util___HashMap map = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 index = 3;
-  int32 fence = 4;
-  int32 est = 5;
-  int32 expectedModCount = 6;
+message dev_resteasy_grpc_example___Intf {
 }
 
-message java_util_HashMap_HIDDEN_EntryIterator {
-  java_util_HashMap_HIDDEN_Node next = 1;
-  java_util_HashMap_HIDDEN_Node current = 2;
-  int32 expectedModCount = 3;
-  int32 index = 4;
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___ArrayList142 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
 }
 
-message java_util_LinkedHashMap_HIDDEN_Entry {
-  int32 hash = 1;
-  google.protobuf.Any key = 2;
-  google.protobuf.Any value = 3;
-  java_util_HashMap_HIDDEN_Node next = 4;
-  java_util_LinkedHashMap_HIDDEN_Entry before = 5;
-  java_util_LinkedHashMap_HIDDEN_Entry after = 6;
+// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___Set82 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___HashSet84 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
+message dev_resteasy_grpc_lists_sets___L3140 {
+  string classname = 1;
+  //java.lang.Long
+  repeated int64 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<java.lang.Float>>
+message java_util___List101 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.Float>
+  repeated java_util___HashSet143 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>>
+message java_util___List130 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
+  repeated dev_resteasy_grpc_lists_sets___L3116 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L1
+message dev_resteasy_grpc_lists_sets___L1 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>
+message java_util___List144 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
+  repeated dev_resteasy_grpc_lists_sets___L3129 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___HashSet88 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___Set85 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>
+message dev_resteasy_grpc_lists_sets___L375 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>
+  repeated dev_resteasy_grpc_lists_sets___S3145 data = 2;
+}
+
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+message java_util___Set110 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
+  repeated dev_resteasy_grpc_lists_sets___S377 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+message dev_resteasy_grpc_lists_sets___L3122 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
+  repeated java_util___List124 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Float>
+message dev_resteasy_grpc_lists_sets___L3146 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
+}
+
+// Set: java.util.HashSet<java.lang.Integer>
+message java_util___HashSet89 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+message java_util___List118 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
+  repeated java_util___List147 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___List102 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___HashSet94 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.String>>
+message dev_resteasy_grpc_lists_sets___L3134 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.String>
+  repeated dev_resteasy_grpc_lists_sets___L3138 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>>
+message dev_resteasy_grpc_lists_sets___L3120 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>
+  repeated java_util___List144 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L2
+message dev_resteasy_grpc_lists_sets___L2 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L1
+  repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set>
+message dev_resteasy_grpc_lists_sets___S3141 {
+  string classname = 1;
+  //java.util.Set
+  repeated java_util___Set data = 2;
+}
+
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+message java_util___List123 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
+  repeated java_util___List132 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>
+message dev_resteasy_grpc_lists_sets___L3108 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>
+  repeated dev_resteasy_grpc_lists_sets___S3148 data = 2;
+}
+
+// List: java.util.List<java.util.ArrayList<java.lang.Float>>
+message java_util___List67 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.Float>
+  repeated java_util___ArrayList74 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L2>
+message java_util___List124 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L2
+  repeated dev_resteasy_grpc_lists_sets___L2 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.List<java.lang.Object>>
+message java_util___HashSet73 {
+  string classname = 1;
+  //java.util.List<java.lang.Object>
+  repeated java_util___List39 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>>
+message java_util___List133 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
+  repeated dev_resteasy_grpc_lists_sets___L3121 data = 2;
+}
+
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+message java_util___Set99 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
+  repeated dev_resteasy_grpc_lists_sets___S3112 data = 2;
+}
+
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S2>
+message java_util___Set98 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
+}
+
+// Set: java.util.HashSet<java.lang.Float>
+message java_util___HashSet143 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
+message dev_resteasy_grpc_lists_sets___L3116 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L1
+  repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
+}
+
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___HashSet113 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___HashSet105 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___List65 data = 2;
+}
+
+// Set: java.util.Set<java.lang.Float>
+message java_util___Set115 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
+message java_util___List147 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___L3140 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
+message dev_resteasy_grpc_lists_sets___L3129 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___Set91 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___Set85 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___HashSet106 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___List55 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<java.lang.Object>>
+message java_util___List107 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.Object>
+  repeated java_util___HashSet4 data = 2;
+}
+
+// Set: java.util.Set<java.util.HashSet<java.lang.Float>>
+message java_util___Set90 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.Float>
+  repeated java_util___HashSet143 data = 2;
+}
+
+// Set: java.util.Set<java.lang.Integer>
+message java_util___Set96 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
+message java_util___List127 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Float>
+  repeated dev_resteasy_grpc_lists_sets___L3146 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.Set<java.lang.Float>>
+message dev_resteasy_grpc_lists_sets___L3117 {
+  string classname = 1;
+  //java.util.Set<java.lang.Float>
+  repeated java_util___Set115 data = 2;
+}
+
+message dev_resteasy_grpc_example___CC5 {
+  int32 k = 1;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<java.lang.Object>>
+message dev_resteasy_grpc_lists_sets___L3135 {
+  string classname = 1;
+  //java.util.List<java.lang.Object>
+  repeated java_util___List39 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>
+message dev_resteasy_grpc_lists_sets___S3148 {
+  string classname = 1;
+  //java.util.Set<java.lang.String>
+  repeated java_util___Set3 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>
+message dev_resteasy_grpc_lists_sets___S3145 {
+  string classname = 1;
+  //java.util.Set<java.lang.Object>
+  repeated java_util___Set2 data = 2;
 }
 
 message gEmpty {}
@@ -507,56 +1861,179 @@ message GeneralEntityMessage {
    string httpMethod = 5;
    oneof messageType {
       dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 6;
-      gEmpty gEmpty_field = 7;
-      gByte gByte_field = 8;
-      gString gString_field = 9;
-      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 10;
-      gFloat gFloat_field = 11;
-      gDouble gDouble_field = 12;
-      java_util___HashMap java_util___HashMap_field = 13;
-      gBoolean gBoolean_field = 14;
-      gLong gLong_field = 15;
-      gShort gShort_field = 16;
-      gInteger gInteger_field = 17;
-      java_util___HashSet java_util___HashSet_field = 18;
-      google.protobuf.Any google_protobuf_Any_field = 19;
-      java_util___ArrayList java_util___ArrayList_field = 20;
-      gCharacter gCharacter_field = 21;
-      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 22;
-      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 23;
-      dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder_field = 24;
-      FormMap form_field = 25;
+      java_util___ArrayList53 java_util___ArrayList53_field = 7;
+      java_util___ArrayList52 java_util___ArrayList52_field = 8;
+      dev_resteasy_grpc_lists_sets___D10 dev_resteasy_grpc_lists_sets___D10_field = 9;
+      gString gString_field = 10;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 11;
+      java_util___ArrayList51 java_util___ArrayList51_field = 12;
+      java_util___ArrayList50 java_util___ArrayList50_field = 13;
+      java_util___List33 java_util___List33_field = 14;
+      java_util___List34 java_util___List34_field = 15;
+      java_util___List31 java_util___List31_field = 16;
+      java_util___List32 java_util___List32_field = 17;
+      java_util___List30 java_util___List30_field = 18;
+      dev_resteasy_grpc_lists_sets___D61 dev_resteasy_grpc_lists_sets___D61_field = 19;
+      java_util___ArrayList41 java_util___ArrayList41_field = 20;
+      java_util___Set java_util___Set_field = 21;
+      java_util___ArrayList49 java_util___ArrayList49_field = 22;
+      java_util___ArrayList48 java_util___ArrayList48_field = 23;
+      google.protobuf.Any Any_field = 24;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array dev_resteasy_grpc_arrays___Float___Array_field = 25;
+      java_util___ArrayList java_util___ArrayList_field = 26;
+      gCharacter gCharacter_field = 27;
+      dev_resteasy_grpc_lists_sets___D4 dev_resteasy_grpc_lists_sets___D4_field = 28;
+      java_util___HashSet15 java_util___HashSet15_field = 29;
+      java_util___List java_util___List_field = 30;
+      dev_resteasy_grpc_lists_sets___D5 dev_resteasy_grpc_lists_sets___D5_field = 31;
+      java_util___HashSet16 java_util___HashSet16_field = 32;
+      dev_resteasy_grpc_lists_sets___D2 dev_resteasy_grpc_lists_sets___D2_field = 33;
+      java_util___HashSet17 java_util___HashSet17_field = 34;
+      dev_resteasy_grpc_lists_sets___D3 dev_resteasy_grpc_lists_sets___D3_field = 35;
+      gByte gByte_field = 36;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array dev_resteasy_grpc_arrays___Integer___Array_field = 37;
+      java_util___ArrayList38 java_util___ArrayList38_field = 38;
+      gLong gLong_field = 39;
+      java_util___ArrayList37 java_util___ArrayList37_field = 40;
+      java_util___HashSet12 java_util___HashSet12_field = 41;
+      java_util___HashSet13 java_util___HashSet13_field = 42;
+      java_util___List46 java_util___List46_field = 43;
+      java_util___HashSet14 java_util___HashSet14_field = 44;
+      java_util___List47 java_util___List47_field = 45;
+      gShort gShort_field = 46;
+      gInteger gInteger_field = 47;
+      java_util___Set11 java_util___Set11_field = 48;
+      java_util___HashSet java_util___HashSet_field = 49;
+      java_util___Set10 java_util___Set10_field = 50;
+      dev_resteasy_grpc_example___Intf dev_resteasy_grpc_example___Intf_field = 51;
+      java_util___Set19 java_util___Set19_field = 52;
+      java_util___Set18 java_util___Set18_field = 53;
+      dev_resteasy_grpc_example___IntfImpl dev_resteasy_grpc_example___IntfImpl_field = 54;
+      dev_resteasy_grpc_lists_sets___D1 dev_resteasy_grpc_lists_sets___D1_field = 55;
+      gEmpty gEmpty_field = 56;
+      gFloat gFloat_field = 57;
+      gDouble gDouble_field = 58;
+      dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray_field = 59;
+      java_util___ArrayList29 java_util___ArrayList29_field = 60;
+      java_util___ArrayList28 java_util___ArrayList28_field = 61;
+      java_util___List39 java_util___List39_field = 62;
+      java_util___ArrayList27 java_util___ArrayList27_field = 63;
+      java_util___ArrayList26 java_util___ArrayList26_field = 64;
+      gBoolean gBoolean_field = 65;
+      java_util___ArrayList25 java_util___ArrayList25_field = 66;
+      java_util___ArrayList24 java_util___ArrayList24_field = 67;
+      java_util___List35 java_util___List35_field = 68;
+      java_util___List36 java_util___List36_field = 69;
+      java_util___Set3 java_util___Set3_field = 70;
+      java_util___Set23 java_util___Set23_field = 71;
+      java_util___List44 java_util___List44_field = 72;
+      java_util___Set2 java_util___Set2_field = 73;
+      java_util___Set22 java_util___Set22_field = 74;
+      java_util___List45 java_util___List45_field = 75;
+      java_util___Set21 java_util___Set21_field = 76;
+      java_util___List42 java_util___List42_field = 77;
+      java_util___Set20 java_util___Set20_field = 78;
+      java_util___List43 java_util___List43_field = 79;
+      java_util___Set7 java_util___Set7_field = 80;
+      java_util___List40 java_util___List40_field = 81;
+      java_util___Set6 java_util___Set6_field = 82;
+      java_util___Set9 java_util___Set9_field = 83;
+      java_util___Set8 java_util___Set8_field = 84;
+      java_util___HashSet4 java_util___HashSet4_field = 85;
+      java_util___HashSet5 java_util___HashSet5_field = 86;
+      dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder_field = 87;
+      FormMap form_field = 88;
    }
 }
 
 message GeneralReturnMessage {
    map<string, gHeader> headers = 1;
    repeated gNewCookie cookies = 2;
-   gInteger status = 3;
+   int32 status = 3;
    oneof messageType {
       dev_resteasy_grpc_example___CC2 dev_resteasy_grpc_example___CC2_field = 4;
-      gString gString_field = 5;
-      gByte gByte_field = 6;
-      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 7;
-      gEmpty gEmpty_field = 8;
-      gFloat gFloat_field = 9;
-      gDouble gDouble_field = 10;
-      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 11;
-      java_util___HashMap java_util___HashMap_field = 12;
-      gBoolean gBoolean_field = 13;
-      gLong gLong_field = 14;
-      gShort gShort_field = 15;
-      gInteger gInteger_field = 16;
-      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 17;
-      google.protobuf.Any google_protobuf_Any_field = 18;
-      java_util___HashSet java_util___HashSet_field = 19;
-      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 20;
-      java_util___ArrayList java_util___ArrayList_field = 21;
-      gCharacter gCharacter_field = 22;
-      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 23;
-      dev_resteasy_grpc_example___ArrayStuff dev_resteasy_grpc_example___ArrayStuff_field = 24;
-      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 25;
-      dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder_field = 26;
+      java_util___ArrayList53 java_util___ArrayList53_field = 5;
+      java_util___ArrayList52 java_util___ArrayList52_field = 6;
+      gString gString_field = 7;
+      dev_resteasy_grpc_lists_sets___D10 dev_resteasy_grpc_lists_sets___D10_field = 8;
+      dev_resteasy_grpc_example___CC4 dev_resteasy_grpc_example___CC4_field = 9;
+      java_util___ArrayList51 java_util___ArrayList51_field = 10;
+      java_util___ArrayList50 java_util___ArrayList50_field = 11;
+      dev_resteasy_grpc_example___CC6 dev_resteasy_grpc_example___CC6_field = 12;
+      java_util___List33 java_util___List33_field = 13;
+      java_util___List34 java_util___List34_field = 14;
+      java_util___List31 java_util___List31_field = 15;
+      java_util___List32 java_util___List32_field = 16;
+      java_util___List30 java_util___List30_field = 17;
+      dev_resteasy_grpc_lists_sets___D61 dev_resteasy_grpc_lists_sets___D61_field = 18;
+      java_util___ArrayList41 java_util___ArrayList41_field = 19;
+      java_util___Set java_util___Set_field = 20;
+      java_util___ArrayList49 java_util___ArrayList49_field = 21;
+      java_util___ArrayList48 java_util___ArrayList48_field = 22;
+      google.protobuf.Any Any_field = 23;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array dev_resteasy_grpc_arrays___Float___Array_field = 24;
+      java_util___ArrayList java_util___ArrayList_field = 25;
+      gCharacter gCharacter_field = 26;
+      dev_resteasy_grpc_example___CC7 dev_resteasy_grpc_example___CC7_field = 27;
+      dev_resteasy_grpc_example___CC9 dev_resteasy_grpc_example___CC9_field = 28;
+      dev_resteasy_grpc_lists_sets___D4 dev_resteasy_grpc_lists_sets___D4_field = 29;
+      java_util___HashSet15 java_util___HashSet15_field = 30;
+      java_util___List java_util___List_field = 31;
+      dev_resteasy_grpc_lists_sets___D5 dev_resteasy_grpc_lists_sets___D5_field = 32;
+      java_util___HashSet16 java_util___HashSet16_field = 33;
+      dev_resteasy_grpc_lists_sets___D2 dev_resteasy_grpc_lists_sets___D2_field = 34;
+      java_util___HashSet17 java_util___HashSet17_field = 35;
+      dev_resteasy_grpc_lists_sets___D3 dev_resteasy_grpc_lists_sets___D3_field = 36;
+      gByte gByte_field = 37;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array dev_resteasy_grpc_arrays___Integer___Array_field = 38;
+      java_util___ArrayList38 java_util___ArrayList38_field = 39;
+      gLong gLong_field = 40;
+      java_util___HashSet12 java_util___HashSet12_field = 41;
+      java_util___HashSet13 java_util___HashSet13_field = 42;
+      java_util___List46 java_util___List46_field = 43;
+      java_util___HashSet14 java_util___HashSet14_field = 44;
+      java_util___List47 java_util___List47_field = 45;
+      gShort gShort_field = 46;
+      gInteger gInteger_field = 47;
+      java_util___Set11 java_util___Set11_field = 48;
+      java_util___HashSet java_util___HashSet_field = 49;
+      java_util___Set10 java_util___Set10_field = 50;
+      dev_resteasy_grpc_example___Intf dev_resteasy_grpc_example___Intf_field = 51;
+      java_util___Set19 java_util___Set19_field = 52;
+      java_util___Set18 java_util___Set18_field = 53;
+      dev_resteasy_grpc_lists_sets___D1 dev_resteasy_grpc_lists_sets___D1_field = 54;
+      gEmpty gEmpty_field = 55;
+      gFloat gFloat_field = 56;
+      gDouble gDouble_field = 57;
+      dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray_field = 58;
+      java_util___ArrayList29 java_util___ArrayList29_field = 59;
+      java_util___ArrayList28 java_util___ArrayList28_field = 60;
+      java_util___List39 java_util___List39_field = 61;
+      java_util___ArrayList27 java_util___ArrayList27_field = 62;
+      java_util___ArrayList26 java_util___ArrayList26_field = 63;
+      gBoolean gBoolean_field = 64;
+      java_util___ArrayList25 java_util___ArrayList25_field = 65;
+      java_util___ArrayList24 java_util___ArrayList24_field = 66;
+      java_util___List35 java_util___List35_field = 67;
+      java_util___List36 java_util___List36_field = 68;
+      java_util___Set3 java_util___Set3_field = 69;
+      java_util___Set23 java_util___Set23_field = 70;
+      java_util___List44 java_util___List44_field = 71;
+      java_util___Set2 java_util___Set2_field = 72;
+      java_util___Set22 java_util___Set22_field = 73;
+      dev_resteasy_grpc_bridge_runtime_sse___SseEvent dev_resteasy_grpc_bridge_runtime_sse___SseEvent_field = 74;
+      java_util___List45 java_util___List45_field = 75;
+      java_util___Set21 java_util___Set21_field = 76;
+      java_util___List42 java_util___List42_field = 77;
+      java_util___Set20 java_util___Set20_field = 78;
+      java_util___List43 java_util___List43_field = 79;
+      java_util___Set7 java_util___Set7_field = 80;
+      java_util___List40 java_util___List40_field = 81;
+      java_util___Set6 java_util___Set6_field = 82;
+      java_util___Set9 java_util___Set9_field = 83;
+      java_util___Set8 java_util___Set8_field = 84;
+      java_util___HashSet4 java_util___HashSet4_field = 85;
+      java_util___HashSet5 java_util___HashSet5_field = 86;
    }
 }
 ///////////////
@@ -568,44 +2045,261 @@ message dev_resteasy_grpc_arrays___ArrayHolder___wrapper {
 }
 
 message dev_resteasy_grpc_arrays___ArrayHolder___WArray {
-   repeated dev_resteasy_grpc_arrays___ArrayHolder___wrapper dev_resteasy_grpc_arrays___ArrayHolder___field = 1;
-}
-
-///////////////
-message java_util_HashMap_HIDDEN_Node___wrapper {
-   oneof type {
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE none_field = 1;
-      java_util_HashMap_HIDDEN_Node java_util_HashMap_HIDDEN_Node_field = 2;
-   }
-}
-
-message java_util_HashMap_HIDDEN_Node___WArray {
-   repeated java_util_HashMap_HIDDEN_Node___wrapper java_util_HashMap_HIDDEN_Node___field = 1;
+   string componentType = 1;
+   repeated dev_resteasy_grpc_arrays___ArrayHolder___wrapper wrapper___field = 2;
 }
 
 message dev_resteasy_grpc_arrays___ArrayHolder {
-   string componentClass = 1;
    oneof messageType {
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray dev_resteasy_grpc_arrays___Any___WArray_field = 2;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array dev_resteasy_grpc_arrays___Boolean___Array_field = 3;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray dev_resteasy_grpc_arrays___Boolean___WArray_field = 4;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array dev_resteasy_grpc_arrays___Byte___Array_field = 5;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray dev_resteasy_grpc_arrays___Byte___WArray_field = 6;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array dev_resteasy_grpc_arrays___Character___Array_field = 7;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray dev_resteasy_grpc_arrays___Character___WArray_field = 8;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array dev_resteasy_grpc_arrays___Double___Array_field = 9;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray dev_resteasy_grpc_arrays___Double___WArray_field = 10;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array dev_resteasy_grpc_arrays___Float___Array_field = 11;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray dev_resteasy_grpc_arrays___Float___WArray_field = 12;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array dev_resteasy_grpc_arrays___Integer___Array_field = 13;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray dev_resteasy_grpc_arrays___Integer___WArray_field = 14;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array dev_resteasy_grpc_arrays___Long___Array_field = 15;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray dev_resteasy_grpc_arrays___Long___WArray_field = 16;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE dev_resteasy_grpc_arrays___NONE_field = 17;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___Array dev_resteasy_grpc_arrays___Short___Array_field = 18;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray dev_resteasy_grpc_arrays___Short___WArray_field = 19;
-      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray dev_resteasy_grpc_arrays___String___WArray_field = 20;
-      dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray_field = 21;
-      java_util_HashMap_HIDDEN_Node___WArray java_util_HashMap_HIDDEN_Node___WArray_field = 22;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array dev_resteasy_grpc_arrays___Boolean___Array_field = 1;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray dev_resteasy_grpc_arrays___Boolean___WArray_field = 2;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array dev_resteasy_grpc_arrays___Byte___Array_field = 3;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray dev_resteasy_grpc_arrays___Byte___WArray_field = 4;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array dev_resteasy_grpc_arrays___Character___Array_field = 5;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray dev_resteasy_grpc_arrays___Character___WArray_field = 6;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array dev_resteasy_grpc_arrays___Double___Array_field = 7;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray dev_resteasy_grpc_arrays___Double___WArray_field = 8;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array dev_resteasy_grpc_arrays___Float___Array_field = 9;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray dev_resteasy_grpc_arrays___Float___WArray_field = 10;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array dev_resteasy_grpc_arrays___Integer___Array_field = 11;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray dev_resteasy_grpc_arrays___Integer___WArray_field = 12;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array dev_resteasy_grpc_arrays___Long___Array_field = 13;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray dev_resteasy_grpc_arrays___Long___WArray_field = 14;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE dev_resteasy_grpc_arrays___NONE_field = 15;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___Array dev_resteasy_grpc_arrays___Short___Array_field = 16;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray dev_resteasy_grpc_arrays___Short___WArray_field = 17;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray dev_resteasy_grpc_arrays___String___WArray_field = 18;
+      dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray_field = 19;
    }
 }
+//////////  types: //////////
+// dev_resteasy_grpc_example___CC2
+// java_util___ArrayList53
+// java_util___ArrayList52
+// dev_resteasy_grpc_lists_sets___D10
+// gString
+// dev_resteasy_grpc_example___CC4
+// java_util___ArrayList51
+// java_util___ArrayList50
+// java_util___List33
+// java_util___List34
+// java_util___List31
+// java_util___List32
+// java_util___List30
+// dev_resteasy_grpc_lists_sets___D61
+// java_util___ArrayList41
+// java_util___Set
+// java_util___ArrayList49
+// java_util___ArrayList48
+// dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array
+// java_util___ArrayList
+// gCharacter
+// dev_resteasy_grpc_lists_sets___D4
+// java_util___HashSet15
+// java_util___List
+// dev_resteasy_grpc_lists_sets___D5
+// java_util___HashSet16
+// dev_resteasy_grpc_lists_sets___D2
+// java_util___HashSet17
+// dev_resteasy_grpc_lists_sets___D3
+// gByte
+// dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array
+// java_util___ArrayList38
+// gLong
+// java_util___ArrayList37
+// java_util___HashSet12
+// java_util___HashSet13
+// java_util___List46
+// java_util___HashSet14
+// java_util___List47
+// gShort
+// gInteger
+// java_util___Set11
+// java_util___HashSet
+// java_util___Set10
+// dev_resteasy_grpc_example___Intf
+// java_util___Set19
+// java_util___Set18
+// dev_resteasy_grpc_example___IntfImpl
+// dev_resteasy_grpc_lists_sets___D1
+// gFloat
+// gDouble
+// dev_resteasy_grpc_arrays___ArrayHolder___WArray
+// java_util___ArrayList29
+// java_util___ArrayList28
+// java_util___List39
+// java_util___ArrayList27
+// java_util___ArrayList26
+// gBoolean
+// java_util___ArrayList25
+// java_util___ArrayList24
+// java_util___List35
+// java_util___List36
+// java_util___Set3
+// java_util___Set23
+// java_util___List44
+// java_util___Set2
+// java_util___Set22
+// java_util___List45
+// java_util___Set21
+// java_util___List42
+// java_util___Set20
+// java_util___List43
+// java_util___Set7
+// java_util___List40
+// java_util___Set6
+// java_util___Set9
+// java_util___Set8
+// java_util___HashSet4
+// java_util___HashSet5
+
+//////////  synthetic names: //////////
+// java.util.Set23->java.util.Set
+// dev.resteasy.grpc.lists.sets.L375->dev.resteasy.grpc.lists.sets.L3
+// java.util.List40->java.util.List
+// java.util.ArrayList50->java.util.ArrayList
+// java.util.ArrayList64->java.util.ArrayList
+// java.util.List67->java.util.List
+// java.util.List43->java.util.List
+// java.util.Set93->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3138->dev.resteasy.grpc.lists.sets.L3
+// java.util.HashSet12->java.util.HashSet
+// dev.resteasy.grpc.lists.sets.S3145->dev.resteasy.grpc.lists.sets.S3
+// java.util.Set22->java.util.Set
+// java.util.Set90->java.util.Set
+// java.util.HashSet97->java.util.HashSet
+// java.util.HashSet14->java.util.HashSet
+// java.util.Set91->java.util.Set
+// java.util.List118->java.util.List
+// dev.resteasy.grpc.lists.sets.L3137->dev.resteasy.grpc.lists.sets.L3
+// dev.resteasy.grpc.lists.sets.S3112->dev.resteasy.grpc.lists.sets.S3
+// java.util.Set6->java.util.Set
+// java.util.List101->java.util.List
+// java.util.List147->java.util.List
+// java.util.HashSet16->java.util.HashSet
+// java.util.Set21->java.util.Set
+// java.util.HashSet105->java.util.HashSet
+// java.util.List107->java.util.List
+// java.util.Set85->java.util.Set
+// java.util.List144->java.util.List
+// java.util.HashSet73->java.util.HashSet
+// java.util.HashSet100->java.util.HashSet
+// java.util.HashSet113->java.util.HashSet
+// java.util.ArrayList74->java.util.ArrayList
+// java.util.HashSet88->java.util.HashSet
+// java.util.List109->java.util.List
+// java.util.List33->java.util.List
+// dev.resteasy.grpc.lists.sets.L3120->dev.resteasy.grpc.lists.sets.L3
+// java.util.List36->java.util.List
+// java.util.ArrayList48->java.util.ArrayList
+// java.util.ArrayList70->java.util.ArrayList
+// java.util.Set3->java.util.Set
+// java.util.ArrayList51->java.util.ArrayList
+// java.util.HashSet94->java.util.HashSet
+// java.util.ArrayList27->java.util.ArrayList
+// java.util.List42->java.util.List
+// dev.resteasy.grpc.lists.sets.L3140->dev.resteasy.grpc.lists.sets.L3
+// java.util.List65->java.util.List
+// java.util.List123->java.util.List
+// java.util.Set98->java.util.Set
+// java.util.HashSet89->java.util.HashSet
+// java.util.Set10->java.util.Set
+// java.util.HashSet92->java.util.HashSet
+// java.util.List130->java.util.List
+// dev.resteasy.grpc.lists.sets.L3134->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set81->java.util.Set
+// java.util.HashSet143->java.util.HashSet
+// java.util.Set20->java.util.Set
+// java.util.List44->java.util.List
+// dev.resteasy.grpc.lists.sets.S379->dev.resteasy.grpc.lists.sets.S3
+// java.util.HashSet87->java.util.HashSet
+// java.util.List31->java.util.List
+// java.util.ArrayList41->java.util.ArrayList
+// java.util.List45->java.util.List
+// java.util.HashSet84->java.util.HashSet
+// java.util.List125->java.util.List
+// dev.resteasy.grpc.lists.sets.L3129->dev.resteasy.grpc.lists.sets.L3
+// java.util.List66->java.util.List
+// java.util.Set96->java.util.Set
+// java.util.List46->java.util.List
+// java.util.Set99->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3135->dev.resteasy.grpc.lists.sets.L3
+// java.util.List47->java.util.List
+// java.util.ArrayList28->java.util.ArrayList
+// java.util.List102->java.util.List
+// dev.resteasy.grpc.lists.sets.L3108->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set110->java.util.Set
+// java.util.Set9->java.util.Set
+// java.util.List127->java.util.List
+// java.util.HashSet114->java.util.HashSet
+// java.util.ArrayList49->java.util.ArrayList
+// java.util.ArrayList52->java.util.ArrayList
+// java.util.List59->java.util.List
+// java.util.List34->java.util.List
+// dev.resteasy.grpc.lists.sets.L3146->dev.resteasy.grpc.lists.sets.L3
+// java.util.HashSet15->java.util.HashSet
+// java.util.HashSet95->java.util.HashSet
+// dev.resteasy.grpc.lists.sets.D61->dev.resteasy.grpc.lists.sets.D6
+// java.util.List128->java.util.List
+// java.util.ArrayList142->java.util.ArrayList
+// dev.resteasy.grpc.lists.sets.L3119->dev.resteasy.grpc.lists.sets.L3
+// java.util.ArrayList29->java.util.ArrayList
+// java.util.Set8->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3131->dev.resteasy.grpc.lists.sets.L3
+// java.util.ArrayList60->java.util.ArrayList
+// java.util.Set111->java.util.Set
+// java.util.List133->java.util.List
+// java.util.ArrayList38->java.util.ArrayList
+// java.util.List124->java.util.List
+// java.util.Set7->java.util.Set
+// java.util.Set2->java.util.Set
+// java.util.List56->java.util.List
+// java.util.ArrayList58->java.util.ArrayList
+// dev.resteasy.grpc.lists.sets.S3141->dev.resteasy.grpc.lists.sets.S3
+// java.util.Set86->java.util.Set
+// java.util.List69->java.util.List
+// dev.resteasy.grpc.lists.sets.L3117->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set115->java.util.Set
+// java.util.List103->java.util.List
+// java.util.List55->java.util.List
+// dev.resteasy.grpc.lists.sets.L3139->dev.resteasy.grpc.lists.sets.L3
+// java.util.List72->java.util.List
+// java.util.ArrayList62->java.util.ArrayList
+// java.util.Set83->java.util.Set
+// dev.resteasy.grpc.lists.sets.S377->dev.resteasy.grpc.lists.sets.S3
+// dev.resteasy.grpc.lists.sets.D10->dev.resteasy.grpc.lists.sets.D1
+// java.util.ArrayList26->java.util.ArrayList
+// java.util.List76->java.util.List
+// java.util.List78->java.util.List
+// java.util.HashSet13->java.util.HashSet
+// java.util.List63->java.util.List
+// dev.resteasy.grpc.lists.sets.S3148->dev.resteasy.grpc.lists.sets.S3
+// java.util.List35->java.util.List
+// dev.resteasy.grpc.lists.sets.L3121->dev.resteasy.grpc.lists.sets.L3
+// java.util.ArrayList61->java.util.ArrayList
+// java.util.HashSet4->java.util.HashSet
+// java.util.List32->java.util.List
+// dev.resteasy.grpc.lists.sets.L3122->dev.resteasy.grpc.lists.sets.L3
+// java.util.List57->java.util.List
+// java.util.List104->java.util.List
+// java.util.List30->java.util.List
+// dev.resteasy.grpc.lists.sets.S3136->dev.resteasy.grpc.lists.sets.S3
+// java.util.Set80->java.util.Set
+// java.util.List71->java.util.List
+// java.util.ArrayList37->java.util.ArrayList
+// java.util.ArrayList24->java.util.ArrayList
+// java.util.Set82->java.util.Set
+// java.util.List68->java.util.List
+// java.util.HashSet5->java.util.HashSet
+// java.util.Set19->java.util.Set
+// java.util.ArrayList53->java.util.ArrayList
+// java.util.HashSet106->java.util.HashSet
+// java.util.ArrayList25->java.util.ArrayList
+// java.util.HashSet17->java.util.HashSet
+// java.util.List126->java.util.List
+// java.util.Set18->java.util.Set
+// java.util.Set11->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3116->dev.resteasy.grpc.lists.sets.L3
+// java.util.List132->java.util.List
+// java.util.ArrayList54->java.util.ArrayList
+// java.util.List39->java.util.List

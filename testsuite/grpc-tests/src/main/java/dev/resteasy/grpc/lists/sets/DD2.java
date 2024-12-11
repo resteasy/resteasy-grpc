@@ -6,6 +6,7 @@ import java.util.Set;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
+@Path("")
 public class DD2 {
 
     //   @Path("set/hashset/map")
@@ -103,7 +104,7 @@ public class DD2 {
     public Set<Set> setSetTest5(Set<Set> l) {
         return l;
     }
-    
+
     @Path("set/hashset/variable")
     @POST
     public <T> Set<HashSet<T>> setHashsetTest1(Set<HashSet<T>> l) {
@@ -163,7 +164,7 @@ public class DD2 {
     public HashSet<Set> hashsetSetTest5(HashSet<Set> l) {
         return l;
     }
-    
+
     @Path("hashset/hashset/variable")
     @POST
     public <T> HashSet<HashSet<T>> hashsetHashsetTest1(HashSet<HashSet<T>> l) {
@@ -193,4 +194,10 @@ public class DD2 {
     public HashSet<HashSet> hashsetHashsetTest5(HashSet<HashSet> l) {
         return l;
     }
+    //
+    //    @Path("s3/wildcard")
+    //    @POST
+    //    public S3<?> s3Wildcard(S3<?> s3) {
+    //        return s3;
+    //    }
 }

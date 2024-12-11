@@ -8,6 +8,7 @@ import java.util.Set;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
+@Path("")
 public class DD3 {
 
     //   @Path("set/hashset/map")
@@ -45,7 +46,7 @@ public class DD3 {
     public Set<List> setListTest5(Set<List> l) {
         return l;
     }
-    
+
     @Path("set/arraylist/variable")
     @POST
     public <T> Set<ArrayList<T>> setArraylistTest1(Set<ArrayList<T>> l) {
@@ -105,7 +106,7 @@ public class DD3 {
     public ArrayList<Set> arraylistSetTest5(ArrayList<Set> l) {
         return l;
     }
-    
+
     @Path("arraylist/hashset/variable")
     @POST
     public <T> ArrayList<HashSet<T>> arraylistHashsetTest1(ArrayList<HashSet<T>> l) {

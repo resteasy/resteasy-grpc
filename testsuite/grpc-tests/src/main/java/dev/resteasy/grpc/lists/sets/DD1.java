@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
+@Path("")
 public class DD1 {
 
     //   @Path("list/arraylist/map")
@@ -103,7 +104,7 @@ public class DD1 {
     public List<List> listListTest5(List<List> l) {
         return l;
     }
-    
+
     @Path("list/arraylist/variable")
     @POST
     public <T> List<ArrayList<T>> listArraylistTest1(List<ArrayList<T>> l) {
@@ -142,13 +143,13 @@ public class DD1 {
 
     @Path("arraylist/list/wildcard")
     @POST
-    public ArrayList<List<?>> ArraylistListTest2(ArrayList<List<?>> l) {
+    public ArrayList<List<?>> arraylistListTest2(ArrayList<List<?>> l) {
         return l;
     }
 
     @Path("arraylist/list/string")
     @POST
-    public ArrayList<List<String>> ArraylistListTest3(ArrayList<List<String>> l) {
+    public ArrayList<List<String>> arraylistListTest3(ArrayList<List<String>> l) {
         return l;
     }
 
@@ -163,7 +164,7 @@ public class DD1 {
     public ArrayList<List> arraylistListTest5(ArrayList<List> l) {
         return l;
     }
-    
+
     @Path("arraylist/arraylist/variable")
     @POST
     public <T> ArrayList<ArrayList<T>> arraylistArraylistTest1(ArrayList<ArrayList<T>> l) {
@@ -172,13 +173,13 @@ public class DD1 {
 
     @Path("arraylist/arraylist/wildcard")
     @POST
-    public ArrayList<ArrayList<?>> ArraylistArraylistTest2(ArrayList<ArrayList<?>> l) {
+    public ArrayList<ArrayList<?>> arraylistArraylistTest2(ArrayList<ArrayList<?>> l) {
         return l;
     }
 
     @Path("arraylist/arraylist/string")
     @POST
-    public ArrayList<ArrayList<String>> ArraylistArraylistTest3(ArrayList<ArrayList<String>> l) {
+    public ArrayList<ArrayList<String>> arraylistArraylistTest3(ArrayList<ArrayList<String>> l) {
         return l;
     }
 

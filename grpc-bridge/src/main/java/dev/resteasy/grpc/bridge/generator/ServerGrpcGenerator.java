@@ -60,6 +60,7 @@ class ServerGrpcGenerator {
                     .writeLine("import jakarta.ws.rs.GET;")
                     .writeLine("import jakarta.ws.rs.Path;")
                     .writeLine("import jakarta.ws.rs.core.Context;")
+                    .writeLine("import jakarta.ws.rs.core.Response;")
                     .writeLine("import java.util.concurrent.atomic.AtomicBoolean;");
             // Import the service implementation
             final String serviceImplName;
@@ -100,13 +101,11 @@ class ServerGrpcGenerator {
 
             writer.writeLine("@Path(\"context\")")
                     .writeLine("@GET")
-                    .startBlock("public String startContext(@Context HttpServletRequest request) throws Exception {")
+                    .startBlock("public Response startContext(@Context HttpServletRequest request) throws Exception {")
                     .writeLine("if (!servletContextInitialized.getAndSet(true)) {")
-                    .writeLine("servletContext = request.getServletContext();")
-                    .writeLine("return \"Got \" + this + \" servletContext\";")
-                    .writeLine("} else {")
-                    .writeLine("return this + \" servletContext already initialized.\";")
+                    .writeLine("   servletContext = request.getServletContext();")
                     .writeLine("}")
+                    .writeLine("return Response.status(204).build();")
                     .endBlock()
                     .writeLine();
 

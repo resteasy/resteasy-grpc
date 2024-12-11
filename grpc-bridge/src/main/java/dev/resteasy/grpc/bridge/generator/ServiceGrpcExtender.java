@@ -292,7 +292,12 @@ public class ServiceGrpcExtender {
                     sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;" + LS);
                     imports.add("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder");
                 } else {
-                    sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
+                    if (actualEntityClass.startsWith("dev.resteasy.grpc.arrays")) {
+                        String simpleName = actualEntityClass.substring(actualEntityClass.lastIndexOf(".") + 1);
+                        sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto." + simpleName + ";" + LS);
+                    } else {
+                        sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
+                    }
                     imports.add(actualEntityClass);
                 }
             }
@@ -308,7 +313,11 @@ public class ServiceGrpcExtender {
                     sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;");
                     imports.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder");
                 } else {
-                    sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
+                    if (actualReturnClass.contains(".")) {
+                        sbHeader.append("import " + actualReturnClass + ";" + LS);
+                    } else {
+                        sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
+                    }
                     imports.add(actualReturnClass);
                 }
             }
@@ -327,6 +336,9 @@ public class ServiceGrpcExtender {
 
     private void rpcBody(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass,
             String method, String syncType, StringBuilder sb, String retn) {
+        if (actualReturnClass.contains(".")) {
+            actualReturnClass = actualReturnClass.substring(actualReturnClass.lastIndexOf(".") + 1);
+        }
         sb.append("      HttpServletRequest request = null;" + LS)
                 .append("      try {" + LS)
                 .append("         HttpServletResponseImpl response = new HttpServletResponseImpl(\"")
@@ -629,7 +641,7 @@ public class ServiceGrpcExtender {
                 .append("            cookieBuilder.clear();" + LS)
                 .append("         }" + LS)
                 .append("      }" + LS)
-                .append("      grmBuilder.setStatus(gInteger.newBuilder().setValue(response.getStatus()).build());" + LS)
+                .append("      grmBuilder.setStatus(response.getStatus());" + LS)
                 .append("      return grmBuilder;" + LS)
                 .append("   }" + LS + LS);
         sb.append("   private static gNewCookie parseNewCookie(gNewCookie.Builder ncb, String s) throws ParseException {" + LS)
@@ -692,8 +704,16 @@ public class ServiceGrpcExtender {
     }
 
     private String getGetterMethod(String actualEntityClass) {
+        if ("com.google.protobuf.Any".equals(actualEntityClass)
+                || "google.protobuf.Any".equals(actualEntityClass)
+                || "Any".equals(actualEntityClass)) {
+            return "getAnyField()";
+        }
         if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
             actualEntityClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
+        }
+        if (actualEntityClass.contains(".")) {
+            actualEntityClass = actualEntityClass.substring(actualEntityClass.lastIndexOf(".") + 1);
         }
         actualEntityClass = actualEntityClass.replaceAll("___", "_");
         StringBuilder sb = new StringBuilder("get");
@@ -716,7 +736,7 @@ public class ServiceGrpcExtender {
             actualReturnClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
         }
         if ("com.google.protobuf.Any".equals(actualReturnClass) || "Any".equals(actualReturnClass)) {
-            return "grmb.setGoogleProtobufAnyField";
+            return "grmb.setAnyField";
         }
         if (actualReturnClass.contains("___") || actualReturnClass.contains("_INNER_")) {
             return "grmb.set" + camelize(actualReturnClass) + "Field";

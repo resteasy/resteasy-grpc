@@ -130,7 +130,7 @@ public class ArrayUtility {
             }
 
             case "java.lang.Boolean": {
-                List<dev_resteasy_grpc_arrays___Boolean___wrapper> list = ah.getDevResteasyGrpcArraysBooleanWArrayField().getBooleanFieldList();
+                List<dev_resteasy_grpc_arrays___Boolean___wrapper> list = ah.getDevResteasyGrpcArraysBooleanWArrayField().getWrapperFieldList();
                 Boolean[] Bs = new Boolean[list.size()];
                 for (int i = 0; i < Bs.length; i++) {
                     if (!list.get(i).hasNoneField()) {
@@ -145,7 +145,7 @@ public class ArrayUtility {
             }
 
             case "java.lang.Byte": {
-                List<Array_proto.dev_resteasy_grpc_arrays___Byte___wrapper> list = ah.getDevResteasyGrpcArraysByteWArrayField().getByteFieldList();
+                List<Array_proto.dev_resteasy_grpc_arrays___Byte___wrapper> list = ah.getDevResteasyGrpcArraysByteWArrayField().getWrapperFieldList();
                 Byte[] Bs = new Byte[list.size()];
                 for (int i = 0; i < Bs.length; i++) {
                     if (list.get(i).hasByteField()) {
@@ -165,7 +165,7 @@ public class ArrayUtility {
             }
 
             case "java.lang.Short": {
-                List<Array_proto.dev_resteasy_grpc_arrays___Short___wrapper> list = ah.getDevResteasyGrpcArraysShortWArrayField().getShortFieldList();
+                List<Array_proto.dev_resteasy_grpc_arrays___Short___wrapper> list = ah.getDevResteasyGrpcArraysShortWArrayField().getWrapperFieldList();
                 Short[] ss = new Short[list.size()];
                 for (int i = 0; i < ss.length; i++) {
                     if (list.get(i).hasShortField()) {
@@ -185,7 +185,7 @@ public class ArrayUtility {
             }
 
             case "java.lang.Integer": {
-                List<dev_resteasy_grpc_arrays___Integer___wrapper> list = ah.getDevResteasyGrpcArraysIntegerWArrayField().getIntegerFieldList();
+                List<dev_resteasy_grpc_arrays___Integer___wrapper> list = ah.getDevResteasyGrpcArraysIntegerWArrayField().getWrapperFieldList();
                 Integer[] is = new Integer[list.size()];
                 for (int i = 0; i < is.length; i++) {
                     if (list.get(i).hasIntegerField()) {
@@ -205,7 +205,7 @@ public class ArrayUtility {
             }
 
             case "java.lang.Long": {
-               List<dev_resteasy_grpc_arrays___Long___wrapper> list = ah.getDevResteasyGrpcArraysLongWArrayField().getLongFieldList();
+               List<dev_resteasy_grpc_arrays___Long___wrapper> list = ah.getDevResteasyGrpcArraysLongWArrayField().getWrapperFieldList();
                Long[] ls = new Long[list.size()];
                for (int i = 0; i < ls.length; i++) {
                   if (list.get(i).hasLongField()) {
@@ -316,19 +316,19 @@ public class ArrayUtility {
             //            }
             //
             default: {
-               if (isArray(ah.getComponentClass())) {
-                  if (ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderFieldCount() == 0) {
-                     return getNestedEmptyArray(ah.getComponentClass());
-                  }
-                  Object o = getArray(translator, ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderField(0).getDevResteasyGrpcArraysArrayHolderField());
-                  Object[] os = (Object[]) Array.newInstance(o.getClass(),
-                        ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderFieldCount());
-                  os[0] = o;
-                  for (int i = 1; i < ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderFieldCount(); i++) {
-                     os[i] = getArray(translator, ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderField(i).getDevResteasyGrpcArraysArrayHolderField());
-                  }
-                  return os;
-               }
+//               if (isArray(ah.getComponentClass())) {
+//                  if (ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderFieldCount() == 0) {
+//                     return getNestedEmptyArray(ah.getComponentClass());
+//                  }
+//                  Object o = getArray(translator, ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderField(0).getDevResteasyGrpcArraysArrayHolderField());
+//                  Object[] os = (Object[]) Array.newInstance(o.getClass(),
+//                        ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderFieldCount());
+//                  os[0] = o;
+//                  for (int i = 1; i < ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderFieldCount(); i++) {
+//                     os[i] = getArray(translator, ah.getDevResteasyGrpcArraysArrayHolderWArrayField().getDevResteasyGrpcArraysArrayHolderField(i).getDevResteasyGrpcArraysArrayHolderField());
+//                  }
+//                  return os;
+//               }
 //               dev_resteasy_grpc_arrays___anyArray aa = ah.getAnyArrayField();
 //               String className = ah.getComponentClass();
 //               if ("".equals(className) || className == null) {
@@ -385,20 +385,20 @@ public class ArrayUtility {
                 return ahBuilder.setDevResteasyGrpcArraysBooleanArrayField(baBuilder).setComponentClass("boolean").build();
             }
 
-            case "java.lang.Boolean": {
-                dev_resteasy_grpc_arrays___Boolean___wrapper.Builder baBuilder = dev_resteasy_grpc_arrays___Boolean___wrapper.newBuilder();
-                dev_resteasy_grpc_arrays___Boolean___WArray.Builder bawBuilder = dev_resteasy_grpc_arrays___Boolean___WArray
-                        .newBuilder();
-                Boolean[] bs = (Boolean[]) o;
-                for (int i = 0; i < bs.length; i++) {
-                    if (bs[i] == null) {
-                        bawBuilder.addBooleanField(NULL_BOOLEAN);
-                    } else {
-                        bawBuilder.addBooleanField(baBuilder.setBooleanField(bs[i]).build());
-                    }
-                }
-                return ahBuilder.setDevResteasyGrpcArraysBooleanWArrayField(bawBuilder).setComponentClass("java.lang.Boolean").build();
-            }
+//            case "java.lang.Boolean": {
+//                dev_resteasy_grpc_arrays___Boolean___wrapper.Builder baBuilder = dev_resteasy_grpc_arrays___Boolean___wrapper.newBuilder();
+//                dev_resteasy_grpc_arrays___Boolean___WArray.Builder bawBuilder = dev_resteasy_grpc_arrays___Boolean___WArray
+//                        .newBuilder();
+//                Boolean[] bs = (Boolean[]) o;
+//                for (int i = 0; i < bs.length; i++) {
+//                    if (bs[i] == null) {
+//                        bawBuilder.addBooleanField(NULL_BOOLEAN);
+//                    } else {
+//                        bawBuilder.addBooleanField(baBuilder.setBooleanField(bs[i]).build());
+//                    }
+//                }
+//                return ahBuilder.setDevResteasyGrpcArraysBooleanWArrayField(bawBuilder).setComponentClass("java.lang.Boolean").build();
+//            }
 
             case "byte": {
                byte[] bs = (byte[]) o;
@@ -407,20 +407,20 @@ public class ArrayUtility {
                return ahBuilder.setDevResteasyGrpcArraysByteArrayField(builder).setComponentClass("byte").build();
             }
 
-            case "java.lang.Byte": {
-               Byte[] Bs = (Byte[]) o;
-               dev_resteasy_grpc_arrays___Byte___wrapper.Builder baBuilder = dev_resteasy_grpc_arrays___Byte___wrapper.newBuilder();
-               dev_resteasy_grpc_arrays___Byte___WArray.Builder bwaBuilder = dev_resteasy_grpc_arrays___Byte___WArray.newBuilder();
-               for (int i = 0; i < Bs.length; i++) {
-                   if (Bs[i] == null) {
-                       bwaBuilder.addByteField(NULL_BYTE);
-                   } else {
-                       byte[] bs = new byte[] { Bs[i].byteValue() };
-                       bwaBuilder.addByteField(baBuilder.clear().setByteField(ByteString.copyFrom(bs)));
-                   }
-               }
-               return ahBuilder.setDevResteasyGrpcArraysByteWArrayField(bwaBuilder).setComponentClass("java.lang.Byte").build();
-           }
+//            case "java.lang.Byte": {
+//               Byte[] Bs = (Byte[]) o;
+//               dev_resteasy_grpc_arrays___Byte___wrapper.Builder baBuilder = dev_resteasy_grpc_arrays___Byte___wrapper.newBuilder();
+//               dev_resteasy_grpc_arrays___Byte___WArray.Builder bwaBuilder = dev_resteasy_grpc_arrays___Byte___WArray.newBuilder();
+//               for (int i = 0; i < Bs.length; i++) {
+//                   if (Bs[i] == null) {
+//                       bwaBuilder.addByteField(NULL_BYTE);
+//                   } else {
+//                       byte[] bs = new byte[] { Bs[i].byteValue() };
+//                       bwaBuilder.addByteField(baBuilder.clear().setByteField(ByteString.copyFrom(bs)));
+//                   }
+//               }
+//               return ahBuilder.setDevResteasyGrpcArraysByteWArrayField(bwaBuilder).setComponentClass("java.lang.Byte").build();
+//           }
 
             case "short": {
                short[] ss = (short[]) o;
@@ -431,19 +431,19 @@ public class ArrayUtility {
                return ahBuilder.setDevResteasyGrpcArraysShortArrayField(sBuilder).setComponentClass("short").build();
             }
 
-            case "java.lang.Short": {
-                Short[] Ss = (Short[]) o;
-                dev_resteasy_grpc_arrays___Short___wrapper.Builder sBuilder = dev_resteasy_grpc_arrays___Short___wrapper.newBuilder();
-                dev_resteasy_grpc_arrays___Short___WArray.Builder swaBuilder = dev_resteasy_grpc_arrays___Short___WArray.newBuilder();
-                for (int i = 0; i < Ss.length; i++) {
-                    if (Ss[i] == null) {
-                        swaBuilder.addShortField(NULL_SHORT).build();
-                    } else {
-                        swaBuilder.addShortField(sBuilder.setShortField(Ss[i]));
-                    }
-                }
-                return ahBuilder.setDevResteasyGrpcArraysShortWArrayField(swaBuilder).setComponentClass("java.lang.Short").build();
-            }
+//            case "java.lang.Short": {
+//                Short[] Ss = (Short[]) o;
+//                dev_resteasy_grpc_arrays___Short___wrapper.Builder sBuilder = dev_resteasy_grpc_arrays___Short___wrapper.newBuilder();
+//                dev_resteasy_grpc_arrays___Short___WArray.Builder swaBuilder = dev_resteasy_grpc_arrays___Short___WArray.newBuilder();
+//                for (int i = 0; i < Ss.length; i++) {
+//                    if (Ss[i] == null) {
+//                        swaBuilder.addShortField(NULL_SHORT).build();
+//                    } else {
+//                        swaBuilder.addShortField(sBuilder.setShortField(Ss[i]));
+//                    }
+//                }
+//                return ahBuilder.setDevResteasyGrpcArraysShortWArrayField(swaBuilder).setComponentClass("java.lang.Short").build();
+//            }
 
             case "int": {
                int[] is = (int[]) o;
@@ -454,20 +454,20 @@ public class ArrayUtility {
                return ahBuilder.setDevResteasyGrpcArraysIntegerArrayField(iBuilder).setComponentClass("int").build();
             }
 
-            case "java.lang.Integer": {
-                Integer[] is = (Integer[]) o;
-                dev_resteasy_grpc_arrays___Integer___wrapper.Builder iBuilder = dev_resteasy_grpc_arrays___Integer___wrapper.newBuilder();
-                dev_resteasy_grpc_arrays___Integer___WArray.Builder iwaBuilder = dev_resteasy_grpc_arrays___Integer___WArray
-                        .newBuilder();
-                for (int i = 0; i < is.length; i++) {
-                    if (is[i] == null) {
-                        iwaBuilder.addIntegerField(NULL_INTEGER).build();
-                    } else {
-                        iwaBuilder.addIntegerField(iBuilder.setIntegerField(is[i]));
-                    }
-                }
-                return ahBuilder.setDevResteasyGrpcArraysIntegerWArrayField(iwaBuilder).setComponentClass("java.lang.Integer").build();
-            }
+//            case "java.lang.Integer": {
+//                Integer[] is = (Integer[]) o;
+//                dev_resteasy_grpc_arrays___Integer___wrapper.Builder iBuilder = dev_resteasy_grpc_arrays___Integer___wrapper.newBuilder();
+//                dev_resteasy_grpc_arrays___Integer___WArray.Builder iwaBuilder = dev_resteasy_grpc_arrays___Integer___WArray
+//                        .newBuilder();
+//                for (int i = 0; i < is.length; i++) {
+//                    if (is[i] == null) {
+//                        iwaBuilder.addIntegerField(NULL_INTEGER).build();
+//                    } else {
+//                        iwaBuilder.addIntegerField(iBuilder.setIntegerField(is[i]));
+//                    }
+//                }
+//                return ahBuilder.setDevResteasyGrpcArraysIntegerWArrayField(iwaBuilder).setComponentClass("java.lang.Integer").build();
+//            }
 
             case "long": {
                long[] ls = (long[]) o;
@@ -478,19 +478,19 @@ public class ArrayUtility {
                return ahBuilder.setDevResteasyGrpcArraysLongArrayField(lBuilder).setComponentClass("long").build();
             }
 
-            case "java.lang.Long": {
-                Long[] ls = (Long[]) o;
-                dev_resteasy_grpc_arrays___Long___wrapper.Builder lBuilder = dev_resteasy_grpc_arrays___Long___wrapper.newBuilder();
-                dev_resteasy_grpc_arrays___Long___WArray.Builder lwaBuilder = dev_resteasy_grpc_arrays___Long___WArray.newBuilder();
-                for (int i = 0; i < ls.length; i++) {
-                    if (ls[i] == null) {
-                        lwaBuilder.addLongField(NULL_LONG);
-                    } else {
-                        lwaBuilder.addLongField(lBuilder.setLongField(ls[i]));
-                    }
-                }
-                return ahBuilder.setDevResteasyGrpcArraysLongWArrayField(lwaBuilder).setComponentClass("java.lang.Long").build();
-            }
+//            case "java.lang.Long": {
+//                Long[] ls = (Long[]) o;
+//                dev_resteasy_grpc_arrays___Long___wrapper.Builder lBuilder = dev_resteasy_grpc_arrays___Long___wrapper.newBuilder();
+//                dev_resteasy_grpc_arrays___Long___WArray.Builder lwaBuilder = dev_resteasy_grpc_arrays___Long___WArray.newBuilder();
+//                for (int i = 0; i < ls.length; i++) {
+//                    if (ls[i] == null) {
+//                        lwaBuilder.addLongField(NULL_LONG);
+//                    } else {
+//                        lwaBuilder.addLongField(lBuilder.setLongField(ls[i]));
+//                    }
+//                }
+//                return ahBuilder.setDevResteasyGrpcArraysLongWArrayField(lwaBuilder).setComponentClass("java.lang.Long").build();
+//            }
 
             //            case "float": {
             //                float[] fs = (float[]) o;
@@ -575,7 +575,7 @@ public class ArrayUtility {
                      } else {
                         ahwBuilder.clear().setDevResteasyGrpcArraysArrayHolderField(ArrayUtility.getHolder(translator, objects[i]));
                      }
-                     ahaBuilder.addDevResteasyGrpcArraysArrayHolderField(ahwBuilder);
+                     ahaBuilder.addWrapperField(ahwBuilder);
 //                     ahaBuilder.setDevResteasyGrpcArraysArrayHolderWrapperField(i, ahwBuilder);
                   }
                   ahBuilder.setDevResteasyGrpcArraysArrayHolderWArrayField(ahaBuilder).setComponentClass(objects.getClass().getComponentType().getName());
@@ -604,10 +604,10 @@ public class ArrayUtility {
     public static String getComponentClass(dev_resteasy_grpc_arrays___ArrayHolder holder) {
         if (holder.hasDevResteasyGrpcArraysArrayHolderWArrayField()) {
            dev_resteasy_grpc_arrays___ArrayHolder___WArray holderArray = holder.getDevResteasyGrpcArraysArrayHolderWArrayField();
-            if (holderArray.getDevResteasyGrpcArraysArrayHolderFieldCount() == 0) {
+            if (holderArray.getWrapperFieldCount() == 0) {
                 return "";
             }
-            return getComponentClass(holderArray.getDevResteasyGrpcArraysArrayHolderField(0).getDevResteasyGrpcArraysArrayHolderField());
+            return getComponentClass(holderArray.getWrapperField(0).getDevResteasyGrpcArraysArrayHolderField());
         }
         return holder.getComponentClass();
     }

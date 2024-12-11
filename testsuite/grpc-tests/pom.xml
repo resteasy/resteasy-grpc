@@ -84,7 +84,8 @@
                 <resteasy.test.feature.pack.version>${version.org.jboss.resteasy}</resteasy.test.feature.pack.version>
                 <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
-                <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
+                <!--server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version-->
+                <server.test.feature.pack.version>30.0.0.Final</server.test.feature.pack.version>
             </properties>
         </profile>
         <profile>
@@ -233,7 +234,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
 			  <compilerArgs>
-                  <arg>-J--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</arg>
+                  <arg>-J--add-opens java.base/jdk.internal.misc=ALL-UNNAMED -J--add-opens java.base/java.util=ALL-UNNAMED</arg>
                </compilerArgs>
           </configuration>
         </plugin>
@@ -346,24 +347,18 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>genproto</id>
-                        <phase>generate-sources</phase>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>java</goal>
                         </goals>
                         <configuration>
                             <mainClass>dev.resteasy.grpc.bridge.generator.protobuf.JavaToProtobufGenerator</mainClass>
                             <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                            <arguments>
-                                <argument>${project.basedir}</argument>
-                                <argument>dev.resteasy.grpc.example</argument>
-                                <argument>dev.resteasy.grpc.example</argument>
-                                <argument>${root.class}</argument>
-                                <!--argument>-Djars=/opt/local/java/jdk-17.0.7/lib/src.zip</argument-->
-                            </arguments>
+                            <!--additionalClasspathElements>${project.build.directory}/classes</additionalClasspathElements-->
+                            <commandlineArgs>${project.basedir} dev.resteasy.grpc.example dev.resteasy.grpc.example ${root.class} -D"--add-opens java.base/java.util=ALL-UNNAMED"</commandlineArgs>
                             <systemProperties>
                                 <systemProperty>
                                     <key>exec.cleanupDaemonThreads</key>
@@ -389,6 +384,7 @@
                                 <argument>${project.basedir}/target/generated-sources/protobuf/java</argument>
                                 <argument>dev.resteasy.grpc.example.${root.class}</argument>
                                 <argument>${root.class}</argument>
+                                <argument>${project.basedir}/src/main/proto/CC1.proto</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>
@@ -396,6 +392,7 @@
                                     <value>false</value>
                                 </systemProperty>
                             </systemProperties>
+                            <!--commandlineArgs>- -add-opens java.base/java.util=ALL-UNNAMED</commandlineArgs-->
                         </configuration>
                     </execution>
                     <execution>
@@ -409,8 +406,10 @@
                             <cleanupDaemonThreads>false</cleanupDaemonThreads>
                             <arguments>
                                 <argument>${project.build.directory}/generated-sources/protobuf/grpc-java</argument>
-                                <argument>dev.resteasy.grpc.example.${root.class}_proto</argument>
+                                <argument>dev.resteasy.grpc.example.${root.class}</argument>
                                 <argument>${root.class}</argument>
+                                <argument>${project.basedir}</argument>
+                                <argument>${project.basedir}/src/main/proto/CC1.proto</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>
@@ -418,9 +417,9 @@
                                     <value>false</value>
                                 </systemProperty>
                             </systemProperties>
-                            <argLine>--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</argLine>
                         </configuration>
                     </execution>
+                    <!--argLine>- -add-opens java.base/jdk.internal.misc=ALL-UNNAMED</argLine-->
                     <execution>
                         <id>genGRPC</id>
                         <phase>process-classes</phase>
@@ -471,7 +470,7 @@
                     </execution>
                 </executions>
             </plugin>
-           <plugin>
+           <!--plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
                 <version>1.0</version>
@@ -484,12 +483,11 @@
                         </goals>
                         <configuration>
                             <sourceFile>${project.basedir}/src/main/resources/ArrayUtility</sourceFile>
-                            <!--destinationFile>${project.basedir}/src/main/java/dev/resteasy/grpc/arrays/ArrayUtility.java</destinationFile-->
                             <destinationFile>${project.basedir}/target/generated-sources/protobuf/java/dev/resteasy/grpc/arrays/ArrayUtility.java</destinationFile>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
         </plugins>
     </build>
 </project>

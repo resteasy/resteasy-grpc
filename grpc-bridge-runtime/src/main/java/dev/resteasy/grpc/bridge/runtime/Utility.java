@@ -24,8 +24,14 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jboss.resteasy.spi.util.Types.ResteasyParameterizedType;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.Descriptors.FieldDescriptor;
@@ -51,7 +57,7 @@ public final class Utility {
         // restrict instantiation
     }
 
-    public static Class<?> extractClassFromAny(Any any, JavabufTranslator translator) throws Exception {
+    public static Class<?> extractClassFromAny(Any any, JavabufTranslator translator) {
         String s = extractStringTypeFromAny(any);
         if (s == "" || s == null) {
             return null;
@@ -65,8 +71,6 @@ public final class Utility {
             c = WRAPPER_CLASSES.get(c);
         }
         return translator.translateToJavabufClass(c);
-        //        return d;
-        //        return translator.translateToJavabufClass(classname);
     }
 
     public static Class<?> extractTypeFromAny(Any any, ClassLoader cl, String outerClassName) throws ClassNotFoundException {
@@ -74,6 +78,7 @@ public final class Utility {
         String pkg = className.substring(0, className.lastIndexOf('.') + 1);
         String innerClassName = className.substring(className.lastIndexOf('.') + 1);
         className = pkg + outerClassName + "$" + innerClassName;
+        className = "dev.resteasy.grpc.example.CC1_proto$java_util___ArrayList";
         Class<?> clazz = cl.loadClass(className);
         return clazz;
     }
@@ -91,7 +96,33 @@ public final class Utility {
         String javabufClassname = classname.replace('.', '_');
         int pos = javabufClassname.lastIndexOf('_');
         javabufClassname = javabufClassname.substring(0, pos) + "__" + javabufClassname.substring(pos);
+        if (javabufClassname.startsWith("[")) {
+            javabufClassname = javabufClassname.substring(2, javabufClassname.length() - 1) + "___WArray";
+        }
         return javabufClassname;
+    }
+
+    public static String classnameToGetter(String s) {
+        if (s.length() == 0) {
+            return s;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("get");
+        boolean upper = true;
+        for (int i = 0; i < s.length(); i++) {
+            if ('_' == s.charAt(i)) {
+                upper = true;
+                continue;
+            }
+            if (upper) {
+                sb.append(s.substring(i, i + 1).toUpperCase());
+                upper = false;
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        sb.append("Field");
+        return sb.toString();
     }
 
     public static String getClassnameFromProto(FieldDescriptor fd) {
@@ -114,28 +145,6 @@ public final class Utility {
         }
     }
 
-    /*
-     * var lookup = MethodHandles.privateLookupIn(Field.class, MethodHandles.lookup());
-     * VarHandle MODIFIERS = lookup.findVarHandle(Field.class, "modifiers", int.class);
-     *
-     * var emptyElementDataField = ArrayList.class.getDeclaredField("EMPTY_ELEMENTDATA");
-     * // make field non-final
-     * MODIFIERS.set(emptyElementDataField, emptyElementDataField.getModifiers() & ~Modifier.FINAL);
-     *
-     * // set field to new value
-     * emptyElementDataField.setAccessible(true);
-     * emptyElementDataField.set(null, new Object[] {"Hello", "World!"});
-     *
-     * var list = new ArrayList<>(0);
-     *
-     * // println uses toString(), and ArrayList.toString() indirectly relies on 'size'
-     * var sizeField = ArrayList.class.getDeclaredField("size");
-     * sizeField.setAccessible(true);
-     * sizeField.set(list, 2); // the new "empty element data" has a length of 2
-     *
-     * System.out.println(list);
-     */
-
     public static void setField(Field field, Object object, Object value, JavabufTranslator translator) throws Exception {
         if (Modifier.isFinal(field.getModifiers())) {
             if (Modifier.isStatic(field.getModifiers())) {
@@ -148,42 +157,7 @@ public final class Utility {
             // make field non-final
             MODIFIERS.set(field, field.getModifiers() & ~Modifier.FINAL);
             field.setAccessible(true);
-            //            field.set(object, value);
-            //            return;
-
-            //            return;
-            //           field.setAccessible(true);
-            //           Field modifiersField = Field.class.getDeclaredField("modifiers");
-            //           modifiersField.setAccessible(true);
-            //           modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            //           System.out.println(Modifier.isFinal(field.getModifiers()));
-            //            Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-            //            getDeclaredFields0.setAccessible(true);
-            //            Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
-            //            Field modifiers = null;
-            //            for (Field each : fields) {
-            //                if ("modifiers".equals(each.getName())) {
-            //                    //                    System.out.println(field.get(Field.class));
-            //                    //                    each.setAccessible(true);
-            //                    //                    System.out.println(each.get(Field.class));
-            //                    //                    System.out.println("before: " + each.getInt(Field.class));
-            //                    //                    each.setInt(Field.class, each.getModifiers() & ~Modifier.FINAL);
-            //                    //                    System.out.println("after: " + each.getInt(Field.class));
-            //                    modifiers = each;
-            //                    break;
-            //                }
-            //            }
-            //            modifiers.setAccessible(true);
-            //            System.out.println(modifiers.get(field));
-            //            int m = field.getModifiers() & ~Modifier.FINAL;
-            //            modifiers.setInt(field, m);
-            //            //           modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            //            //           System.out.println(Modifier.isFinal(field.getModifiers()));
-            //            //           assertNotNull(modifiers);
-            //            //           System.out.println("modifiers after: " + modifiers);
         }
-        //        System.out.println("setField(): " + value.getClass());
-        //        Class<?> ufai = UnsafeFieldAccessorImpl.class;
         field.setAccessible(true);
         if (value == null) {
             field.set(object, value);
@@ -209,7 +183,6 @@ public final class Utility {
             }
         } else {
             field.setAccessible(true);
-            System.out.println("field: " + field.getName());
             field.set(object, value);
         }
     }
@@ -253,11 +226,59 @@ public final class Utility {
         while (c != null) {
             try {
                 Field field = c.getDeclaredField(name);
+                System.out.println(field.getGenericType().getTypeName());
                 return field;
             } catch (Exception e) {
                 c = c.getSuperclass();
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Object getHiddenObject(Class<?> clazz, String hidden) {
+        try {
+            for (Class<?> c : clazz.getDeclaredClasses()) {
+                if (hidden.equals(c.getSimpleName())) {
+
+                    return c.newInstance();
+                }
+            }
+            throw new RuntimeException("can't find " + clazz.getName() + "." + hidden);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Type objectify(Type type) {
+        if (!(type instanceof ParameterizedType)) {
+            return type;
+        }
+        ParameterizedType ptype = (ParameterizedType) type;
+        Type[] types = ptype.getActualTypeArguments();
+        Type[] newTypes = new Type[types.length];
+        for (int i = 0; i < types.length; i++) {
+            if (types[i] instanceof TypeVariable || types[i] instanceof WildcardType) {
+                newTypes[i] = Object.class;
+            } else if (types[i] instanceof ParameterizedType) {
+                newTypes[i] = objectify((ParameterizedType) types[i]);
+            } else {
+                newTypes[i] = types[i];
+            }
+        }
+        return new GrpcParameterizedType(newTypes, ptype.getRawType(), ptype.getOwnerType());
+    }
+
+    public static class GrpcParameterizedType extends ResteasyParameterizedType {
+        public GrpcParameterizedType(Type[] actuals, Type rawType, Type ownerType) {
+            super(actuals, rawType, ownerType);
+        }
+
+        @Override
+        public String toString() {
+            String s = super.toString();
+            s = s.replace("class ", "");
+            return s.replace("interface ", "");
+        }
     }
 }

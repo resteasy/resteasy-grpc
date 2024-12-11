@@ -27,6 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.logging.Logger;
 
 import com.github.javaparser.ParseResult;
@@ -67,9 +71,6 @@ import com.github.javaparser.utils.Pair;
 import com.github.javaparser.utils.SourceRoot;
 
 import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
-import jakarta.ws.rs.container.AsyncResponse;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 /**
  * Traverses a set of Jakarta REST resources and creates a protobuf representation.
@@ -334,35 +335,34 @@ public class JavaToProtobufGenerator {
                 "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray");
         WRAPPER_TO_JAVABUF_MAP.put("java.lang.String", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
 
-        PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "bool");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Boolean", "bool");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Boolean", "bool");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("byte", "bytes");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Byte", "bytes");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Byte", "bytes");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("short", "int32");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Short", "int32");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Short", "int32");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("int", "int32");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Integer", "int32");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Integer", "int32");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("long", "int64");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Long", "int64");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Long", "int64");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("float", "float");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Float", "float");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Float", "float");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("double", "double");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Double", "double");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Double", "double");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("char", "string");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Character", "string");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Character", "string");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("string", "string");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("String", "string");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.String", "string");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Boolean", "gBoolean");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Byte", "gByte");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Short", "gShort");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("int", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Integer", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Integer", "gInteger");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Long", "gLong");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Float", "gFloat");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Double", "gDouble");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("char", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("Character", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Character", "gCharacter");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("string", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("String", "gString");
+        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.String", "gString");
 
-        // ?? Compare with PRIMITIVE_WRAPPER_TYPES_IO
         PRIMITIVE_WRAPPER_TYPES_FIELD.put("Boolean", "bool");
         PRIMITIVE_WRAPPER_TYPES_FIELD.put("Byte", "int32");
         PRIMITIVE_WRAPPER_TYPES_FIELD.put("Short", "int32");
@@ -575,7 +575,7 @@ public class JavaToProtobufGenerator {
             }
             String dir = filename.substring(0, n).trim();
             filename = dir + "/" + filename.substring(n + 1).replace(".", "/") + ".java";
-            CompilationUnit cu = StaticJavaParser.parse(new File(filename)); //                AdditionalClassVisitor additionalClassVisitor = new AdditionalClassVisitor(dir);
+            CompilationUnit cu = StaticJavaParser.parse(new File(filename));
             classVisitor.visit(cu, sb);
         }
         if (isSSE) {
@@ -706,13 +706,21 @@ public class JavaToProtobufGenerator {
     private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
         Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
         if (path.resolve(args[3] + ".proto").toFile().exists()) {
-            //            return;
+            return;
         }
         counter = 0;
         createArrayDefs(args, sb);
         sb.append("//////////  types: //////////" + LS);
         for (String s : entityTypes) {
             sb.append("// ").append(s).append(LS);
+        }
+        sb.append(LS + "//////////  synthetic names: //////////" + LS);
+        for (String s : classnames.keySet()) {
+            sb.append("// ").append(classnames.get(s)).append("->");
+            if (s.contains("<")) {
+                s = s.substring(0, s.indexOf('<'));
+            }
+            sb.append(s).append(LS);
         }
         Files.writeString(path.resolve(args[3] + ".proto"), sb.toString(), StandardCharsets.UTF_8);
         Path path2 = Path.of("/tmp/CC1.proto");
@@ -791,7 +799,6 @@ public class JavaToProtobufGenerator {
             }
         } catch (Exception e) {
             System.out.println("HMMMMMM");
-            e.printStackTrace();
         }
     }
 
@@ -878,7 +885,7 @@ public class JavaToProtobufGenerator {
                         ReferenceTypeImpl rt = (ReferenceTypeImpl) p.getType().resolve();
                         ResolvedType objectified = objectify(rt);
                         if (!visited.contains(objectified.describe())) {
-                           pendingTypes.add(objectified);
+                            pendingTypes.add(objectified);
                         }
                     }
                 }
@@ -920,6 +927,8 @@ public class JavaToProtobufGenerator {
                 sb.append(LS).append("// List: ").append(objectified.describe());
             } else if (isSet) {
                 sb.append(LS).append("// Set: ").append(objectified.describe());
+            } else if ("java.lang.Object".equals(objectified.describe())) {
+                return;
             }
             if (start) {
                 String innerClass = isInnerClass(resolvedType.asReferenceType().getTypeDeclaration().get());
@@ -968,12 +977,18 @@ public class JavaToProtobufGenerator {
                 } else { // Defined type
                     ResolvedType rt = rfd.getType();
                     if (rt.isReferenceType()) {
-                       type = visitReferenceType(objectify(rt.asReferenceType()));
-                       if (isSetOrList(rt.asReferenceType())) {
-                            sb.append("  //").append(rt.describe()).append(LS);
+                        ResolvedType objectifiedField = objectify(rt.asReferenceType());
+                        type = visitReferenceType(objectifiedField);
+                        if (isSetOrList(rt.asReferenceType())) {
+                            sb.append("  //").append(objectifiedField.describe()).append(LS);
                         }
                     } else if (rfd.getType().isTypeVariable()) {
-                        type = "google.protobuf.Any";
+                        Optional<ResolvedType> opt = clazz.getGenericParameterByName(rfd.getType().asTypeVariable().describe());
+                        if (opt.isPresent() && opt.get().isReferenceType()) {
+                            type = fqnifyClass(opt.get(), "___");
+                        } else {
+                            type = "google.protobuf.Any";
+                        }
                     }
                 }
                 String fieldName = getFieldName(fieldNames, rfd.getName());
@@ -993,25 +1008,35 @@ public class JavaToProtobufGenerator {
         }
     }
 
+    /**
+     * 1. Create new type in which all wildcards and type variables are replaced with Object.class.
+     * 2. Create non generic version of type.
+     */
     private static ResolvedType objectify(ResolvedReferenceType clazz) {
-       if (objectifiedTypes.containsKey(clazz)) {
-          return objectifiedTypes.get(clazz);
-       }
-       List<ResolvedType> list = new ArrayList<ResolvedType>();
-       Iterator<Pair<ResolvedTypeParameterDeclaration, ResolvedType>> iterator = clazz.getTypeParametersMap().iterator();
-       while (iterator.hasNext()) {
-          Pair<ResolvedTypeParameterDeclaration, ResolvedType> pair = iterator.next();
-          if (pair.b.isTypeVariable() || pair.b.isWildcard()) {
-             list.add(objectType);
-          } else if (pair.b.isReferenceType()){
-             list.add(objectify(pair.b.asReferenceType()));
-          }
-       }
-       ReferenceTypeImpl rti = new ReferenceTypeImpl(clazz.getTypeDeclaration().get(), list, combinedTypeSolver);
-       objectifiedTypes.put(clazz, rti);
-       return rti;
+        if (objectifiedTypes.containsKey(clazz)) {
+            return objectifiedTypes.get(clazz);
+        }
+        List<ResolvedType> list = new ArrayList<ResolvedType>();
+        Iterator<Pair<ResolvedTypeParameterDeclaration, ResolvedType>> iterator = clazz.getTypeParametersMap().iterator();
+        while (iterator.hasNext()) {
+            Pair<ResolvedTypeParameterDeclaration, ResolvedType> pair = iterator.next();
+            if (pair.b.isTypeVariable() || pair.b.isWildcard()) {
+                list.add(objectType);
+            } else if (pair.b.isReferenceType()) {
+                list.add(objectify(pair.b.asReferenceType()));
+            }
+        }
+        ReferenceTypeImpl rti = new ReferenceTypeImpl(clazz.getTypeDeclaration().get(), list, combinedTypeSolver);
+        objectifiedTypes.put(clazz, rti);
+        List<ResolvedType> list2 = new ArrayList<ResolvedType>();
+        // Create non generic version of clazz.
+        ReferenceTypeImpl rti2 = new ReferenceTypeImpl(clazz.getTypeDeclaration().get(), list2, combinedTypeSolver);
+        if (!visited.contains(rti2.describe())) {
+            pendingTypes.add(rti2);
+        }
+        return rti;
     }
-    
+
     public static ReflectionClassDeclaration rcd = new ReflectionClassDeclaration(Object.class, combinedTypeSolver);
 
     private static void visitCollection(ResolvedType resolvedType, Set<String> fieldNames, StringBuilder sb) {
@@ -1023,7 +1048,7 @@ public class JavaToProtobufGenerator {
             pendingTypes.add(rt.asReferenceType());
         }
         sb.append("  //").append(rt.describe()).append(LS)
-          .append("  repeated ").append(fqn).append(" data = ").append(counter++).append(";" + LS);
+                .append("  repeated ").append(fqn).append(" data = ").append(counter++).append(";" + LS);
     }
 
     private static String visitArray(ResolvedFieldDeclaration rfd) {
@@ -1043,7 +1068,7 @@ public class JavaToProtobufGenerator {
             if (bat.isReference()) {
                 fqn = bat.asReferenceType().getQualifiedName(); // type variable?
                 if (!visited.contains(fqn)) {
-                   pendingTypes.add(objectify(bat.asReferenceType()));
+                    pendingTypes.add(objectify(bat.asReferenceType()));
                 }
             }
         } else {
@@ -1071,7 +1096,7 @@ public class JavaToProtobufGenerator {
         while (it.hasNext()) {
             Pair<ResolvedTypeParameterDeclaration, ResolvedType> pair = it.next();
             if (pair.b.isReferenceType()) {
-               pendingTypes.add(objectify(pair.b.asReferenceType()));
+                pendingTypes.add(objectify(pair.b.asReferenceType()));
             }
         }
         String innerClass = isInnerClass(rt.asReferenceType().getTypeDeclaration().get());
@@ -1092,7 +1117,7 @@ public class JavaToProtobufGenerator {
             if (isEntity(p)) {
                 ResolvedType rt = p.getType().resolve();
                 if (rt.isReferenceType()) {
-                   rt = objectify(rt.asReferenceType());
+                    rt = objectify(rt.asReferenceType());
                 }
                 String javaType = rt.describe();
                 String rawType = p.getTypeAsString();
@@ -1415,7 +1440,7 @@ public class JavaToProtobufGenerator {
         }
         Pair<ResolvedTypeParameterDeclaration, ResolvedType> pair = lt.get(0);
         if (pair.b.isTypeVariable()) {
-           return new Pair<ResolvedTypeParameterDeclaration, ResolvedType>(pair.a, objectType);
+            return new Pair<ResolvedTypeParameterDeclaration, ResolvedType>(pair.a, objectType);
         }
         return lt.get(0);
     }
@@ -1454,7 +1479,7 @@ public class JavaToProtobufGenerator {
     }
 
     private static String getRpcName(Set<String> rpcNames, String proposedName) {
-        String name = proposedName;
+        String name = proposedName.substring(0, 1).toLowerCase() + proposedName.substring(1);
         int counter = 1;
         while (rpcNames.contains(name.toLowerCase())) {
             name = proposedName + "___" + counter++;

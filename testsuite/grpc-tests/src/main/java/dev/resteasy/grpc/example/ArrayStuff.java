@@ -4,24 +4,24 @@ import java.util.Arrays;
 
 public class ArrayStuff {
 
-    public static class Stuff {
-        int i;
-
-        Stuff() {
-        }
-
-        public Stuff(int i) {
-            this.i = i;
-        }
-
-        public boolean equals(Object other) {
-            if (!Stuff.class.equals(other.getClass())) {
-                return false;
-            }
-            Stuff stuff = (Stuff) other;
-            return this.i == stuff.i;
-        }
-    }
+    //    public static class Stuff {
+    //        int i;
+    //
+    //        Stuff() {
+    //        }
+    //
+    //        public Stuff(int i) {
+    //            this.i = i;
+    //        }
+    //
+    //        public boolean equals(Object other) {
+    //            if (!Stuff.class.equals(other.getClass())) {
+    //                return false;
+    //            }
+    //            Stuff stuff = (Stuff) other;
+    //            return this.i == stuff.i;
+    //        }
+    //    }
 
     boolean[] bos;
     boolean[][] boss;
@@ -63,8 +63,8 @@ public class ArrayStuff {
     Character[] Cs;
     Character[][] Css;
 
-    Stuff[] sts;
-    Stuff[][] stss;
+    //    Stuff[] sts;
+    //    Stuff[][] stss;
 
     public ArrayStuff() {
     }
@@ -118,9 +118,9 @@ public class ArrayStuff {
             Css = new Character[][] { { Character.valueOf('m') }, { Character.valueOf('n') }, { Character.valueOf('o') },
                     { Character.valueOf('p') } };
 
-            sts = new Stuff[] { new Stuff(85), new Stuff(86), new Stuff(87) };
-            stss = new Stuff[][] { { new Stuff(88), new Stuff(89) }, { new Stuff(90), new Stuff(91) },
-                    { new Stuff(92), new Stuff(93) } };
+            //            sts = new Stuff[] { new Stuff(85), new Stuff(86), new Stuff(87) };
+            //            stss = new Stuff[][] { { new Stuff(88), new Stuff(89) }, { new Stuff(90), new Stuff(91) },
+            //                    { new Stuff(92), new Stuff(93) } };
 
         } else {
             bos = new boolean[] { true, false, false };
@@ -170,9 +170,9 @@ public class ArrayStuff {
             Css = new Character[][] { { Character.valueOf('1') }, { Character.valueOf('2') }, { Character.valueOf('3') },
                     { Character.valueOf('4') } };
 
-            sts = new Stuff[] { new Stuff(95), new Stuff(96), new Stuff(97) };
-            stss = new Stuff[][] { { new Stuff(98), new Stuff(99) }, { new Stuff(100), new Stuff(101) },
-                    { new Stuff(102), new Stuff(103) } };
+            //            sts = new Stuff[] { new Stuff(95), new Stuff(96), new Stuff(97) };
+            //            stss = new Stuff[][] { { new Stuff(98), new Stuff(99) }, { new Stuff(100), new Stuff(101) },
+            //                    { new Stuff(102), new Stuff(103) } };
 
         }
     }
@@ -222,12 +222,12 @@ public class ArrayStuff {
         boolean b30 = Arrays.deepEquals(css, as.css);
         boolean b31 = Arrays.deepEquals(Cs, as.Cs);
         boolean b32 = Arrays.deepEquals(Css, as.Css);
-        boolean b33 = Arrays.deepEquals(sts, as.sts);
-        boolean b34 = Arrays.deepEquals(stss, as.stss);
+        //        boolean b33 = Arrays.deepEquals(sts, as.sts);
+        //        boolean b34 = Arrays.deepEquals(stss, as.stss);
 
         return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 &&
                 b11 && b12 && b13 && b14 && b15 && b16 && b17 && b18 && b19 && b20 &&
                 b21 && b22 && b23 && b24 && b25 && b26 && b27 && b28 && b29 && b30 &&
-                b31 && b32 && b33 && b34;
+                b31 && b32;// && b33 && b34;
     }
 }

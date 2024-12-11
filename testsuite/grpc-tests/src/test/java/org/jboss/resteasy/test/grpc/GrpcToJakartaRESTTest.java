@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
+import dev.resteasy.grpc.example.CC1_proto.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -75,5 +76,4 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
         doAsyncTest(asyncStubPlaintext);
         doFutureTest(futureStubPlaintext);
     }
-
 }
