@@ -1167,6 +1167,46 @@ public class JavaToProtobufGenerator {
         return "gEmpty";
     }
 
+    private static boolean isInterface(ResolvedType rt) {
+        System.out.println(rt.describe());
+        System.out.println(objectify(rt.asReferenceType()).describe());
+        if (rt.describe().contains("Intf")) {
+            System.out.println(rt.describe());
+        }
+        String name = rt.describe();
+        if (rt.describe().contains("<")) {
+            name = name.substring(0, name.indexOf('<'));
+        }
+        try {
+            Class<?> clazz = Class.forName(name);
+            return clazz.isInterface();
+        } catch (Exception e) {
+            //            throw new RuntimeException(e);
+            logger.info(e);
+            return false;
+        }
+        //    	if (!rt.isReference()) {
+        //    		return false;
+        //    	}
+        //    	System.out.println("DESCRIBE: " + rt.describe());
+        //    	if (rt.describe().contains("Intf")) {
+        //    		System.out.println(rt.describe());
+        //        	for (ResolvedReferenceType rrt : rt.asReferenceType().getAllAncestors()) {
+        //        		System.out.println(rrt.describe());
+        //        	}
+        //    	}
+        //    	System.out.println(rt.t)
+        //    	System.out.println(rt.asReferenceType().getAllInterfacesAncestors().size());
+        //    	System.out.println(rt.asReferenceType().getAllAncestors().size());
+        //    	for (ResolvedReferenceType rrt : rt.asReferenceType().getAllInterfacesAncestors()) {
+        //    		if (rt.describe().equals(rrt.describe())) {
+        //    			return true;
+        //    		}
+        //    	}
+        //    	return false;
+
+    }
+
     private static boolean isEntity(Parameter p) {
         for (AnnotationExpr ae : p.getAnnotations()) {
             if (ANNOTATIONS.contains(ae.getNameAsString())) {

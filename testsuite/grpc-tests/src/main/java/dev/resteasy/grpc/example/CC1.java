@@ -568,26 +568,26 @@ public class CC1 {
         return Response.ok("servletResponse").status(223).build();
     }
 
-    //    public static class InnerClass {
-    //        private int i = 3;
-    //        private String s = "three";
-    //
-    //        public int getI() {
-    //            return i;
-    //        }
-    //
-    //        public void setI(int i) {
-    //            this.i = i;
-    //        }
-    //
-    //        public String getS() {
-    //            return s;
-    //        }
-    //
-    //        public void setS(String s) {
-    //            this.s = s;
-    //        }
-    //    }
+    public static class InnerClass {
+        private int i = 3;
+        private String s = "three";
+
+        public int getI() {
+            return i;
+        }
+
+        public void setI(int i) {
+            this.i = i;
+        }
+
+        public String getS() {
+            return s;
+        }
+
+        public void setS(String s) {
+            this.s = s;
+        }
+    }
 
     //dev.resteasy.grpc.example.CC1.C.F
     //    public static class C {
@@ -624,11 +624,11 @@ public class CC1 {
     //        return c;
     //    }
 
-    //    @Path("inner")
-    //    @GET
-    //    public InnerClass inner() {
-    //        return new InnerClass();
-    //    }
+    @Path("inner")
+    @GET
+    public InnerClass inner() {
+        return new InnerClass();
+    }
 
     @GET
     public String notSubresourceGet() {

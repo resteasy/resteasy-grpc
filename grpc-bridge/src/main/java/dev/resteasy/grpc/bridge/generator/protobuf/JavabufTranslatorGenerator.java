@@ -902,6 +902,7 @@ public class JavabufTranslatorGenerator {
             writeTranslatorClass(args, translatorClass, sb);
         } catch (Exception e) {
             logger.error(e);
+            e.printStackTrace();
         }
     }
 
@@ -992,6 +993,7 @@ public class JavabufTranslatorGenerator {
             return list;
         } catch (Exception ignore) {
             // Array_proto class is not available: ignore
+            ignore.printStackTrace();
             return list;
         }
     }
@@ -1234,7 +1236,7 @@ public class JavabufTranslatorGenerator {
                             .append(simpleName + ".class);" + LS);
                     sb.append("      fromJavabufClassMap.put(")
                             .append(simpleName + ".class.getName(), ")
-                            .append(getJavabufClassValue(simpleName, false, false) + ");" + LS);
+                            .append(getJavabufClassValue(simpleName, false, true) + ");" + LS);
                     if (simpleName.contains("HIDDEN")) {
                         continue; // TAKE THIS OUT !!!
                     }
@@ -1308,8 +1310,9 @@ public class JavabufTranslatorGenerator {
         }
         String originalName = originalSimpleName(clazz.getName());
         //        String className = javabufToJava(clazz.getName(), originalName, false);
-        String className = javabufToJava(clazz.getName(), originalName, true);
+        String className = javabufToJava(clazz.getName(), originalName, false);
         System.out.println("ABSTRACT: " + clazz.getName() + " -> " + className);
+        System.out.println("FOR_NAME: 11" + className);
         Class<?> c = Class.forName(className, true,
                 Thread.currentThread().getContextClassLoader());
         return Modifier.isAbstract(c.getModifiers()) || c.isInterface();
@@ -1903,7 +1906,8 @@ public class JavabufTranslatorGenerator {
                         sb.append(String.format(ArrayPrimitiveBuilderClass, primitiveClass, javaComponentClass, methodClass));
                 }
             } else {
-                javaComponentClass = javabufToJava(javabufComponentClass, javaComponentClass, false);
+                //                javaComponentClass = javabufToJava(javabufComponentClass, javaComponentClass, false);
+                javaComponentClass = javabufToJava(javabufComponentClass, javaComponentClass, true);
                 if (javaComponentClass.contains("___")) {
                     javaComponentClass = javabufComponentClass.substring(javabufComponentClass.lastIndexOf("___") + 3);
                 }
@@ -1957,7 +1961,7 @@ public class JavabufTranslatorGenerator {
                     .append("               continue;" + LS)
                     .append("            }" + LS)
                     .append("            assignList.add(toJavabuf(")
-                    .append(getJavabufClassValue(clazz.getSimpleName(), false, false));
+                    .append(getJavabufClassValue(clazz.getSimpleName(), false, true));
             sb.append(", descriptor.findFieldByName(name)));" + LS)
                     .append("         }" + LS)
                     .append("      }" + LS + LS)
@@ -2092,6 +2096,7 @@ public class JavabufTranslatorGenerator {
             if (i >= 0) {
                 javaclassName = javaclassName.substring(0, i);
             }
+            System.out.println("FOR_NAME: 1" + javaclassName);
             Class<?> javaclass = Class.forName(javaclassName);
             String s = LISTS_SETS_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
             String t = null;
@@ -2124,6 +2129,7 @@ public class JavabufTranslatorGenerator {
             if (i >= 0) {
                 javaclassName = javaclassName.substring(0, i);
             }
+            System.out.println("FOR_NAME: 2" + javaclassName);
             Class<?> javaclass = Class.forName(javaclassName);
             String s = LISTS_SETS_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
             String t = null;
@@ -2155,6 +2161,7 @@ public class JavabufTranslatorGenerator {
             try {
                 cons = findConstructor(clazz, originalName);
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
             if (cons == null) { // abstract class
@@ -2173,7 +2180,7 @@ public class JavabufTranslatorGenerator {
                     .append("               continue;" + LS)
                     .append("            }" + LS)
                     .append("            assignList.add(fromJavabuf(")
-                    .append(getJavabufClassValue(clazz.getSimpleName(), false, false))
+                    .append(getJavabufClassValue(clazz.getSimpleName(), false, true))
                     .append(", descriptor.findFieldByName(name)));" + LS)
                     .append("         }" + LS)
                     .append("      }" + LS + LS);
@@ -2286,6 +2293,7 @@ public class JavabufTranslatorGenerator {
         i = s.indexOf("_INNER_");
         if (i >= 0) {
             System.out.println("RETURNING 2: " + s.substring(i + "_INNER_".length()));
+            new Exception("INNER").printStackTrace();
             return s.substring(i + "_INNER_".length());
         }
         i = s.indexOf("_HIDDEN_");
@@ -2372,6 +2380,7 @@ public class JavabufTranslatorGenerator {
         String className = null;
         try {
             className = javabufToJava(clazz.getName(), originalName, false);
+            System.out.println("FOR_NAME: 3" + className);
             Class<?> originalClazz = Class.forName(className);
             if (Modifier.isAbstract(originalClazz.getModifiers())) {
                 return null;
@@ -2390,8 +2399,8 @@ public class JavabufTranslatorGenerator {
             }
             return con;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
-            //            e.printStackTrace();
             //            return null;
         }
     }
@@ -2418,6 +2427,10 @@ public class JavabufTranslatorGenerator {
     }
 
     private static String javabufToJava(String javabufName, String simpleName, boolean canonical) {
+        System.out.println("TO_JAVA: ");
+        if (simpleName.endsWith("InnerClass")) {
+            System.out.println("INNER");
+        }
         String tmp = javabufName;
         String tmpPkg = "";
         int n = tmp.lastIndexOf("$");
@@ -2433,9 +2446,11 @@ public class JavabufTranslatorGenerator {
                 tmpPkg = tmp.substring(0, n);
                 tmpPkg = tmpPkg.replace("_", ".");
                 if (canonical) {
-                    tmp = tmpPkg + "$" + tmp.substring(n + "_INNER_".length());
-                } else {
+                    //                    tmp = tmpPkg + "$" + tmp.substring(n + "_INNER_".length());
                     tmp = tmpPkg + "." + tmp.substring(n + "_INNER_".length());
+                } else {
+                    //                    tmp = tmpPkg + "." + tmp.substring(n + "_INNER_".length());
+                    tmp = tmpPkg + "$" + tmp.substring(n + "_INNER_".length());
                 }
                 return disambiguateClassname(tmp);
             }
@@ -2469,9 +2484,11 @@ public class JavabufTranslatorGenerator {
             if (simpleName.contains("_HIDDEN_")) {
                 String classname = originalInnerClassName(simpleName);
                 try {
+                    System.out.println("FOR_NAME: 4" + classname);
                     Class<?> clazz = Class.forName(classname);
                     return "getReturnNonPublicJavaClass(\"" + clazz.getName() + "\").getJavaClass()";
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             }
@@ -2480,6 +2497,7 @@ public class JavabufTranslatorGenerator {
             }
             return javabufToJava(simpleName, originalSimpleName(simpleName), canonical) + ".class";
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

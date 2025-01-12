@@ -245,6 +245,8 @@ service CC1Service {
   rpc jaxrsResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/servletResponse gEmpty google.protobuf.Any GET sync
   rpc servletResponse (GeneralEntityMessage) returns (GeneralReturnMessage);
+// p/inner gEmpty dev_resteasy_grpc_example_CC1_INNER_InnerClass GET sync
+  rpc inner (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/ gEmpty gString GET sync
   rpc notSubresourceGet (GeneralEntityMessage) returns (GeneralReturnMessage);
 // p/ gEmpty gString POST sync
@@ -363,19 +365,16 @@ message java_util___Set8 {
   repeated java_util___Set data = 2;
 }
 
-message dev_resteasy_grpc_example___IntfImpl {
-  string s = 1;
-}
-
-message dev_resteasy_grpc_lists_sets___D6 {
-  google.protobuf.Any t = 1;
-}
-
 // List: java.util.ArrayList<java.lang.String>
 message java_util___ArrayList41 {
   string classname = 1;
   //java.lang.String
   repeated string data = 2;
+}
+
+message dev_resteasy_grpc_example___CC4 {
+  string s = 1;
+  dev_resteasy_grpc_example___CC5 cc5 = 2;
 }
 
 // List: java.util.List<java.util.List>
@@ -385,63 +384,19 @@ message java_util___List44 {
   repeated java_util___List data = 2;
 }
 
-message dev_resteasy_grpc_lists_sets___D10 {
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
-  java_util___ArrayList54 l04 = 1;
-  //java.util.ArrayList<java.util.List<java.lang.Object>>
-  java_util___ArrayList48 l11 = 2;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
-  java_util___List55 l22 = 3;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___List56 l32 = 4;
-  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___List57 l44 = 5;
-  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
-  java_util___ArrayList58 l14 = 6;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
-  java_util___List59 l24 = 7;
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
-  java_util___ArrayList60 l02 = 8;
-  //java.util.ArrayList<java.util.List<java.lang.Float>>
-  java_util___ArrayList61 l10 = 9;
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
-  java_util___ArrayList62 l03 = 10;
-  //java.util.ArrayList<java.lang.Object>
-  java_util___ArrayList38 l01 = 11;
-  //java.util.List<java.util.List<java.lang.Float>>
-  java_util___List63 l30 = 12;
-  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___ArrayList64 l13 = 13;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
-  java_util___List65 l23 = 14;
-  //java.util.ArrayList<java.lang.Object>
-  java_util___ArrayList38 at = 15;
-  //java.util.List
-  java_util___List l50 = 16;
-  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___List66 l42 = 17;
-  //java.util.List<java.util.ArrayList<java.lang.Float>>
-  java_util___List67 l40 = 18;
-  //java.util.List<java.util.List<java.lang.Object>>
-  java_util___List42 l31 = 19;
-  //java.util.ArrayList<java.lang.Integer>
-  java_util___ArrayList37 l00 = 20;
-  //java.util.List<java.lang.Integer>
-  java_util___List68 l20 = 21;
-  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___List69 l43 = 22;
-  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___ArrayList70 l12 = 23;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___List71 l33 = 24;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___List72 l34 = 25;
-  //java.util.ArrayList
-  java_util___ArrayList l51 = 26;
-  //java.util.List<java.lang.Object>
-  java_util___List39 l21 = 27;
-  //java.util.List<java.util.ArrayList<java.lang.Object>>
-  java_util___List45 l41 = 28;
+message dev_resteasy_grpc_example___CC9 {
+  dev_resteasy_grpc_example___CC3 cc3 = 1;
+  int64 l = 2;
+  bool bb = 3;
+  double d = 4;
+  int32 ii = 5;
+  float f = 6;
+  int32 ss = 7;
+  int32 by = 8;
+  string c = 9;
+  int32 i = 10;
+  int32 s = 11;
+  bool bo = 12;
 }
 
 // List: java.util.List<java.util.List<java.lang.String>>
@@ -451,6 +406,59 @@ message java_util___List43 {
   repeated java_util___List40 data = 2;
 }
 
+message dev_resteasy_grpc_lists_sets___D3 {
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___List54 l24 = 1;
+  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List55 l43 = 2;
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___HashSet56 l23 = 3;
+  //java.util.List<java.lang.Integer>
+  java_util___List57 l20 = 4;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___HashSet58 l04 = 5;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 6;
+  //java.util.List<java.util.List<java.lang.Object>>
+  java_util___List42 l31 = 7;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List59 l33 = 8;
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___HashSet56 l13 = 9;
+  //java.util.HashSet<java.util.List<java.lang.Object>>
+  java_util___HashSet60 l11 = 10;
+  //java.util.HashSet<java.lang.Object>
+  java_util___HashSet4 l01 = 11;
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___HashSet61 l14 = 12;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List62 l32 = 13;
+  //java.util.HashSet<java.util.Set<java.lang.Float>>
+  java_util___HashSet63 l10 = 14;
+  //java.util.HashSet<java.lang.Integer>
+  java_util___HashSet64 l00 = 15;
+  //java.util.List<java.util.HashSet<java.lang.Float>>
+  java_util___List65 l40 = 16;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  java_util___List66 l22 = 17;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  java_util___HashSet67 l03 = 18;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List68 l34 = 19;
+  //java.util.List<java.util.List<java.lang.Float>>
+  java_util___List69 l30 = 20;
+  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___HashSet70 l12 = 21;
+  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List71 l44 = 22;
+  //java.util.List<java.util.HashSet<java.lang.Object>>
+  java_util___List72 l41 = 23;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+  java_util___HashSet73 l02 = 24;
+  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List74 l42 = 25;
+}
+
 // Set: java.util.Set<java.util.HashSet>
 message java_util___Set11 {
   string classname = 1;
@@ -458,11 +466,8 @@ message java_util___Set11 {
   repeated java_util___HashSet data = 2;
 }
 
-// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___List69 {
-  string classname = 1;
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___ArrayList62 data = 2;
+message dev_resteasy_grpc_example___IntfImpl {
+  string s = 1;
 }
 
 // Set: java.util.Set<java.util.ArrayList<java.lang.Object>>
@@ -472,11 +477,44 @@ message java_util___Set21 {
   repeated java_util___ArrayList38 data = 2;
 }
 
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+message java_util___List54 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
+  repeated dev_resteasy_grpc_lists_sets___S375 data = 2;
+}
+
+message dev_resteasy_grpc_lists_sets___D5 {
+  dev_resteasy_grpc_lists_sets___D2 d2 = 1;
+  dev_resteasy_grpc_lists_sets___D3 d3 = 2;
+  dev_resteasy_grpc_lists_sets___D1 d1 = 3;
+  dev_resteasy_grpc_lists_sets___D4 d4 = 4;
+}
+
+// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___List71 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___HashSet76 data = 2;
+}
+
 // Set: java.util.HashSet<java.util.HashSet<java.lang.Object>>
 message java_util___HashSet15 {
   string classname = 1;
   //java.util.HashSet<java.lang.Object>
   repeated java_util___HashSet4 data = 2;
+}
+
+message dev_resteasy_grpc_example___CC2 {
+  string s = 1;
+  int32 j = 2;
+}
+
+// Set: java.util.HashSet<java.lang.Float>
+message java_util___HashSet77 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
 }
 
 // Set: java.util.Set<java.util.Set<java.lang.String>>
@@ -490,6 +528,13 @@ message java_util___Set7 {
 message java_util___List32 {
   string classname = 1;
   //java.util.HashSet<java.util.List<java.lang.Object>>
+  repeated java_util___HashSet60 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___List74 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
   repeated java_util___HashSet73 data = 2;
 }
 
@@ -498,6 +543,13 @@ message java_util___List39 {
   string classname = 1;
   //java.lang.Object
   repeated google.protobuf.Any data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S1
+message dev_resteasy_grpc_lists_sets___S1 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
 }
 
 // Set: java.util.Set
@@ -514,13 +566,6 @@ message java_util___HashSet17 {
   repeated java_util___HashSet data = 2;
 }
 
-// List: java.util.ArrayList<java.lang.Float>
-message java_util___ArrayList74 {
-  string classname = 1;
-  //java.lang.Float
-  repeated float data = 2;
-}
-
 // List: java.util.ArrayList<java.util.ArrayList>
 message java_util___ArrayList53 {
   string classname = 1;
@@ -528,18 +573,18 @@ message java_util___ArrayList53 {
   repeated java_util___ArrayList data = 2;
 }
 
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+message java_util___List78 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
+  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
+}
+
 // Set: java.util.Set<java.util.List>
 message java_util___Set20 {
   string classname = 1;
   //java.util.List
   repeated java_util___List data = 2;
-}
-
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>>
-message java_util___List34 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>
-  repeated dev_resteasy_grpc_lists_sets___L375 data = 2;
 }
 
 // Set: java.util.Set<java.util.HashSet<java.lang.Object>>
@@ -563,6 +608,13 @@ message java_util___ArrayList51 {
   repeated java_util___ArrayList38 data = 2;
 }
 
+// Set: java.util.Set<java.lang.Float>
+message java_util___Set80 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
+}
+
 // List: java.util.ArrayList
 message java_util___ArrayList {
   string classname = 1;
@@ -570,34 +622,77 @@ message java_util___ArrayList {
   repeated google.protobuf.Any data = 2;
 }
 
-// Set: dev.resteasy.grpc.lists.sets.S1
-message dev_resteasy_grpc_lists_sets___S1 {
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>>
+message java_util___List35 {
   string classname = 1;
-  //java.lang.String
-  repeated string data = 2;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>
+  repeated dev_resteasy_grpc_lists_sets___L381 data = 2;
 }
 
-message dev_resteasy_grpc_lists_sets___D61 {
-  string t = 1;
-}
-
-// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___List56 {
-  string classname = 1;
+message dev_resteasy_grpc_lists_sets___D10 {
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___ArrayList82 l14 = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___List54 l24 = 2;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
+  java_util___ArrayList83 l02 = 3;
+  //java.util.ArrayList
+  java_util___ArrayList l51 = 4;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___ArrayList84 l13 = 5;
+  //java.util.List<java.util.ArrayList<java.lang.Object>>
+  java_util___List45 l41 = 6;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List85 l42 = 7;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+  java_util___ArrayList86 l03 = 8;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  java_util___List87 l23 = 9;
+  //java.util.ArrayList<java.util.List<java.lang.Float>>
+  java_util___ArrayList88 l10 = 10;
+  //java.util.List<java.util.List<java.lang.Float>>
+  java_util___List69 l30 = 11;
+  //java.util.List<java.util.ArrayList<java.lang.Float>>
+  java_util___List89 l40 = 12;
+  //java.util.List<java.lang.Integer>
+  java_util___List57 l20 = 13;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 at = 14;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List59 l33 = 15;
+  //java.util.List
+  java_util___List l50 = 16;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List90 l43 = 17;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___ArrayList91 l04 = 18;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List68 l34 = 19;
+  //java.util.ArrayList<java.lang.Integer>
+  java_util___ArrayList37 l00 = 20;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 l01 = 21;
+  //java.util.ArrayList<java.util.List<java.lang.Object>>
+  java_util___ArrayList48 l11 = 22;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___ArrayList92 l12 = 23;
   //java.util.List<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___List55 data = 2;
+  java_util___List66 l22 = 24;
+  //java.util.List<java.util.List<java.lang.Object>>
+  java_util___List42 l31 = 25;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 26;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List93 l44 = 27;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List62 l32 = 28;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
-message java_util___List76 {
+// Set: java.util.HashSet<java.lang.Integer>
+message java_util___HashSet64 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
-  repeated dev_resteasy_grpc_lists_sets___S377 data = 2;
-}
-
-message dev_resteasy_grpc_example___CC2 {
-  string s = 1;
-  int32 j = 2;
+  //java.lang.Integer
+  repeated int32 data = 2;
 }
 
 // Set: java.util.HashSet
@@ -607,11 +702,66 @@ message java_util___HashSet {
   repeated google.protobuf.Any data = 2;
 }
 
-// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___ArrayList70 {
-  string classname = 1;
+message dev_resteasy_grpc_lists_sets___D1 {
+  //java.util.List<java.util.List<java.lang.Object>>
+  java_util___List42 l31 = 1;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___ArrayList82 l14 = 2;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
+  java_util___ArrayList83 l02 = 3;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 4;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 at = 5;
+  //java.util.ArrayList<java.util.List<java.lang.Object>>
+  java_util___ArrayList48 l11 = 6;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  java_util___List87 l23 = 7;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___ArrayList91 l04 = 8;
+  //java.util.List<java.util.ArrayList<java.lang.Object>>
+  java_util___List45 l41 = 9;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List93 l44 = 10;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List90 l43 = 11;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+  java_util___ArrayList86 l03 = 12;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___ArrayList84 l13 = 13;
+  //java.util.List<java.lang.Integer>
+  java_util___List57 l20 = 14;
+  //java.util.ArrayList<java.lang.Object>
+  java_util___ArrayList38 l01 = 15;
+  //java.util.ArrayList<java.util.List<java.lang.Float>>
+  java_util___ArrayList88 l10 = 16;
+  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___ArrayList92 l12 = 17;
+  //java.util.ArrayList
+  java_util___ArrayList l51 = 18;
+  //java.util.List<java.util.List<java.lang.Float>>
+  java_util___List69 l30 = 19;
+  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List85 l42 = 20;
   //java.util.List<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___List55 data = 2;
+  java_util___List66 l22 = 21;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___List54 l24 = 22;
+  //java.util.List<java.util.ArrayList<java.lang.Float>>
+  java_util___List89 l40 = 23;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___List62 l32 = 24;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___List59 l33 = 25;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___List68 l34 = 26;
+  //java.util.List
+  java_util___List l50 = 27;
+  //java.util.ArrayList<java.lang.Integer>
+  java_util___ArrayList37 l00 = 28;
+}
+
+message dev_resteasy_grpc_example___Intf {
 }
 
 // Set: java.util.Set<java.util.Set<java.lang.Object>>
@@ -621,19 +771,11 @@ message java_util___Set6 {
   repeated java_util___Set2 data = 2;
 }
 
-message dev_resteasy_grpc_example___CC9 {
-  bool bb = 1;
-  string c = 2;
-  int32 by = 3;
-  dev_resteasy_grpc_example___CC3 cc3 = 4;
-  bool bo = 5;
-  int32 i = 6;
-  int32 ii = 7;
-  int32 ss = 8;
-  int64 l = 9;
-  double d = 10;
-  int32 s = 11;
-  float f = 12;
+// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___HashSet70 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___List66 data = 2;
 }
 
 // Set: java.util.HashSet<java.lang.Object>
@@ -643,19 +785,27 @@ message java_util___HashSet4 {
   repeated google.protobuf.Any data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-message java_util___List78 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
-  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
+message dev_resteasy_grpc_example___CC7 {
+  string s = 1;
+  int32 m = 2;
 }
 
-message dev_resteasy_grpc_example___CC3 {
-  string s = 1;
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
+message dev_resteasy_grpc_lists_sets___S379 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
 }
 
 // List: java.util.ArrayList<java.util.HashSet<java.lang.Object>>
 message java_util___ArrayList27 {
+  string classname = 1;
+  //java.util.HashSet<java.lang.Object>
+  repeated java_util___HashSet4 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<java.lang.Object>>
+message java_util___List72 {
   string classname = 1;
   //java.util.HashSet<java.lang.Object>
   repeated java_util___HashSet4 data = 2;
@@ -668,20 +818,6 @@ message java_util___Set23 {
   repeated java_util___ArrayList data = 2;
 }
 
-// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
-message java_util___ArrayList62 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S2
-  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
-}
-
-// Set: dev.resteasy.grpc.lists.sets.S3
-message dev_resteasy_grpc_lists_sets___S3 {
-  string classname = 1;
-  //java.lang.Object
-  repeated google.protobuf.Any data = 2;
-}
-
 // List: java.util.List<java.lang.String>
 message java_util___List40 {
   string classname = 1;
@@ -689,128 +825,64 @@ message java_util___List40 {
   repeated string data = 2;
 }
 
-// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
-message dev_resteasy_grpc_lists_sets___S377 {
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+message java_util___ArrayList91 {
   string classname = 1;
-  //java.lang.Integer
-  repeated int32 data = 2;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.String>
+  repeated dev_resteasy_grpc_lists_sets___S394 data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.S1>
-message java_util___List55 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S1
-  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
-}
-
-message dev_resteasy_grpc_lists_sets___D2 {
-  //java.util.HashSet<java.util.Set<java.lang.Object>>
-  java_util___HashSet12 s11 = 1;
-  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___Set80 s34 = 2;
-  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___Set81 s33 = 3;
-  //java.util.HashSet
-  java_util___HashSet s51 = 4;
-  //java.util.Set<java.util.Set<java.lang.Object>>
-  java_util___Set6 s31 = 5;
-  //java.util.Set<java.util.HashSet<java.lang.Object>>
-  java_util___Set9 s41 = 6;
-  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___Set82 s43 = 7;
-  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___Set83 s42 = 8;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
-  java_util___HashSet84 s03 = 9;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
-  java_util___Set85 s22 = 10;
-  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___Set86 s44 = 11;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
-  java_util___HashSet87 s04 = 12;
-  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___HashSet88 s12 = 13;
-  //java.util.Set
-  java_util___Set s50 = 14;
-  //java.util.HashSet<java.lang.Integer>
-  java_util___HashSet89 s00 = 15;
-  //java.util.Set<java.util.HashSet<java.lang.Float>>
-  java_util___Set90 s40 = 16;
-  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___Set91 s32 = 17;
-  //java.util.HashSet<java.util.Set<java.lang.Float>>
-  java_util___HashSet92 s10 = 18;
-  //java.util.Set<java.util.Set<java.lang.Float>>
-  java_util___Set93 s30 = 19;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
-  java_util___HashSet94 s02 = 20;
-  //java.util.Set<java.lang.Object>
-  java_util___Set2 s21 = 21;
-  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
-  java_util___HashSet95 s14 = 22;
-  //java.util.Set<java.lang.Integer>
-  java_util___Set96 s20 = 23;
-  //java.util.HashSet<java.lang.Object>
-  java_util___HashSet4 s01 = 24;
-  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___HashSet97 s13 = 25;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
-  java_util___Set98 s23 = 26;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
-  java_util___Set99 s24 = 27;
-}
-
-message dev_resteasy_grpc_lists_sets___D3 {
-  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
-  java_util___HashSet100 l14 = 1;
-  //java.util.HashSet<java.util.List<java.lang.Object>>
-  java_util___HashSet73 l11 = 2;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___List71 l33 = 3;
-  //java.util.List<java.util.HashSet<java.lang.Float>>
-  java_util___List101 l40 = 4;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
-  java_util___HashSet84 l03 = 5;
-  //java.util.HashSet<java.util.Set<java.lang.Float>>
-  java_util___HashSet92 l10 = 6;
-  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___List102 l42 = 7;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
-  java_util___HashSet94 l02 = 8;
+message dev_resteasy_grpc_lists_sets___D4 {
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
+  dev_resteasy_grpc_lists_sets___L395 l02 = 1;
   //java.util.List<java.util.List<java.lang.Float>>
-  java_util___List63 l30 = 9;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___List56 l32 = 10;
+  java_util___List69 l30 = 2;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
+  java_util___List96 l23 = 3;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.Set<java.lang.Float>>
+  dev_resteasy_grpc_lists_sets___L397 l10 = 4;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
+  java_util___List98 l22 = 5;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>>
+  java_util___List99 l43 = 6;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.String>>
+  dev_resteasy_grpc_lists_sets___L3100 l04 = 7;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>>
+  dev_resteasy_grpc_lists_sets___L3101 l14 = 8;
   //java.util.List<java.lang.Integer>
-  java_util___List68 l20 = 11;
-  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___List103 l43 = 12;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
-  java_util___List59 l24 = 13;
-  //java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___List104 l44 = 14;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
-  java_util___HashSet87 l04 = 15;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___List72 l34 = 16;
-  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___HashSet105 l23 = 17;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
-  java_util___List55 l22 = 18;
-  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___HashSet106 l12 = 19;
-  //java.util.List<java.lang.Object>
-  java_util___List39 l21 = 20;
-  //java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___HashSet105 l13 = 21;
-  //java.util.HashSet<java.lang.Integer>
-  java_util___HashSet89 l00 = 22;
+  java_util___List57 l20 = 9;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<java.lang.Object>>
+  dev_resteasy_grpc_lists_sets___L3102 l11 = 10;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+  java_util___List103 l32 = 11;
   //java.util.List<java.util.List<java.lang.Object>>
-  java_util___List42 l31 = 23;
-  //java.util.List<java.util.HashSet<java.lang.Object>>
-  java_util___List107 l41 = 24;
-  //java.util.HashSet<java.lang.Object>
-  java_util___HashSet4 l01 = 25;
+  java_util___List42 l31 = 12;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+  dev_resteasy_grpc_lists_sets___L3104 l12 = 13;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
+  dev_resteasy_grpc_lists_sets___L3105 l00 = 14;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
+  java_util___List106 l40 = 15;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
+  dev_resteasy_grpc_lists_sets___L3107 l03 = 16;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+  java_util___List108 l33 = 17;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
+  java_util___List106 l24 = 18;
+  //java.util.List<java.lang.Object>
+  java_util___List39 l21 = 19;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
+  dev_resteasy_grpc_lists_sets___L3109 l01 = 20;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Object>>
+  java_util___List110 l41 = 21;
+  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+  dev_resteasy_grpc_lists_sets___L3111 l13 = 22;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+  java_util___List112 l44 = 23;
+  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+  java_util___List113 l34 = 24;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>>
+  java_util___List114 l42 = 25;
 }
 
 // List: java.util.ArrayList<java.util.Set<java.lang.Object>>
@@ -827,91 +899,82 @@ message java_util___HashSet12 {
   repeated java_util___Set2 data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>>
-message java_util___List35 {
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Object>>
+message java_util___List110 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>
-  repeated dev_resteasy_grpc_lists_sets___L3108 data = 2;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
+  repeated dev_resteasy_grpc_lists_sets___L3109 data = 2;
 }
 
-message dev_resteasy_grpc_lists_sets___D1 {
-  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___ArrayList70 l12 = 1;
-  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___List69 l43 = 2;
-  //java.util.List<java.lang.Integer>
-  java_util___List68 l20 = 3;
-  //java.util.List<java.util.ArrayList<java.lang.Float>>
-  java_util___List67 l40 = 4;
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
-  java_util___ArrayList54 l04 = 5;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___List72 l34 = 6;
+message dev_resteasy_grpc_lists_sets___D2 {
+  //java.util.HashSet<java.lang.Object>
+  java_util___HashSet4 s01 = 1;
+  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___HashSet115 s12 = 2;
+  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___Set116 s33 = 3;
+  //java.util.Set<java.lang.Object>
+  java_util___Set2 s21 = 4;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+  java_util___HashSet73 s02 = 5;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+  java_util___HashSet58 s04 = 6;
+  //java.util.HashSet<java.util.Set<java.lang.Object>>
+  java_util___HashSet12 s11 = 7;
+  //java.util.HashSet
+  java_util___HashSet s51 = 8;
+  //java.util.Set
+  java_util___Set s50 = 9;
+  //java.util.HashSet<java.util.Set<java.lang.Float>>
+  java_util___HashSet63 s10 = 10;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
+  java_util___Set117 s23 = 11;
+  //java.util.Set<java.util.Set<java.lang.Object>>
+  java_util___Set6 s31 = 12;
+  //java.util.Set<java.util.HashSet<java.lang.Float>>
+  java_util___Set118 s40 = 13;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+  java_util___Set119 s22 = 14;
+  //java.util.HashSet<java.lang.Integer>
+  java_util___HashSet64 s00 = 15;
+  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___Set120 s44 = 16;
+  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___Set121 s42 = 17;
+  //java.util.Set<java.lang.Integer>
+  java_util___Set122 s20 = 18;
+  //java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___Set123 s43 = 19;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  java_util___HashSet67 s03 = 20;
+  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+  java_util___Set124 s32 = 21;
+  //java.util.Set<java.util.HashSet<java.lang.Object>>
+  java_util___Set9 s41 = 22;
+  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
+  java_util___HashSet125 s13 = 23;
+  //java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+  java_util___HashSet126 s14 = 24;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+  java_util___Set127 s24 = 25;
+  //java.util.Set<java.util.Set<java.lang.Float>>
+  java_util___Set128 s30 = 26;
+  //java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+  java_util___Set129 s34 = 27;
+}
+
+// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___List85 {
+  string classname = 1;
   //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
-  java_util___ArrayList60 l02 = 7;
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
-  java_util___ArrayList62 l03 = 8;
-  //java.util.ArrayList<java.lang.Object>
-  java_util___ArrayList38 l01 = 9;
-  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-  java_util___List57 l44 = 10;
-  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
-  java_util___ArrayList58 l14 = 11;
-  //java.util.List<java.lang.Object>
-  java_util___List39 l21 = 12;
-  //java.util.ArrayList<java.util.List<java.lang.Object>>
-  java_util___ArrayList48 l11 = 13;
-  //java.util.List<java.util.List<java.lang.Float>>
-  java_util___List63 l30 = 14;
-  //java.util.ArrayList<java.lang.Object>
-  java_util___ArrayList38 at = 15;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
-  java_util___List65 l23 = 16;
-  //java.util.ArrayList<java.util.List<java.lang.Float>>
-  java_util___ArrayList61 l10 = 17;
-  //java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___List66 l42 = 18;
-  //java.util.List
-  java_util___List l50 = 19;
-  //java.util.List<java.util.ArrayList<java.lang.Object>>
-  java_util___List45 l41 = 20;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-  java_util___List56 l32 = 21;
-  //java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___ArrayList64 l13 = 22;
-  //java.util.List<java.util.List<java.lang.Object>>
-  java_util___List42 l31 = 23;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-  java_util___List71 l33 = 24;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
-  java_util___List59 l24 = 25;
-  //java.util.ArrayList<java.lang.Integer>
-  java_util___ArrayList37 l00 = 26;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
-  java_util___List55 l22 = 27;
-  //java.util.ArrayList
-  java_util___ArrayList l51 = 28;
-}
-
-// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
-message java_util___HashSet100 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
-  repeated java_util___List76 data = 2;
+  repeated java_util___ArrayList83 data = 2;
 }
 
 // List: java.util.List<java.lang.Float>
-message java_util___List109 {
+message java_util___List130 {
   string classname = 1;
   //java.lang.Float
   repeated float data = 2;
-}
-
-// Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
-message java_util___HashSet95 {
-  string classname = 1;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
-  repeated java_util___Set110 data = 2;
 }
 
 // Set: java.util.HashSet<java.util.Set<java.lang.String>>
@@ -921,6 +984,13 @@ message java_util___HashSet13 {
   repeated java_util___Set3 data = 2;
 }
 
+// List: dev.resteasy.grpc.lists.sets.L1
+message dev_resteasy_grpc_lists_sets___L1 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
 // Set: java.util.Set<java.util.List<java.lang.String>>
 message java_util___Set19 {
   string classname = 1;
@@ -928,107 +998,83 @@ message java_util___Set19 {
   repeated java_util___List40 data = 2;
 }
 
-// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___ArrayList64 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___List65 data = 2;
-}
-
-// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-message java_util___Set111 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
-  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
-}
-
-// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
-message java_util___List59 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
-  repeated dev_resteasy_grpc_lists_sets___S3112 data = 2;
-}
-
-// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-message java_util___List72 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-  repeated java_util___List78 data = 2;
-}
-
-// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
-message dev_resteasy_grpc_lists_sets___S379 {
-  string classname = 1;
-  //java.lang.Long
-  repeated int64 data = 2;
-}
-
-// List: java.util.List<dev.resteasy.grpc.lists.sets.S2>
-message java_util___List65 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S2
-  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
-}
-
-// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
-message java_util___ArrayList58 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
-  repeated java_util___List76 data = 2;
-}
-
-// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___List66 {
-  string classname = 1;
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___ArrayList60 data = 2;
-}
-
-// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
-message java_util___ArrayList60 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S1
-  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
-}
-
-// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-message java_util___Set80 {
-  string classname = 1;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-  repeated java_util___Set111 data = 2;
-}
-
 // Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___HashSet97 {
+message java_util___HashSet125 {
   string classname = 1;
   //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___Set98 data = 2;
+  repeated java_util___Set117 data = 2;
 }
 
-// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-message java_util___List104 {
-  string classname = 1;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-  repeated java_util___HashSet113 data = 2;
+message dev_resteasy_grpc_lists_sets___D61 {
+  string t = 1;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3
-message dev_resteasy_grpc_lists_sets___L3 {
+// Set: dev.resteasy.grpc.lists.sets.S3
+message dev_resteasy_grpc_lists_sets___S3 {
   string classname = 1;
   //java.lang.Object
   repeated google.protobuf.Any data = 2;
+}
+
+message dev_resteasy_grpc_example___CC6 {
+  int32 l = 1;
+  dev_resteasy_grpc_example___CC7 cc7 = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>
+message dev_resteasy_grpc_lists_sets___L381 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>
+  repeated dev_resteasy_grpc_lists_sets___S3131 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L2>
+message java_util___List96 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L2
+  repeated dev_resteasy_grpc_lists_sets___L2 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___List132 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___S3133 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>>
+message java_util___List99 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
+  repeated dev_resteasy_grpc_lists_sets___L3107 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___ArrayList92 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___List66 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___HashSet56 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___List87 data = 2;
+}
+
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
+message java_util___Set127 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
+  repeated dev_resteasy_grpc_lists_sets___S375 data = 2;
 }
 
 // List: java.util.List<java.util.HashSet<java.util.List<java.lang.String>>>
 message java_util___List33 {
   string classname = 1;
   //java.util.HashSet<java.util.List<java.lang.String>>
-  repeated java_util___HashSet114 data = 2;
-}
-
-message dev_resteasy_grpc_example___CC6 {
-  dev_resteasy_grpc_example___CC7 cc7 = 1;
-  int32 l = 2;
+  repeated java_util___HashSet134 data = 2;
 }
 
 // List: java.util.List<java.util.ArrayList<java.lang.Object>>
@@ -1038,16 +1084,25 @@ message java_util___List45 {
   repeated java_util___ArrayList38 data = 2;
 }
 
+// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___List93 {
+  string classname = 1;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___ArrayList135 data = 2;
+}
+
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+message java_util___Set136 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
+  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
+}
+
 // Set: java.util.HashSet<java.util.List<java.lang.String>>
-message java_util___HashSet114 {
+message java_util___HashSet134 {
   string classname = 1;
   //java.util.List<java.lang.String>
   repeated java_util___List40 data = 2;
-}
-
-message dev_resteasy_grpc_example___CC7 {
-  string s = 1;
-  int32 m = 2;
 }
 
 // List: java.util.ArrayList<java.util.HashSet>
@@ -1055,6 +1110,20 @@ message java_util___ArrayList29 {
   string classname = 1;
   //java.util.HashSet
   repeated java_util___HashSet data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S1>
+message java_util___List66 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.S2>
+message java_util___List87 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
 }
 
 // List: java.util.List<java.util.Set<java.util.List<java.lang.String>>>
@@ -1065,10 +1134,10 @@ message java_util___List31 {
 }
 
 // Set: java.util.HashSet<java.util.Set<java.lang.Float>>
-message java_util___HashSet92 {
+message java_util___HashSet63 {
   string classname = 1;
   //java.util.Set<java.lang.Float>
-  repeated java_util___Set115 data = 2;
+  repeated java_util___Set80 data = 2;
 }
 
 // List: java.util.List<java.util.ArrayList<java.lang.String>>
@@ -1099,18 +1168,22 @@ message java_util___List47 {
   repeated java_util___ArrayList data = 2;
 }
 
-// List: java.util.ArrayList<java.util.List<java.lang.Float>>
-message java_util___ArrayList61 {
-  string classname = 1;
-  //java.util.List<java.lang.Float>
-  repeated java_util___List109 data = 2;
+message dev_resteasy_grpc_example___CC5 {
+  int32 k = 1;
 }
 
-// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
-message java_util___HashSet94 {
+// List: java.util.ArrayList<java.util.List<java.lang.Float>>
+message java_util___ArrayList88 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S1
-  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+  //java.util.List<java.lang.Float>
+  repeated java_util___List130 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.Set<java.lang.Float>>
+message dev_resteasy_grpc_lists_sets___L397 {
+  string classname = 1;
+  //java.util.Set<java.lang.Float>
+  repeated java_util___Set80 data = 2;
 }
 
 // List: java.util.ArrayList<java.lang.Object>
@@ -1120,64 +1193,18 @@ message java_util___ArrayList38 {
   repeated google.protobuf.Any data = 2;
 }
 
-message dev_resteasy_grpc_lists_sets___D4 {
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
-  dev_resteasy_grpc_lists_sets___L3116 l02 = 1;
-  //dev.resteasy.grpc.lists.sets.L3<java.util.Set<java.lang.Float>>
-  dev_resteasy_grpc_lists_sets___L3117 l10 = 2;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
-  java_util___List118 l34 = 3;
-  //java.util.List<java.lang.Integer>
-  java_util___List68 l20 = 4;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
-  dev_resteasy_grpc_lists_sets___L3119 l01 = 5;
-  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>>
-  dev_resteasy_grpc_lists_sets___L3120 l14 = 6;
-  //java.util.List<java.util.List<java.lang.Object>>
-  java_util___List42 l31 = 7;
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
-  dev_resteasy_grpc_lists_sets___L3121 l03 = 8;
-  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
-  dev_resteasy_grpc_lists_sets___L3122 l13 = 9;
-  //java.util.List<java.util.List<java.lang.Float>>
-  java_util___List63 l30 = 10;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
-  java_util___List123 l32 = 11;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
-  java_util___List124 l23 = 12;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Object>>
-  java_util___List125 l41 = 13;
-  //java.util.List<java.lang.Object>
-  java_util___List39 l21 = 14;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
-  java_util___List126 l44 = 15;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
-  java_util___List127 l24 = 16;
-  //java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
-  java_util___List128 l33 = 17;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
-  dev_resteasy_grpc_lists_sets___L3129 l00 = 18;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>>
-  java_util___List130 l42 = 19;
-  //dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
-  dev_resteasy_grpc_lists_sets___L3131 l12 = 20;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
-  java_util___List132 l22 = 21;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>>
-  java_util___List133 l43 = 22;
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.String>>
-  dev_resteasy_grpc_lists_sets___L3134 l04 = 23;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
-  java_util___List127 l40 = 24;
-  //dev.resteasy.grpc.lists.sets.L3<java.util.List<java.lang.Object>>
-  dev_resteasy_grpc_lists_sets___L3135 l11 = 25;
-}
-
 // List: java.util.ArrayList<java.util.List<java.lang.Object>>
 message java_util___ArrayList48 {
   string classname = 1;
   //java.util.List<java.lang.Object>
   repeated java_util___List39 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
+message dev_resteasy_grpc_lists_sets___L3107 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L2
+  repeated dev_resteasy_grpc_lists_sets___L2 data = 2;
 }
 
 // Set: java.util.HashSet<java.lang.String>
@@ -1187,18 +1214,18 @@ message java_util___HashSet5 {
   repeated string data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L1>
-message java_util___List132 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L1
-  repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
-}
-
 // List: java.util.List<java.util.List<java.lang.Float>>
-message java_util___List63 {
+message java_util___List69 {
   string classname = 1;
   //java.util.List<java.lang.Float>
-  repeated java_util___List109 data = 2;
+  repeated java_util___List130 data = 2;
+}
+
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S1>
+message java_util___ArrayList83 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
 }
 
 // List: java.util.ArrayList<java.util.List>
@@ -1208,11 +1235,23 @@ message java_util___ArrayList50 {
   repeated java_util___List data = 2;
 }
 
-// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
-message java_util___ArrayList54 {
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Float>
+message dev_resteasy_grpc_lists_sets___L3137 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.String>
-  repeated dev_resteasy_grpc_lists_sets___S3136 data = 2;
+  //java.lang.Float
+  repeated float data = 2;
+}
+
+message dev_resteasy_grpc_example_CC1_INNER_InnerClass {
+  string s = 1;
+  int32 i = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>>
+message java_util___List34 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>
+  repeated dev_resteasy_grpc_lists_sets___L3138 data = 2;
 }
 
 // Set: java.util.Set<java.util.HashSet<java.lang.String>>
@@ -1222,11 +1261,18 @@ message java_util___Set10 {
   repeated java_util___HashSet5 data = 2;
 }
 
-// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___Set81 {
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L1>
+message java_util___List98 {
   string classname = 1;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___Set98 data = 2;
+  //dev.resteasy.grpc.lists.sets.L1
+  repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
+message dev_resteasy_grpc_lists_sets___S375 {
+  string classname = 1;
+  //java.lang.Float
+  repeated float data = 2;
 }
 
 // List: java.util.ArrayList<java.util.HashSet<java.lang.String>>
@@ -1236,39 +1282,32 @@ message java_util___ArrayList28 {
   repeated java_util___HashSet5 data = 2;
 }
 
-// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___List103 {
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>
+message java_util___List139 {
   string classname = 1;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___HashSet84 data = 2;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
+  repeated dev_resteasy_grpc_lists_sets___L3105 data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
-message java_util___List126 {
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S2>
+message java_util___Set117 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
-  repeated dev_resteasy_grpc_lists_sets___L3137 data = 2;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
 }
 
-// Set: dev.resteasy.grpc.lists.sets.S2
-message dev_resteasy_grpc_lists_sets___S2 {
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___List59 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S1
-  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___List87 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<java.lang.String>
-message dev_resteasy_grpc_lists_sets___L3138 {
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___List62 {
   string classname = 1;
-  //java.lang.String
-  repeated string data = 2;
-}
-
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>>
-message java_util___List36 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>
-  repeated dev_resteasy_grpc_lists_sets___L3139 data = 2;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___List66 data = 2;
 }
 
 // List: java.util.List
@@ -1278,18 +1317,32 @@ message java_util___List {
   repeated google.protobuf.Any data = 2;
 }
 
+// Set: dev.resteasy.grpc.lists.sets.S2
+message dev_resteasy_grpc_lists_sets___S2 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
 // List: java.util.List<java.lang.Integer>
-message java_util___List68 {
+message java_util___List57 {
   string classname = 1;
   //java.lang.Integer
   repeated int32 data = 2;
 }
 
 // Set: java.util.Set<java.util.Set<java.lang.Float>>
-message java_util___Set93 {
+message java_util___Set128 {
   string classname = 1;
   //java.util.Set<java.lang.Float>
-  repeated java_util___Set115 data = 2;
+  repeated java_util___Set80 data = 2;
+}
+
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___ArrayList135 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___S3133 data = 2;
 }
 
 // Set: java.util.HashSet<java.util.Set>
@@ -1299,13 +1352,6 @@ message java_util___HashSet14 {
   repeated java_util___Set data = 2;
 }
 
-// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S1>
-message java_util___Set85 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S1
-  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
-}
-
 // List: java.util.ArrayList<java.util.Set>
 message java_util___ArrayList26 {
   string classname = 1;
@@ -1313,23 +1359,39 @@ message java_util___ArrayList26 {
   repeated java_util___Set data = 2;
 }
 
-// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
-message dev_resteasy_grpc_lists_sets___S3112 {
-  string classname = 1;
-  //java.lang.Float
-  repeated float data = 2;
-}
-
-message dev_resteasy_grpc_example___CC4 {
-  string s = 1;
-  dev_resteasy_grpc_example___CC5 cc5 = 2;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
-message dev_resteasy_grpc_lists_sets___L3119 {
+// List: dev.resteasy.grpc.lists.sets.L3
+message dev_resteasy_grpc_lists_sets___L3 {
   string classname = 1;
   //java.lang.Object
   repeated google.protobuf.Any data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.String>>
+message dev_resteasy_grpc_lists_sets___L3100 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.String>
+  repeated dev_resteasy_grpc_lists_sets___L3140 data = 2;
+}
+
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___List68 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___List132 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.String>
+message dev_resteasy_grpc_lists_sets___S394 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+message java_util___List103 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
+  repeated java_util___List98 data = 2;
 }
 
 // List: java.util.ArrayList<java.util.List<java.lang.String>>
@@ -1339,25 +1401,11 @@ message java_util___ArrayList49 {
   repeated java_util___List40 data = 2;
 }
 
-// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
-message java_util___HashSet87 {
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+message java_util___List113 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.String>
-  repeated dev_resteasy_grpc_lists_sets___S3136 data = 2;
-}
-
-// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___Set83 {
-  string classname = 1;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___HashSet94 data = 2;
-}
-
-// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___List71 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___List65 data = 2;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
+  repeated java_util___List141 data = 2;
 }
 
 // List: java.util.ArrayList<java.util.Set<java.lang.String>>
@@ -1367,18 +1415,18 @@ message java_util___ArrayList25 {
   repeated java_util___Set3 data = 2;
 }
 
-// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
-message java_util___List128 {
+// Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___HashSet115 {
   string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
-  repeated java_util___List124 data = 2;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___Set119 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
-message dev_resteasy_grpc_lists_sets___L3131 {
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___HashSet76 {
   string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
-  repeated java_util___List132 data = 2;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___S3133 data = 2;
 }
 
 // Set: java.util.Set<java.util.ArrayList<java.lang.String>>
@@ -1395,6 +1443,24 @@ message java_util___HashSet16 {
   repeated java_util___HashSet5 data = 2;
 }
 
+message dev_resteasy_grpc_example___CC3 {
+  string s = 1;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
+message java_util___List106 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Float>
+  repeated dev_resteasy_grpc_lists_sets___L3137 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___Set116 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___Set117 data = 2;
+}
+
 // List: java.util.List<java.util.Set<java.util.List<java.lang.Object>>>
 message java_util___List30 {
   string classname = 1;
@@ -1402,11 +1468,8 @@ message java_util___List30 {
   repeated java_util___Set18 data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Object>>
-message java_util___List125 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
-  repeated dev_resteasy_grpc_lists_sets___L3119 data = 2;
+message dev_resteasy_grpc_lists_sets___D6 {
+  google.protobuf.Any t = 1;
 }
 
 // Set: java.util.Set<java.util.List<java.lang.Object>>
@@ -1416,39 +1479,39 @@ message java_util___Set18 {
   repeated java_util___List39 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
-message dev_resteasy_grpc_lists_sets___L3137 {
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>>
+message java_util___List36 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
-  repeated dev_resteasy_grpc_lists_sets___L3140 data = 2;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>
+  repeated dev_resteasy_grpc_lists_sets___L3142 data = 2;
 }
 
-// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-message java_util___Set86 {
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.String>>
+message java_util___HashSet58 {
   string classname = 1;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-  repeated java_util___HashSet113 data = 2;
+  //dev.resteasy.grpc.lists.sets.S3<java.lang.String>
+  repeated dev_resteasy_grpc_lists_sets___S394 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>
-message dev_resteasy_grpc_lists_sets___L3139 {
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+message java_util___HashSet67 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.util.Set>
-  repeated dev_resteasy_grpc_lists_sets___S3141 data = 2;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
 }
 
-// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.String>
-message dev_resteasy_grpc_lists_sets___S3136 {
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
+message dev_resteasy_grpc_lists_sets___L3105 {
   string classname = 1;
-  //java.lang.String
-  repeated string data = 2;
+  //java.lang.Integer
+  repeated int32 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
-message dev_resteasy_grpc_lists_sets___L3121 {
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+message java_util___Set119 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L2
-  repeated dev_resteasy_grpc_lists_sets___L2 data = 2;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
 }
 
 // Set: java.util.Set<java.lang.String>
@@ -1458,147 +1521,235 @@ message java_util___Set3 {
   repeated string data = 2;
 }
 
-message dev_resteasy_grpc_lists_sets___D5 {
-  dev_resteasy_grpc_lists_sets___D3 d3 = 1;
-  dev_resteasy_grpc_lists_sets___D1 d1 = 2;
-  dev_resteasy_grpc_lists_sets___D4 d4 = 3;
-  dev_resteasy_grpc_lists_sets___D2 d2 = 4;
-}
-
-// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
-message java_util___List57 {
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>
+message dev_resteasy_grpc_lists_sets___L3138 {
   string classname = 1;
-  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-  repeated java_util___ArrayList142 data = 2;
+  //dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>
+  repeated dev_resteasy_grpc_lists_sets___S3143 data = 2;
 }
 
-// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
-message java_util___HashSet84 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S2
-  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
-}
-
-message dev_resteasy_grpc_example___Intf {
-}
-
-// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-message java_util___ArrayList142 {
+// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+message java_util___Set144 {
   string classname = 1;
   //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
-  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
-}
-
-// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___Set82 {
-  string classname = 1;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___HashSet84 data = 2;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
-message dev_resteasy_grpc_lists_sets___L3140 {
-  string classname = 1;
-  //java.lang.Long
-  repeated int64 data = 2;
-}
-
-// List: java.util.List<java.util.HashSet<java.lang.Float>>
-message java_util___List101 {
-  string classname = 1;
-  //java.util.HashSet<java.lang.Float>
-  repeated java_util___HashSet143 data = 2;
+  repeated dev_resteasy_grpc_lists_sets___S3133 data = 2;
 }
 
 // List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>>
-message java_util___List130 {
+message java_util___List114 {
   string classname = 1;
   //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
-  repeated dev_resteasy_grpc_lists_sets___L3116 data = 2;
+  repeated dev_resteasy_grpc_lists_sets___L395 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L1
-message dev_resteasy_grpc_lists_sets___L1 {
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
+message dev_resteasy_grpc_lists_sets___L395 {
   string classname = 1;
-  //java.lang.String
-  repeated string data = 2;
+  //dev.resteasy.grpc.lists.sets.L1
+  repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>
-message java_util___List144 {
+// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+message java_util___HashSet61 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
-  repeated dev_resteasy_grpc_lists_sets___L3129 data = 2;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+  repeated java_util___List78 data = 2;
 }
 
-// Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___HashSet88 {
+// List: java.util.List<java.util.HashSet<java.lang.Float>>
+message java_util___List65 {
   string classname = 1;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___Set85 data = 2;
+  //java.util.HashSet<java.lang.Float>
+  repeated java_util___HashSet77 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>>
-message dev_resteasy_grpc_lists_sets___L375 {
+// List: java.util.List<java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___List90 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>
-  repeated dev_resteasy_grpc_lists_sets___S3145 data = 2;
+  //java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___ArrayList86 data = 2;
 }
 
-// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
-message java_util___Set110 {
+// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___Set120 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>
-  repeated dev_resteasy_grpc_lists_sets___S377 data = 2;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___HashSet76 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
-message dev_resteasy_grpc_lists_sets___L3122 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
-  repeated java_util___List124 data = 2;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Float>
-message dev_resteasy_grpc_lists_sets___L3146 {
+// List: java.util.ArrayList<java.lang.Float>
+message java_util___ArrayList145 {
   string classname = 1;
   //java.lang.Float
   repeated float data = 2;
 }
 
-// Set: java.util.HashSet<java.lang.Integer>
-message java_util___HashSet89 {
+// Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>
+message dev_resteasy_grpc_lists_sets___S3131 {
   string classname = 1;
-  //java.lang.Integer
-  repeated int32 data = 2;
-}
-
-// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
-message java_util___List118 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
-  repeated java_util___List147 data = 2;
-}
-
-// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___List102 {
-  string classname = 1;
-  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___HashSet94 data = 2;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.String>>
-message dev_resteasy_grpc_lists_sets___L3134 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.String>
-  repeated dev_resteasy_grpc_lists_sets___L3138 data = 2;
+  //java.util.Set<java.lang.String>
+  repeated java_util___Set3 data = 2;
 }
 
 // List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>>
-message dev_resteasy_grpc_lists_sets___L3120 {
+message dev_resteasy_grpc_lists_sets___L3101 {
   string classname = 1;
   //java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>>
-  repeated java_util___List144 data = 2;
+  repeated java_util___List139 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___ArrayList84 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___List87 data = 2;
+}
+
+// List: java.util.ArrayList<java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+message java_util___ArrayList82 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+  repeated java_util___List78 data = 2;
+}
+
+// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+message java_util___List108 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
+  repeated java_util___List96 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<java.lang.Object>>
+message dev_resteasy_grpc_lists_sets___L3102 {
+  string classname = 1;
+  //java.util.List<java.lang.Object>
+  repeated java_util___List39 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
+message dev_resteasy_grpc_lists_sets___L3146 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___L3147 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.String>
+message dev_resteasy_grpc_lists_sets___L3140 {
+  string classname = 1;
+  //java.lang.String
+  repeated string data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>
+message dev_resteasy_grpc_lists_sets___L3142 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S3<java.util.Set>
+  repeated dev_resteasy_grpc_lists_sets___S3148 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
+message dev_resteasy_grpc_lists_sets___L3147 {
+  string classname = 1;
+  //java.lang.Long
+  repeated int64 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___Set124 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___Set119 data = 2;
+}
+
+// List: java.util.List<java.util.ArrayList<java.lang.Float>>
+message java_util___List89 {
+  string classname = 1;
+  //java.util.ArrayList<java.lang.Float>
+  repeated java_util___ArrayList145 data = 2;
+}
+
+// List: java.util.List<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___List55 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___HashSet67 data = 2;
+}
+
+// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+message java_util___HashSet73 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S1
+  repeated dev_resteasy_grpc_lists_sets___S1 data = 2;
+}
+
+// Set: java.util.HashSet<java.util.List<java.lang.Object>>
+message java_util___HashSet60 {
+  string classname = 1;
+  //java.util.List<java.lang.Object>
+  repeated java_util___List39 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
+message java_util___List141 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
+  repeated dev_resteasy_grpc_lists_sets___L3147 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L2>>
+message dev_resteasy_grpc_lists_sets___L3111 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L2>
+  repeated java_util___List96 data = 2;
+}
+
+// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>>
+message java_util___Set121 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S1>
+  repeated java_util___HashSet73 data = 2;
+}
+
+// Set: java.util.Set<java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>>
+message java_util___Set123 {
+  string classname = 1;
+  //java.util.HashSet<dev.resteasy.grpc.lists.sets.S2>
+  repeated java_util___HashSet67 data = 2;
+}
+
+// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>>
+message java_util___Set129 {
+  string classname = 1;
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
+  repeated java_util___Set144 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
+message dev_resteasy_grpc_lists_sets___S3133 {
+  string classname = 1;
+  //java.lang.Long
+  repeated int64 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
+message dev_resteasy_grpc_lists_sets___L3104 {
+  string classname = 1;
+  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
+  repeated java_util___List98 data = 2;
+}
+
+// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Object>
+message dev_resteasy_grpc_lists_sets___L3109 {
+  string classname = 1;
+  //java.lang.Object
+  repeated google.protobuf.Any data = 2;
+}
+
+// List: java.util.ArrayList<dev.resteasy.grpc.lists.sets.S2>
+message java_util___ArrayList86 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.S2
+  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
 }
 
 // List: dev.resteasy.grpc.lists.sets.L2
@@ -1608,190 +1759,46 @@ message dev_resteasy_grpc_lists_sets___L2 {
   repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
 }
 
-// Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set>
-message dev_resteasy_grpc_lists_sets___S3141 {
-  string classname = 1;
-  //java.util.Set
-  repeated java_util___Set data = 2;
-}
-
-// List: java.util.List<java.util.List<dev.resteasy.grpc.lists.sets.L1>>
-message java_util___List123 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.L1>
-  repeated java_util___List132 data = 2;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>>
-message dev_resteasy_grpc_lists_sets___L3108 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>
-  repeated dev_resteasy_grpc_lists_sets___S3148 data = 2;
-}
-
-// List: java.util.List<java.util.ArrayList<java.lang.Float>>
-message java_util___List67 {
-  string classname = 1;
-  //java.util.ArrayList<java.lang.Float>
-  repeated java_util___ArrayList74 data = 2;
-}
-
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L2>
-message java_util___List124 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L2
-  repeated dev_resteasy_grpc_lists_sets___L2 data = 2;
-}
-
-// Set: java.util.HashSet<java.util.List<java.lang.Object>>
-message java_util___HashSet73 {
-  string classname = 1;
-  //java.util.List<java.lang.Object>
-  repeated java_util___List39 data = 2;
-}
-
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>>
-message java_util___List133 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L2>
-  repeated dev_resteasy_grpc_lists_sets___L3121 data = 2;
-}
-
-// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Float>>
-message java_util___Set99 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.Float>
-  repeated dev_resteasy_grpc_lists_sets___S3112 data = 2;
-}
-
-// Set: java.util.Set<dev.resteasy.grpc.lists.sets.S2>
-message java_util___Set98 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S2
-  repeated dev_resteasy_grpc_lists_sets___S2 data = 2;
-}
-
-// Set: java.util.HashSet<java.lang.Float>
-message java_util___HashSet143 {
-  string classname = 1;
-  //java.lang.Float
-  repeated float data = 2;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L1>
-message dev_resteasy_grpc_lists_sets___L3116 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L1
-  repeated dev_resteasy_grpc_lists_sets___L1 data = 2;
-}
-
-// Set: java.util.HashSet<dev.resteasy.grpc.lists.sets.S3<java.lang.Long>>
-message java_util___HashSet113 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.S3<java.lang.Long>
-  repeated dev_resteasy_grpc_lists_sets___S379 data = 2;
-}
-
-// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S2>>
-message java_util___HashSet105 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S2>
-  repeated java_util___List65 data = 2;
-}
-
-// Set: java.util.Set<java.lang.Float>
-message java_util___Set115 {
-  string classname = 1;
-  //java.lang.Float
-  repeated float data = 2;
-}
-
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
-message java_util___List147 {
-  string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.Long>
-  repeated dev_resteasy_grpc_lists_sets___L3140 data = 2;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<java.lang.Integer>
-message dev_resteasy_grpc_lists_sets___L3129 {
-  string classname = 1;
-  //java.lang.Integer
-  repeated int32 data = 2;
-}
-
-// Set: java.util.Set<java.util.Set<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___Set91 {
-  string classname = 1;
-  //java.util.Set<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___Set85 data = 2;
-}
-
-// Set: java.util.HashSet<java.util.List<dev.resteasy.grpc.lists.sets.S1>>
-message java_util___HashSet106 {
-  string classname = 1;
-  //java.util.List<dev.resteasy.grpc.lists.sets.S1>
-  repeated java_util___List55 data = 2;
-}
-
-// List: java.util.List<java.util.HashSet<java.lang.Object>>
-message java_util___List107 {
-  string classname = 1;
-  //java.util.HashSet<java.lang.Object>
-  repeated java_util___HashSet4 data = 2;
-}
-
 // Set: java.util.Set<java.util.HashSet<java.lang.Float>>
-message java_util___Set90 {
+message java_util___Set118 {
   string classname = 1;
   //java.util.HashSet<java.lang.Float>
-  repeated java_util___HashSet143 data = 2;
+  repeated java_util___HashSet77 data = 2;
 }
 
 // Set: java.util.Set<java.lang.Integer>
-message java_util___Set96 {
+message java_util___Set122 {
   string classname = 1;
   //java.lang.Integer
   repeated int32 data = 2;
 }
 
-// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<java.lang.Float>>
-message java_util___List127 {
+// Set: java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>>
+message java_util___HashSet126 {
   string classname = 1;
-  //dev.resteasy.grpc.lists.sets.L3<java.lang.Float>
+  //java.util.Set<dev.resteasy.grpc.lists.sets.S3<java.lang.Integer>>
+  repeated java_util___Set136 data = 2;
+}
+
+// List: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>>
+message java_util___List112 {
+  string classname = 1;
+  //dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.L3<java.lang.Long>>
   repeated dev_resteasy_grpc_lists_sets___L3146 data = 2;
 }
 
-// List: dev.resteasy.grpc.lists.sets.L3<java.util.Set<java.lang.Float>>
-message dev_resteasy_grpc_lists_sets___L3117 {
-  string classname = 1;
-  //java.util.Set<java.lang.Float>
-  repeated java_util___Set115 data = 2;
-}
-
-message dev_resteasy_grpc_example___CC5 {
-  int32 k = 1;
-}
-
-// List: dev.resteasy.grpc.lists.sets.L3<java.util.List<java.lang.Object>>
-message dev_resteasy_grpc_lists_sets___L3135 {
-  string classname = 1;
-  //java.util.List<java.lang.Object>
-  repeated java_util___List39 data = 2;
-}
-
-// Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.String>>
-message dev_resteasy_grpc_lists_sets___S3148 {
-  string classname = 1;
-  //java.util.Set<java.lang.String>
-  repeated java_util___Set3 data = 2;
-}
-
 // Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set<java.lang.Object>>
-message dev_resteasy_grpc_lists_sets___S3145 {
+message dev_resteasy_grpc_lists_sets___S3143 {
   string classname = 1;
   //java.util.Set<java.lang.Object>
   repeated java_util___Set2 data = 2;
+}
+
+// Set: dev.resteasy.grpc.lists.sets.S3<java.util.Set>
+message dev_resteasy_grpc_lists_sets___S3148 {
+  string classname = 1;
+  //java.util.Set
+  repeated java_util___Set data = 2;
 }
 
 message gEmpty {}
@@ -2031,9 +2038,10 @@ message GeneralReturnMessage {
       java_util___List40 java_util___List40_field = 81;
       java_util___Set6 java_util___Set6_field = 82;
       java_util___Set9 java_util___Set9_field = 83;
-      java_util___Set8 java_util___Set8_field = 84;
-      java_util___HashSet4 java_util___HashSet4_field = 85;
-      java_util___HashSet5 java_util___HashSet5_field = 86;
+      dev_resteasy_grpc_example_CC1_INNER_InnerClass dev_resteasy_grpc_example_CC1_INNER_InnerClass_field = 84;
+      java_util___Set8 java_util___Set8_field = 85;
+      java_util___HashSet4 java_util___HashSet4_field = 86;
+      java_util___HashSet5 java_util___HashSet5_field = 87;
    }
 }
 ///////////////
@@ -2155,151 +2163,151 @@ message dev_resteasy_grpc_arrays___ArrayHolder {
 
 //////////  synthetic names: //////////
 // java.util.Set23->java.util.Set
-// dev.resteasy.grpc.lists.sets.L375->dev.resteasy.grpc.lists.sets.L3
+// dev.resteasy.grpc.lists.sets.L3138->dev.resteasy.grpc.lists.sets.L3
 // java.util.List40->java.util.List
 // java.util.ArrayList50->java.util.ArrayList
-// java.util.ArrayList64->java.util.ArrayList
-// java.util.List67->java.util.List
+// java.util.ArrayList84->java.util.ArrayList
+// java.util.List89->java.util.List
 // java.util.List43->java.util.List
-// java.util.Set93->java.util.Set
-// dev.resteasy.grpc.lists.sets.L3138->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set128->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3140->dev.resteasy.grpc.lists.sets.L3
 // java.util.HashSet12->java.util.HashSet
-// dev.resteasy.grpc.lists.sets.S3145->dev.resteasy.grpc.lists.sets.S3
+// dev.resteasy.grpc.lists.sets.S3143->dev.resteasy.grpc.lists.sets.S3
 // java.util.Set22->java.util.Set
-// java.util.Set90->java.util.Set
-// java.util.HashSet97->java.util.HashSet
+// java.util.Set118->java.util.Set
+// java.util.HashSet125->java.util.HashSet
 // java.util.HashSet14->java.util.HashSet
-// java.util.Set91->java.util.Set
-// java.util.List118->java.util.List
-// dev.resteasy.grpc.lists.sets.L3137->dev.resteasy.grpc.lists.sets.L3
-// dev.resteasy.grpc.lists.sets.S3112->dev.resteasy.grpc.lists.sets.S3
+// java.util.List113->java.util.List
+// java.util.Set124->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3146->dev.resteasy.grpc.lists.sets.L3
+// dev.resteasy.grpc.lists.sets.S375->dev.resteasy.grpc.lists.sets.S3
 // java.util.Set6->java.util.Set
-// java.util.List101->java.util.List
-// java.util.List147->java.util.List
+// java.util.List65->java.util.List
+// java.util.List141->java.util.List
 // java.util.HashSet16->java.util.HashSet
 // java.util.Set21->java.util.Set
-// java.util.HashSet105->java.util.HashSet
-// java.util.List107->java.util.List
-// java.util.Set85->java.util.Set
-// java.util.List144->java.util.List
-// java.util.HashSet73->java.util.HashSet
-// java.util.HashSet100->java.util.HashSet
-// java.util.HashSet113->java.util.HashSet
-// java.util.ArrayList74->java.util.ArrayList
-// java.util.HashSet88->java.util.HashSet
-// java.util.List109->java.util.List
+// java.util.HashSet56->java.util.HashSet
+// java.util.List72->java.util.List
+// java.util.Set119->java.util.Set
+// java.util.List139->java.util.List
+// java.util.HashSet60->java.util.HashSet
+// java.util.HashSet61->java.util.HashSet
+// java.util.HashSet76->java.util.HashSet
+// java.util.HashSet115->java.util.HashSet
+// java.util.List130->java.util.List
+// java.util.ArrayList145->java.util.ArrayList
 // java.util.List33->java.util.List
-// dev.resteasy.grpc.lists.sets.L3120->dev.resteasy.grpc.lists.sets.L3
+// dev.resteasy.grpc.lists.sets.L3101->dev.resteasy.grpc.lists.sets.L3
 // java.util.List36->java.util.List
 // java.util.ArrayList48->java.util.ArrayList
-// java.util.ArrayList70->java.util.ArrayList
+// java.util.ArrayList92->java.util.ArrayList
 // java.util.Set3->java.util.Set
 // java.util.ArrayList51->java.util.ArrayList
-// java.util.HashSet94->java.util.HashSet
+// java.util.HashSet73->java.util.HashSet
 // java.util.ArrayList27->java.util.ArrayList
 // java.util.List42->java.util.List
-// dev.resteasy.grpc.lists.sets.L3140->dev.resteasy.grpc.lists.sets.L3
-// java.util.List65->java.util.List
-// java.util.List123->java.util.List
-// java.util.Set98->java.util.Set
-// java.util.HashSet89->java.util.HashSet
+// dev.resteasy.grpc.lists.sets.L3147->dev.resteasy.grpc.lists.sets.L3
+// java.util.List87->java.util.List
+// java.util.List103->java.util.List
+// java.util.Set117->java.util.Set
+// java.util.HashSet64->java.util.HashSet
 // java.util.Set10->java.util.Set
-// java.util.HashSet92->java.util.HashSet
-// java.util.List130->java.util.List
-// dev.resteasy.grpc.lists.sets.L3134->dev.resteasy.grpc.lists.sets.L3
-// java.util.Set81->java.util.Set
-// java.util.HashSet143->java.util.HashSet
+// java.util.HashSet63->java.util.HashSet
+// java.util.List114->java.util.List
+// dev.resteasy.grpc.lists.sets.L3100->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set116->java.util.Set
+// java.util.HashSet77->java.util.HashSet
 // java.util.Set20->java.util.Set
 // java.util.List44->java.util.List
-// dev.resteasy.grpc.lists.sets.S379->dev.resteasy.grpc.lists.sets.S3
-// java.util.HashSet87->java.util.HashSet
+// dev.resteasy.grpc.lists.sets.S3133->dev.resteasy.grpc.lists.sets.S3
+// java.util.HashSet58->java.util.HashSet
 // java.util.List31->java.util.List
 // java.util.ArrayList41->java.util.ArrayList
 // java.util.List45->java.util.List
-// java.util.HashSet84->java.util.HashSet
-// java.util.List125->java.util.List
-// dev.resteasy.grpc.lists.sets.L3129->dev.resteasy.grpc.lists.sets.L3
-// java.util.List66->java.util.List
-// java.util.Set96->java.util.Set
+// java.util.HashSet67->java.util.HashSet
+// java.util.List110->java.util.List
+// dev.resteasy.grpc.lists.sets.L3105->dev.resteasy.grpc.lists.sets.L3
+// java.util.List85->java.util.List
+// java.util.Set122->java.util.Set
 // java.util.List46->java.util.List
-// java.util.Set99->java.util.Set
-// dev.resteasy.grpc.lists.sets.L3135->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set127->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3102->dev.resteasy.grpc.lists.sets.L3
 // java.util.List47->java.util.List
 // java.util.ArrayList28->java.util.ArrayList
-// java.util.List102->java.util.List
-// dev.resteasy.grpc.lists.sets.L3108->dev.resteasy.grpc.lists.sets.L3
-// java.util.Set110->java.util.Set
+// java.util.List74->java.util.List
+// dev.resteasy.grpc.lists.sets.L381->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set136->java.util.Set
 // java.util.Set9->java.util.Set
-// java.util.List127->java.util.List
-// java.util.HashSet114->java.util.HashSet
+// java.util.List106->java.util.List
+// java.util.HashSet134->java.util.HashSet
 // java.util.ArrayList49->java.util.ArrayList
 // java.util.ArrayList52->java.util.ArrayList
-// java.util.List59->java.util.List
+// java.util.List54->java.util.List
 // java.util.List34->java.util.List
-// dev.resteasy.grpc.lists.sets.L3146->dev.resteasy.grpc.lists.sets.L3
+// dev.resteasy.grpc.lists.sets.L3137->dev.resteasy.grpc.lists.sets.L3
 // java.util.HashSet15->java.util.HashSet
-// java.util.HashSet95->java.util.HashSet
+// java.util.HashSet126->java.util.HashSet
 // dev.resteasy.grpc.lists.sets.D61->dev.resteasy.grpc.lists.sets.D6
-// java.util.List128->java.util.List
-// java.util.ArrayList142->java.util.ArrayList
-// dev.resteasy.grpc.lists.sets.L3119->dev.resteasy.grpc.lists.sets.L3
+// java.util.List108->java.util.List
+// java.util.ArrayList135->java.util.ArrayList
+// dev.resteasy.grpc.lists.sets.L3109->dev.resteasy.grpc.lists.sets.L3
 // java.util.ArrayList29->java.util.ArrayList
 // java.util.Set8->java.util.Set
-// dev.resteasy.grpc.lists.sets.L3131->dev.resteasy.grpc.lists.sets.L3
-// java.util.ArrayList60->java.util.ArrayList
-// java.util.Set111->java.util.Set
-// java.util.List133->java.util.List
+// dev.resteasy.grpc.lists.sets.L3104->dev.resteasy.grpc.lists.sets.L3
+// java.util.ArrayList83->java.util.ArrayList
+// java.util.Set144->java.util.Set
+// java.util.List99->java.util.List
 // java.util.ArrayList38->java.util.ArrayList
-// java.util.List124->java.util.List
+// java.util.List96->java.util.List
 // java.util.Set7->java.util.Set
 // java.util.Set2->java.util.Set
-// java.util.List56->java.util.List
-// java.util.ArrayList58->java.util.ArrayList
-// dev.resteasy.grpc.lists.sets.S3141->dev.resteasy.grpc.lists.sets.S3
-// java.util.Set86->java.util.Set
-// java.util.List69->java.util.List
-// dev.resteasy.grpc.lists.sets.L3117->dev.resteasy.grpc.lists.sets.L3
-// java.util.Set115->java.util.Set
-// java.util.List103->java.util.List
+// java.util.List62->java.util.List
+// java.util.ArrayList82->java.util.ArrayList
+// dev.resteasy.grpc.lists.sets.S3148->dev.resteasy.grpc.lists.sets.S3
+// java.util.Set120->java.util.Set
+// java.util.List90->java.util.List
+// dev.resteasy.grpc.lists.sets.L397->dev.resteasy.grpc.lists.sets.L3
+// java.util.Set80->java.util.Set
 // java.util.List55->java.util.List
-// dev.resteasy.grpc.lists.sets.L3139->dev.resteasy.grpc.lists.sets.L3
-// java.util.List72->java.util.List
-// java.util.ArrayList62->java.util.ArrayList
-// java.util.Set83->java.util.Set
-// dev.resteasy.grpc.lists.sets.S377->dev.resteasy.grpc.lists.sets.S3
+// java.util.List66->java.util.List
+// dev.resteasy.grpc.lists.sets.L3142->dev.resteasy.grpc.lists.sets.L3
+// java.util.List68->java.util.List
+// java.util.ArrayList86->java.util.ArrayList
+// java.util.Set121->java.util.Set
+// dev.resteasy.grpc.lists.sets.S379->dev.resteasy.grpc.lists.sets.S3
 // dev.resteasy.grpc.lists.sets.D10->dev.resteasy.grpc.lists.sets.D1
 // java.util.ArrayList26->java.util.ArrayList
-// java.util.List76->java.util.List
 // java.util.List78->java.util.List
+// java.util.List132->java.util.List
 // java.util.HashSet13->java.util.HashSet
-// java.util.List63->java.util.List
-// dev.resteasy.grpc.lists.sets.S3148->dev.resteasy.grpc.lists.sets.S3
+// java.util.List69->java.util.List
+// dev.resteasy.grpc.lists.sets.S3131->dev.resteasy.grpc.lists.sets.S3
 // java.util.List35->java.util.List
-// dev.resteasy.grpc.lists.sets.L3121->dev.resteasy.grpc.lists.sets.L3
-// java.util.ArrayList61->java.util.ArrayList
+// dev.resteasy.grpc.lists.sets.L3107->dev.resteasy.grpc.lists.sets.L3
+// java.util.ArrayList88->java.util.ArrayList
 // java.util.HashSet4->java.util.HashSet
 // java.util.List32->java.util.List
-// dev.resteasy.grpc.lists.sets.L3122->dev.resteasy.grpc.lists.sets.L3
-// java.util.List57->java.util.List
-// java.util.List104->java.util.List
-// java.util.List30->java.util.List
-// dev.resteasy.grpc.lists.sets.S3136->dev.resteasy.grpc.lists.sets.S3
-// java.util.Set80->java.util.Set
+// dev.resteasy.grpc.lists.sets.L3111->dev.resteasy.grpc.lists.sets.L3
 // java.util.List71->java.util.List
+// java.util.List93->java.util.List
+// java.util.List30->java.util.List
+// dev.resteasy.grpc.lists.sets.S394->dev.resteasy.grpc.lists.sets.S3
+// java.util.Set129->java.util.Set
+// java.util.List59->java.util.List
 // java.util.ArrayList37->java.util.ArrayList
 // java.util.ArrayList24->java.util.ArrayList
-// java.util.Set82->java.util.Set
-// java.util.List68->java.util.List
+// java.util.Set123->java.util.Set
+// java.util.List57->java.util.List
 // java.util.HashSet5->java.util.HashSet
 // java.util.Set19->java.util.Set
 // java.util.ArrayList53->java.util.ArrayList
-// java.util.HashSet106->java.util.HashSet
+// java.util.HashSet70->java.util.HashSet
 // java.util.ArrayList25->java.util.ArrayList
 // java.util.HashSet17->java.util.HashSet
-// java.util.List126->java.util.List
+// java.util.List112->java.util.List
 // java.util.Set18->java.util.Set
 // java.util.Set11->java.util.Set
-// dev.resteasy.grpc.lists.sets.L3116->dev.resteasy.grpc.lists.sets.L3
-// java.util.List132->java.util.List
-// java.util.ArrayList54->java.util.ArrayList
+// dev.resteasy.grpc.lists.sets.L395->dev.resteasy.grpc.lists.sets.L3
+// java.util.List98->java.util.List
+// java.util.ArrayList91->java.util.ArrayList
 // java.util.List39->java.util.List

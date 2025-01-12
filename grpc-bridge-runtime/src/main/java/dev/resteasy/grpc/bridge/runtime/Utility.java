@@ -78,7 +78,6 @@ public final class Utility {
         String pkg = className.substring(0, className.lastIndexOf('.') + 1);
         String innerClassName = className.substring(className.lastIndexOf('.') + 1);
         className = pkg + outerClassName + "$" + innerClassName;
-        className = "dev.resteasy.grpc.example.CC1_proto$java_util___ArrayList";
         Class<?> clazz = cl.loadClass(className);
         return clazz;
     }

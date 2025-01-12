@@ -96,7 +96,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
         ar.as(ZipExporter.class).exportTo(
-                new File("/tmp/arrays.war"), true);
+                new File("/tmp/collections.war"), true);
         return ar;
     }
 
@@ -114,6 +114,20 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
     /****************************************************************************************/
     /****************************************************************************************/
+    void doBlockingTestx(CC1ServiceBlockingStub stub) throws Exception {
+        this.testLocatorPost(stub);
+        this.testServletParams(stub);
+        this.testSSE(stub);
+        this.testInterfaceReturn(stub);
+        this.testConstructor(stub);
+        this.testInterfaceEntity(stub);
+        this.testCopy(stub);
+        this.testSuspend(stub);
+        this.testParamsSet(stub);
+        this.testBoolean(stub);
+        this.testInnerClass(stub);
+    }
+
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
         this.testBoolean(stub);
         this.testBooleanWithUnnecessaryURL(stub);
@@ -132,17 +146,17 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testFloatWrapper(stub);
         this.testHeaderParams(stub);
         this.testInheritance(stub);
-        //     this.testInnerClass(stub);
+        this.testInnerClass(stub);
         this.testInt(stub);
         this.testInteger(stub);
         this.testJaxrsResponse(stub);
         this.testLocatorGet(stub);
-        //        this.testLocatorPost(stub);
+        this.testLocatorPost(stub);
         this.testLong(stub);
         this.testLongWrapper(stub);
         this.testMatrixParams(stub);
         this.testParamsList(stub);
-        //        this.testParamsSet(stub);
+        this.testParamsSet(stub);
         this.testParamsSortedSet(stub);
         this.testPathParams(stub);
         this.testProduces(stub);
@@ -155,17 +169,17 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testServletContextInitParam(stub);
         this.testServletContextPath(stub);
         this.testServletInfo(stub);
-        //this.testServletParams(stub);
+        this.testServletParams(stub);
         this.testServletPath(stub);
         this.testServletResponse(stub);
         this.testShort(stub);
         this.testShortWrapper(stub);
-        //        this.testSSE(stub);
+        this.testSSE(stub);
         this.testString(stub);
-        //        this.testSuspend(stub);
-        //        this.testCopy(stub);
-        //        this.testInterfaceEntity(stub);
-        //        this.testInterfaceReturn(stub);
+        this.testSuspend(stub);
+        this.testCopy(stub);
+        this.testInterfaceEntity(stub);
+        this.testInterfaceReturn(stub);
         //        this.testArraysInts1(stub);
         //        this.testArraysInts1Translator(stub);
         //        this.testArraysInts2(stub);
@@ -182,7 +196,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
         testIntAsyncStub(asyncStub);
-        //        testSseAsyncStub(asyncStub);
+        testSseAsyncStub(asyncStub);
     }
 
     void doFutureTest(CC1ServiceFutureStub futureStub) throws Exception {
@@ -791,24 +805,24 @@ abstract class AbstractGrpcToJakartaRESTTest {
         }
     }
 
-    //    void testParamsSet(CC1ServiceBlockingStub stub) throws Exception {
-    //        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
-    //        builder.putHeaders("h1", gHeader.newBuilder().addValues("hv1").addValues("hv2").build());
-    //        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/params;m1=mv1;m1=mv2/pv1/set/pv2?q1=qv1&q1=qv2")
-    //                .build();
-    //        GeneralReturnMessage response;
-    //        try {
-    //            response = stub.paramsSet(gem);
-    //            gString expected = gString.newBuilder().setValue("hv1hv2mv1mv2pv1pv2qv1qv2").build();
-    //            Assert.assertEquals(expected, response.getGStringField());
-    //        } catch (StatusRuntimeException e) {
-    //
-    //            try (StringWriter writer = new StringWriter()) {
-    //                e.printStackTrace(new PrintWriter(writer));
-    //                Assert.fail(writer.toString());
-    //            }
-    //        }
-    //    }
+    void testParamsSet(CC1ServiceBlockingStub stub) throws Exception {
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        builder.putHeaders("h1", gHeader.newBuilder().addValues("hv1").addValues("hv2").build());
+        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/params;m1=mv1;m1=mv2/pv1/set/pv2?q1=qv1&q1=qv2")
+                .build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.paramsSet(gem);
+            gString expected = gString.newBuilder().setValue("hv1hv2mv1mv2pv1pv2qv1qv2").build();
+            Assert.assertEquals(expected, response.getGStringField());
+        } catch (StatusRuntimeException e) {
+
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
 
     void testParamsSortedSet(CC1ServiceBlockingStub stub) throws Exception {
         dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
@@ -1295,24 +1309,24 @@ abstract class AbstractGrpcToJakartaRESTTest {
         }
     }
 
-    //    void testInnerClass(CC1ServiceBlockingStub stub) throws Exception {
-    //        GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
-    //        GeneralEntityMessage gem = messageBuilder.build();
-    //        GeneralReturnMessage response;
-    //        try {
-    //            response = stub.inner(gem);
-    //            CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass.Builder builder = CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass
-    //                    .newBuilder();
-    //            CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass inner = builder.setI(3).setS("three").build();
-    //            Assert.assertEquals(inner, response.getDevResteasyGrpcExampleCC1INNERInnerClassField());
-    //        } catch (StatusRuntimeException e) {
-    //
-    //            try (StringWriter writer = new StringWriter()) {
-    //                e.printStackTrace(new PrintWriter(writer));
-    //                Assert.fail(writer.toString());
-    //            }
-    //        }
-    //    }
+    void testInnerClass(CC1ServiceBlockingStub stub) throws Exception {
+        GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = messageBuilder.build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.inner(gem);
+            CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass.Builder builder = CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass
+                    .newBuilder();
+            CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass inner = builder.setI(3).setS("three").build();
+            Assert.assertEquals(inner, response.getDevResteasyGrpcExampleCC1INNERInnerClassField());
+        } catch (StatusRuntimeException e) {
+
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assert.fail(writer.toString());
+            }
+        }
+    }
 
     void testLocatorGet(CC1ServiceBlockingStub stub) throws Exception {
         GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
@@ -1360,7 +1374,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.copy(gem);
             CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
-                    .setValue("xyz")
+                    .setValue("abc")
                     .build();
             Assert.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
