@@ -57,7 +57,7 @@ public final class Utility {
         // restrict instantiation
     }
 
-    public static Class<?> extractClassFromAny(Any any, JavabufTranslator translator) {
+    public static Class extractClassFromAny(Any any, JavabufTranslator translator) {
         String s = extractStringTypeFromAny(any);
         if (s == "" || s == null) {
             return null;
@@ -164,14 +164,11 @@ public final class Utility {
             if (field.getType().getComponentType().isPrimitive()) {
                 field.set(object, value);
             } else {
-                System.out.println(object);
                 field.set(object, wrapArray(value));
-                System.out.println(object);
 
             }
         } else if (Any.class.equals(value.getClass())) {
             Any any = (Any) value;
-            System.out.println(any.getSerializedSize());
             if (any.getSerializedSize() == 0) {
                 field.set(object, null);
             } else {
@@ -225,7 +222,6 @@ public final class Utility {
         while (c != null) {
             try {
                 Field field = c.getDeclaredField(name);
-                System.out.println(field.getGenericType().getTypeName());
                 return field;
             } catch (Exception e) {
                 c = c.getSuperclass();

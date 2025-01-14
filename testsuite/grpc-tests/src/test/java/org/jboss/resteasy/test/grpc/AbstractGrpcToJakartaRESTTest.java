@@ -17,7 +17,6 @@ import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
@@ -95,8 +94,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
-        ar.as(ZipExporter.class).exportTo(
-                new File("/tmp/collections.war"), true);
+//        ar.as(ZipExporter.class).exportTo(
+//                new File("/tmp/collections.war"), true);
         return ar;
     }
 

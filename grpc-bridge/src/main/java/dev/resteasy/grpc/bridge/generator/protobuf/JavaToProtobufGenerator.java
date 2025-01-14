@@ -798,7 +798,7 @@ public class JavaToProtobufGenerator {
                 writer.write(transformClassName(s1) + " " + s2 + LS);
             }
         } catch (Exception e) {
-            System.out.println("HMMMMMM");
+            logger.error("HMMMMMM");
         }
     }
 
@@ -1155,6 +1155,9 @@ public class JavaToProtobufGenerator {
                         return "dev_resteasy_grpc_arrays___ArrayHolder___WArray";
                     }
                 }
+                if (isInterface(rt)) {
+                    return "google.protobuf.Any";
+                }
                 pendingTypes.add(rt);
                 String s = fqnifyClass(rt, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
                 String javabufType = protoClass + s;
@@ -1168,11 +1171,6 @@ public class JavaToProtobufGenerator {
     }
 
     private static boolean isInterface(ResolvedType rt) {
-        System.out.println(rt.describe());
-        System.out.println(objectify(rt.asReferenceType()).describe());
-        if (rt.describe().contains("Intf")) {
-            System.out.println(rt.describe());
-        }
         String name = rt.describe();
         if (rt.describe().contains("<")) {
             name = name.substring(0, name.indexOf('<'));
@@ -1185,26 +1183,6 @@ public class JavaToProtobufGenerator {
             logger.info(e);
             return false;
         }
-        //    	if (!rt.isReference()) {
-        //    		return false;
-        //    	}
-        //    	System.out.println("DESCRIBE: " + rt.describe());
-        //    	if (rt.describe().contains("Intf")) {
-        //    		System.out.println(rt.describe());
-        //        	for (ResolvedReferenceType rrt : rt.asReferenceType().getAllAncestors()) {
-        //        		System.out.println(rrt.describe());
-        //        	}
-        //    	}
-        //    	System.out.println(rt.t)
-        //    	System.out.println(rt.asReferenceType().getAllInterfacesAncestors().size());
-        //    	System.out.println(rt.asReferenceType().getAllAncestors().size());
-        //    	for (ResolvedReferenceType rrt : rt.asReferenceType().getAllInterfacesAncestors()) {
-        //    		if (rt.describe().equals(rrt.describe())) {
-        //    			return true;
-        //    		}
-        //    	}
-        //    	return false;
-
     }
 
     private static boolean isEntity(Parameter p) {
@@ -1271,6 +1249,9 @@ public class JavaToProtobufGenerator {
                     } else {
                         return "dev_resteasy_grpc_arrays___ArrayHolder___WArray";
                     }
+                }
+                if (isInterface(rt)) {
+                    return "google.protobuf.Any";
                 }
                 rt = objectify(rt.asReferenceType());
                 pendingTypes.add(rt);

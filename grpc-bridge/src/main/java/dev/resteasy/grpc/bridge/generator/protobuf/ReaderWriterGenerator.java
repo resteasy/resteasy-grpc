@@ -376,7 +376,7 @@ public class ReaderWriterGenerator {
                 .append("         Type oType = Utility.objectify(genericType);" + LS)
                 .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\");"
                         + LS)
-                .append("         if (type.isInterface()) {" + LS)
+                .append("         if (type.isInterface() && !ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
                 .append("            Class clazz = Utility.extractTypeFromAny(any, getClass().getClassLoader(), \"")
                 .append(args[2]).append("_proto\");" + LS)
@@ -391,7 +391,7 @@ public class ReaderWriterGenerator {
                 .append("translator.translateToJavabufClass(type));" + LS)
                 .append("            return ")
                 .append("translator.translateFromJavabuf(m);" + LS)
-                .append("         } else if (ENTITY_MAP.get(gt) != null) {" + LS)
+                .append("         } else if (ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            GeneratedMessageV3 message = (GeneratedMessageV3) ENTITY_MAP.get(gt).invoke(null, entityStream);"
                         + LS)
                 .append("            return translator.translateFromJavabuf(message);" + LS)
@@ -442,11 +442,11 @@ public class ReaderWriterGenerator {
                 .append("      if (genericType != null) {" + LS)
                 //                .append("         message = translator.translateToJavabuf(t, new GenericType(genericType));" + LS)
                 .append("         GenericType gt =  new GenericType(genericType);" + LS)
-                .append("    	  if (gt.getRawType().isInterface()) {" + LS)
-                .append("    	     message = translator.translateToJavabuf(t);" + LS)
-                .append("    	  } else {" + LS)
-                .append("    		 message = translator.translateToJavabuf(t, gt);" + LS)
-                .append("    	  }" + LS)
+                .append("         if (gt.getRawType().isInterface()) {" + LS)
+                .append("            message = translator.translateToJavabuf(t);" + LS)
+                .append("         } else {" + LS)
+                .append("            message = translator.translateToJavabuf(t, gt);" + LS)
+                .append("         }" + LS)
                 .append("      } else {" + LS)
                 .append("         message = translator.translateToJavabuf(t);" + LS)
                 .append("      }" + LS)
@@ -595,7 +595,6 @@ public class ReaderWriterGenerator {
             String sn = clazz.getSimpleName();
             return pkg + "___" + sn;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

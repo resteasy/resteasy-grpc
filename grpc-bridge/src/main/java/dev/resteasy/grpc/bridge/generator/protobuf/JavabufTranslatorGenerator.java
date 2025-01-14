@@ -1311,8 +1311,6 @@ public class JavabufTranslatorGenerator {
         String originalName = originalSimpleName(clazz.getName());
         //        String className = javabufToJava(clazz.getName(), originalName, false);
         String className = javabufToJava(clazz.getName(), originalName, false);
-        System.out.println("ABSTRACT: " + clazz.getName() + " -> " + className);
-        System.out.println("FOR_NAME: 11" + className);
         Class<?> c = Class.forName(className, true,
                 Thread.currentThread().getContextClassLoader());
         return Modifier.isAbstract(c.getModifiers()) || c.isInterface();
