@@ -64,7 +64,7 @@ import io.grpc.stub.StreamObserver;
  */
 abstract class AbstractGrpcToJakartaRESTTest {
 
-    protected static JavabufTranslator translator;
+    private static JavabufTranslator translator;
 
     static {
         Class<?> clazz;

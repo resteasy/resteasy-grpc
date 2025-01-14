@@ -2425,10 +2425,6 @@ public class JavabufTranslatorGenerator {
     }
 
     private static String javabufToJava(String javabufName, String simpleName, boolean canonical) {
-        System.out.println("TO_JAVA: ");
-        if (simpleName.endsWith("InnerClass")) {
-            System.out.println("INNER");
-        }
         String tmp = javabufName;
         String tmpPkg = "";
         int n = tmp.lastIndexOf("$");

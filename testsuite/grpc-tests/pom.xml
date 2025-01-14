@@ -239,6 +239,19 @@
           </configuration>
         </plugin>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/proto</directory>
+                            <includes>
+                                <include>${root.class}.proto</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
@@ -254,7 +267,7 @@
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <version>4.2.1.Final</version>
+                <version>4.2.2.Final</version>
                 <configuration>
                     <jboss-home>${jboss.home}</jboss-home>
                     <provisioning-dir>${jboss.home}</provisioning-dir>
@@ -471,25 +484,19 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-           <!--plugin>
-                <groupId>com.coderplus.maven.plugins</groupId>
-                <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0</version>
+            </plugin>  
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-file</id>
-                        <phase>process-sources</phase>
+                        <id>attach-javadocs</id>
                         <goals>
-                            <goal>copy</goal>
+                            <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <sourceFile>${project.basedir}/src/main/resources/ArrayUtility</sourceFile>
-                            <destinationFile>${project.basedir}/target/generated-sources/protobuf/java/dev/resteasy/grpc/arrays/ArrayUtility.java</destinationFile>
-                        </configuration>
                     </execution>
                 </executions>
-            </plugin-->
+            </plugin>
         </plugins>
     </build>
 </project>
