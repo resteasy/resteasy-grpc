@@ -51,7 +51,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.declarations.ResolvedClassDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
@@ -60,7 +59,6 @@ import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.reflectionmodel.ReflectionClassDeclaration;
@@ -707,9 +705,9 @@ public class JavaToProtobufGenerator {
 
     private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
         Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
-        if (path.resolve(args[3] + ".proto").toFile().exists()) {
-            return;
-        }
+        //        if (path.resolve(args[3] + ".proto").toFile().exists()) {
+        //            return;
+        //        }
         counter = 0;
         createArrayDefs(args, sb);
         sb.append("//////////  types: //////////" + LS);
