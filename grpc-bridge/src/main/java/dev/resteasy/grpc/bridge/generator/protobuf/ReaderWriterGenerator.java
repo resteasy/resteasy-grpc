@@ -381,6 +381,8 @@ public class ReaderWriterGenerator {
                 .append("            Class clazz = Utility.extractTypeFromAny(any, getClass().getClassLoader(), \"")
                 .append(args[2]).append("_proto\");" + LS)
                 .append("            Message m = any.unpack(clazz);" + LS)
+                .append(" System.out.println(\"m(0): \" + m.getDescriptorForType().getFullName() + \": \" + m.toString());"
+                        + LS)
                 .append("            return ")
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (\"application/grpc-part\".equals(mediaType.toString())) {" + LS)
@@ -389,10 +391,14 @@ public class ReaderWriterGenerator {
                 .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
                 .append("            Message m = any.unpack(")
                 .append("translator.translateToJavabufClass(type));" + LS)
+                .append("  System.out.println(\"m(1): \" + m.getDescriptorForType().getFullName() + \": \" + m.toString());"
+                        + LS)
                 .append("            return ")
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            GeneratedMessageV3 message = (GeneratedMessageV3) ENTITY_MAP.get(gt).invoke(null, entityStream);"
+                        + LS)
+                .append("  System.out.println(\"m(2): \" + message.getDescriptorForType().getFullName() + \": \" + message.toString());"
                         + LS)
                 .append("            return translator.translateFromJavabuf(message);" + LS)
                 //                .append("         } else if (type.isInterface()) {" + LS)
