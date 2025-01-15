@@ -1177,10 +1177,12 @@ public class JavaToProtobufGenerator {
         }
         try {
             Class<?> clazz = Class.forName(name);
+                        System.out.println("INTERFACE 2: " + rt.describe() + ": " + clazz.getName());
             return clazz.isInterface();
         } catch (Exception e) {
             //            throw new RuntimeException(e);
-            logger.info(e);
+            logger.info("INTERFACE 2: " + e);
+            
             return false;
         }
     }
