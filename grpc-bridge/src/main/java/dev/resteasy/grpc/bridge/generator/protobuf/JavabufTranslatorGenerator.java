@@ -1393,6 +1393,8 @@ public class JavabufTranslatorGenerator {
                 .append("         System.out.println(\"translateFromJavabuf(): \" + message.getClass() + \", \" + s + \" is not recognized\" + message.toString());"
                         + LS)
                 .append("         if (tfj == null) {" + LS)
+
+                .append("            new Exception(\"translatefromJavabufClass()\").printStackTrace();" + LS)
                 .append("            throw new RuntimeException(\"translateFromJavabuf(): \" + message.getClass() + \", \" + s + \" is not recognized\" + message.toString());"
                         + LS)
                 .append("         }" + LS)
