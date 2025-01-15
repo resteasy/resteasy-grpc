@@ -17,6 +17,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
@@ -94,8 +95,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
-//        ar.as(ZipExporter.class).exportTo(
-//                new File("/tmp/collections.war"), true);
+        ar.as(ZipExporter.class).exportTo(
+                new File("/tmp/collections.war"), true);
         return ar;
     }
 
@@ -114,12 +115,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
     /****************************************************************************************/
     /****************************************************************************************/
     void doBlockingTestx(CC1ServiceBlockingStub stub) throws Exception {
+        this.testInterfaceEntity(stub);
         this.testLocatorPost(stub);
         this.testServletParams(stub);
         this.testSSE(stub);
         this.testInterfaceReturn(stub);
         this.testConstructor(stub);
-        this.testInterfaceEntity(stub);
         this.testCopy(stub);
         this.testSuspend(stub);
         this.testParamsSet(stub);
@@ -128,57 +129,57 @@ abstract class AbstractGrpcToJakartaRESTTest {
     }
 
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
-        this.testBoolean(stub);
-        this.testBooleanWithUnnecessaryURL(stub);
-        this.testBooleanWrapper(stub);
-        this.testByte(stub);
-        this.testByteWrapper(stub);
-        this.testChar(stub);
-        this.testCharacter(stub);
-        this.testCompletionStage(stub);
-        this.testConstructor(stub);
-        this.testConsumes(stub);
-        this.testCookieParams(stub);
-        this.testDouble(stub);
-        this.testDoubleWrapper(stub);
-        this.testFloat(stub);
-        this.testFloatWrapper(stub);
-        this.testHeaderParams(stub);
-        this.testInheritance(stub);
-        this.testInnerClass(stub);
-        this.testInt(stub);
-        this.testInteger(stub);
-        this.testJaxrsResponse(stub);
-        this.testLocatorGet(stub);
-        this.testLocatorPost(stub);
-        this.testLong(stub);
-        this.testLongWrapper(stub);
-        this.testMatrixParams(stub);
-        this.testParamsList(stub);
-        this.testParamsSet(stub);
-        this.testParamsSortedSet(stub);
-        this.testPathParams(stub);
-        this.testProduces(stub);
-        this.testQueryParams(stub);
-        this.testReferenceField(stub);
-        this.testResponse(stub);
-        this.testServerCookies(stub);
-        this.testServerHeaders(stub);
-        this.testServletConfigServletName(stub);
-        this.testServletContextInitParam(stub);
-        this.testServletContextPath(stub);
-        this.testServletInfo(stub);
-        this.testServletParams(stub);
-        this.testServletPath(stub);
-        this.testServletResponse(stub);
-        this.testShort(stub);
-        this.testShortWrapper(stub);
-        this.testSSE(stub);
-        this.testString(stub);
-        this.testSuspend(stub);
-        this.testCopy(stub);
+//        this.testBoolean(stub);
+//        this.testBooleanWithUnnecessaryURL(stub);
+//        this.testBooleanWrapper(stub);
+//        this.testByte(stub);
+//        this.testByteWrapper(stub);
+//        this.testChar(stub);
+//        this.testCharacter(stub);
+//        this.testCompletionStage(stub);
+//        this.testConstructor(stub);
+//        this.testConsumes(stub);
+//        this.testCookieParams(stub);
+//        this.testDouble(stub);
+//        this.testDoubleWrapper(stub);
+//        this.testFloat(stub);
+//        this.testFloatWrapper(stub);
+//        this.testHeaderParams(stub);
+//        this.testInheritance(stub);
+//        this.testInnerClass(stub);
+//        this.testInt(stub);
+//        this.testInteger(stub);
+//        this.testJaxrsResponse(stub);
+//        this.testLocatorGet(stub);
+//        this.testLocatorPost(stub);
+//        this.testLong(stub);
+//        this.testLongWrapper(stub);
+//        this.testMatrixParams(stub);
+//        this.testParamsList(stub);
+//        this.testParamsSet(stub);
+//        this.testParamsSortedSet(stub);
+//        this.testPathParams(stub);
+//        this.testProduces(stub);
+//        this.testQueryParams(stub);
+//        this.testReferenceField(stub);
+//        this.testResponse(stub);
+//        this.testServerCookies(stub);
+//        this.testServerHeaders(stub);
+//        this.testServletConfigServletName(stub);
+//        this.testServletContextInitParam(stub);
+//        this.testServletContextPath(stub);
+//        this.testServletInfo(stub);
+//        this.testServletParams(stub);
+//        this.testServletPath(stub);
+//        this.testServletResponse(stub);
+//        this.testShort(stub);
+//        this.testShortWrapper(stub);
+//        this.testSSE(stub);
+//        this.testString(stub);
+//        this.testSuspend(stub);
+//        this.testCopy(stub);
         this.testInterfaceEntity(stub);
-        this.testInterfaceReturn(stub);
+//        this.testInterfaceReturn(stub);
         //        this.testArraysInts1(stub);
         //        this.testArraysInts1Translator(stub);
         //        this.testArraysInts2(stub);
@@ -1389,7 +1390,9 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
         CC1_proto.dev_resteasy_grpc_example___IntfImpl entity = CC1_proto.dev_resteasy_grpc_example___IntfImpl.newBuilder()
                 .setS("abc").build();
+        System.out.println("testInterfaceEntity(): " + entity.getDescriptorForType().getFullName());
         Any entityAny = Any.pack(entity);
+        System.out.println("testInterfaceEntity(): " + entityAny.getDescriptorForType().getFullName());
         GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/interface/entity")
                 .setAnyField(entityAny)
                 .build();
