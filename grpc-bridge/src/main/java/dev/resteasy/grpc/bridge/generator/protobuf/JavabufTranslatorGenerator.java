@@ -1344,7 +1344,8 @@ public class JavabufTranslatorGenerator {
                 .append("         ttj = toJavabufMap.get(o.getClass().getName());" + LS)
                 .append("      }" + LS)
                 .append("      if (ttj == null) {" + LS)
-                .append("         throw new RuntimeException(o.getClass() + \" is not recognized\");" + LS)
+                .append("         throw new RuntimeException(\"translateToJavabuf(): \" + o.getClass().getName() + \" is not recognized\");"
+                        + LS)
                 .append("      }" + LS)
                 .append("      ttj.clear();" + LS)
                 .append("      return ttj.assignToJavabuf(o);" + LS)
@@ -1390,7 +1391,8 @@ public class JavabufTranslatorGenerator {
                 .append("         s = s.substring(s.lastIndexOf(\".\") + 1);" + LS)
                 .append("         TranslateFromJavabuf tfj = fromJavabufMap.get(s);" + LS)
                 .append("         if (tfj == null) {" + LS)
-                .append("            throw new RuntimeException(message.getClass() + \" is not recognized\");" + LS)
+                .append("            throw new RuntimeException(\"translateFromJavabuf(): \" + message.getClass() + \", \" + s + \" is not recognized\");"
+                        + LS)
                 .append("         }" + LS)
                 .append("         return tfj.assignFromJavabuf(message);" + LS)
                 .append("      } catch (Exception e) {" + LS)
@@ -1411,7 +1413,8 @@ public class JavabufTranslatorGenerator {
                 .append("         }" + LS)
                 .append("      }" + LS)
                 .append("      if (tfj == null) {" + LS)
-                .append("         throw new RuntimeException(clazz.getName() + \" is not recognized\");" + LS)
+                .append("         throw new RuntimeException(\"parseFromJavabuf(): \" + clazz.getName() + \" is not recognized\");"
+                        + LS)
                 .append("      }" + LS)
                 .append("      return tfj.parseFromJavabuf(is);" + LS)
                 .append("   }" + LS + LS);
