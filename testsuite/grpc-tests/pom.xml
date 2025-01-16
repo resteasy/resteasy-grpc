@@ -55,7 +55,7 @@
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
-                        <version>4.2.2.Final</version>
+                        <version>5.1.1.Final</version>
                         <executions>
                             <execution>
                                 <id>server-provisioning</id>
@@ -247,7 +247,7 @@
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <version>4.2.2.Final</version>
+                <version>5.1.1.Final</version>
                 <configuration>
                     <jboss-home>${jboss.home}</jboss-home>
                     <provisioning-dir>${jboss.home}</provisioning-dir>
