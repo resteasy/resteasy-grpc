@@ -177,7 +177,7 @@ public class ReaderWriterGenerator {
                 + "                String l1 = line.substring(0, n);%n"
                 + "                String l2 = line.substring(n + 1);%n"
                 + "                ENTITY_MAP.put(l1, getParser(l2));%n"
-                + " System.out.println(\"ENTITY_MAP: \" + l1 + \": \" + l2);%n" 
+                + " System.out.println(\"ENTITY_MAP: \" + l1 + \": \" + l2);%n"
                 + "                line = reader.readLine();%n"
                 + "            }%n"
                 + "        } catch (Exception e) {%n"
