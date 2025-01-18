@@ -575,6 +575,7 @@ public class JavaToProtobufGenerator {
             if (n < 0) {
                 throw new RuntimeException("bad syntax: " + filename);
             }
+            System.out.println("FILE: " + filename);
             String dir = filename.substring(0, n).trim();
             filename = dir + File.separator + filename.substring(n + 1).replace(".", File.separator) + ".java";
             CompilationUnit cu = StaticJavaParser.parse(new File(filename));
