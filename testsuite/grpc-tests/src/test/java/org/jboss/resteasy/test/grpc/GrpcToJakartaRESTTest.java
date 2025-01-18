@@ -72,7 +72,7 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
     @Test
     public void testPlaintext() throws Exception {
         doBlockingTest(blockingStubPlaintext);
-        //        doAsyncTest(asyncStubPlaintext);
-        //        doFutureTest(futureStubPlaintext);
+        doAsyncTest(asyncStubPlaintext);
+        doFutureTest(futureStubPlaintext);
     }
 }
