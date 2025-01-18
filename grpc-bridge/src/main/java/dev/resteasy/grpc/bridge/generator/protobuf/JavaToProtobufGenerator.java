@@ -726,8 +726,8 @@ public class JavaToProtobufGenerator {
             sb.append(s).append(LS);
         }
         Files.writeString(path.resolve(args[3] + ".proto"), sb.toString(), StandardCharsets.UTF_8);
-        Path path2 = Path.of("/tmp/CC1.proto");
-        Files.writeString(path2, sb.toString(), StandardCharsets.UTF_8);
+        //        Path path2 = Path.of("/tmp/CC1.proto");
+        //        Files.writeString(path2, sb.toString(), StandardCharsets.UTF_8);
         logger.debug("done");
     }
 
