@@ -571,7 +571,7 @@ public class JavaToProtobufGenerator {
     private static void processAdditionalClasses(JavaSymbolSolver symbolSolver, StringBuilder sb) throws FileNotFoundException {
         StaticJavaParser.getConfiguration().setSymbolResolver(symbolSolver);
         for (String filename : additionalClasses) {
-            int n = filename.indexOf(":");
+            int n = filename.lastIndexOf(":");
             if (n < 0) {
                 throw new RuntimeException("bad syntax: " + filename);
             }
