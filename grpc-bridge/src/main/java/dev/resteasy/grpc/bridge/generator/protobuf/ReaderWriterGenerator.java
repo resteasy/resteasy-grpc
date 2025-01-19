@@ -357,6 +357,9 @@ public class ReaderWriterGenerator {
 
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) {
         String separator = File.separator.equals("\\") ? "\\\\" : "/";
+        System.out.println("ARG3: " + args[3]);
+        System.out.println(String.format(ENTITY_MAP_SETUP, args[3]));
+        new Exception(String.format(ENTITY_MAP_SETUP, args[3])).printStackTrace();
         sb.append("@Provider" + LS)
                 .append("@Consumes({\"application/grpc-jaxrs;grpc-jaxrs=true\",\"application/grpc-part\"})" + LS)
                 .append("@Produces(\"*/*;grpc-jaxrs=true\")" + LS)
