@@ -67,7 +67,7 @@ jobs:
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}
-          path: '/D:/a/resteasy-grpc/resteasy-grpc/testsuite/grpc-tests/target/generated-sources/protobuf/grpc-java/dev/resteasy/grpc/example/CC1MessageBodyReaderWriter.java'
+          path: 'D:/a/resteasy-grpc/resteasy-grpc/testsuite/grpc-tests/target/generated-sources/protobuf/grpc-java/dev/resteasy/grpc/example/CC1MessageBodyReaderWriter.java'
 
   format-check:
     runs-on: ubuntu-latest
