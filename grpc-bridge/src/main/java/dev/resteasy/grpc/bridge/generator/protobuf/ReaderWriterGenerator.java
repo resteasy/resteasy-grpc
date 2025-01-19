@@ -174,7 +174,7 @@ public class ReaderWriterGenerator {
                 //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
                 + "Path file = null;%n"
                 + "try {%n"
-                + "  System.out.println(\"SUB: %1$s\".replace(\"\\\", \"\\\\\"));%n"
+                + "  System.out.println(\"SUB: %1$s\".replace(\"\\\\\", \"\\\\\\\\\"));%n"
                 + "        System.out.println(\"PATHs: \" + Paths.get(\"%1$s\", \"target\", \"entityTypes\"));%n"
                 //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
                 //                + "final Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
@@ -359,6 +359,8 @@ public class ReaderWriterGenerator {
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) {
         String separator = File.separator.equals("\\") ? "\\\\" : "/";
         System.out.println("FILE:" + Paths.get(args[3], "target", "entityTypes"));
+        System.out.println("REPLACE: " + args[3].replace("\\\\", "\\\\\\\\"));
+        System.out.println("REPLACE: " + args[3].replace("\\", "\\\\"));
         System.out.println("ARG3: " + args[3]);
         System.out.println(String.format(ENTITY_MAP_SETUP, args[3]));
         new Exception(String.format(ENTITY_MAP_SETUP, args[3])).printStackTrace();
