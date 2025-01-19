@@ -172,19 +172,19 @@ public class ReaderWriterGenerator {
         ENTITY_MAP_SETUP = "   static {%n"
                 //                + "        System.out.println(\"PATH: %1$s%2$starget%2$sentityTypes\");%n"
                 //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
-//                + "Path file = null;%n"
-//                + "try {%n"
-//                + "  System.out.println(\"SUB: %1$s\".replace(\"\\\\\", \"\\\\\\\\\"));%n"
-//                + "        System.out.println(\"PATHs: \" + Paths.get(\"%1$s\", \"target\", \"entityTypes\"));%n"
-//                //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
-//                //                + "final Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
-//                + "file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
-//                + "} catch (Exception e) {%n"
-//                + "  System.out.println(\"PATHs 2: \" + \"%1$s\");%n"
-//                + "  System.out.println(\"FILE: \" + file);%n"
-//                + "   e.printStackTrace();%n"
-//                + "}%n"
-        		+ "Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
+                //                + "Path file = null;%n"
+                //                + "try {%n"
+                //                + "  System.out.println(\"SUB: %1$s\".replace(\"\\\\\", \"\\\\\\\\\"));%n"
+                //                + "        System.out.println(\"PATHs: \" + Paths.get(\"%1$s\", \"target\", \"entityTypes\"));%n"
+                //                //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
+                //                //                + "final Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
+                //                + "file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
+                //                + "} catch (Exception e) {%n"
+                //                + "  System.out.println(\"PATHs 2: \" + \"%1$s\");%n"
+                //                + "  System.out.println(\"FILE: \" + file);%n"
+                //                + "   e.printStackTrace();%n"
+                //                + "}%n"
+                + "Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
                 + " System.out.println(\"PATHs 2:\" + file);%n"
                 + "        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {%n"
                 + "            String line = reader.readLine();%n"
@@ -357,11 +357,11 @@ public class ReaderWriterGenerator {
         sb.append("" + LS + LS);
     }
     /*
-2025-01-19T17:15:21.9775798Z REPLACE: D:\a\resteasy-grpc\resteasy-grpc\testsuite\grpc-tests
-2025-01-19T17:15:21.9777852Z java.lang.Exception:    static {
-2025-01-19T17:15:21.9779556Z Path file = null;
-2025-01-19T17:15:21.9780057Z REPLACE: D:\\a\\resteasy-grpc\\resteasy-grpc\\testsuite\\grpc-tests
-    */
+     * 2025-01-19T17:15:21.9775798Z REPLACE: D:\a\resteasy-grpc\resteasy-grpc\testsuite\grpc-tests
+     * 2025-01-19T17:15:21.9777852Z java.lang.Exception: static {
+     * 2025-01-19T17:15:21.9779556Z Path file = null;
+     * 2025-01-19T17:15:21.9780057Z REPLACE: D:\\a\\resteasy-grpc\\resteasy-grpc\\testsuite\\grpc-tests
+     */
 
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) {
         String separator = File.separator.equals("\\") ? "\\\\" : "/";
@@ -372,15 +372,21 @@ public class ReaderWriterGenerator {
         Path file2 = Paths.get(args[3].replace("\\\\", "\\\\\\\\"), "target", "entityTypes");
         Path file3 = Paths.get(args[3].replace("\\", "\\\\"), "target", "entityTypes");
         try {
-        	System.out.println("EXISTS 1: " + file1.toString() + ": " +  file1.toFile().exists());
-        } catch (Exception e) { e.printStackTrace(); }
+            System.out.println("EXISTS 1: " + file1.toString() + ": " + file1.toFile().exists());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
-        	System.out.println("EXISTS 2: " + file1.toString() + ": " +  file1.toFile().exists());
-        } catch (Exception e) { e.printStackTrace(); }
+            System.out.println("EXISTS 2: " + file1.toString() + ": " + file1.toFile().exists());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
-        	System.out.println("EXISTS 3: " + file1.toString() + ": " +  file1.toFile().exists());
-        } catch (Exception e) { e.printStackTrace(); }
-        
+            System.out.println("EXISTS 3: " + file1.toString() + ": " + file1.toFile().exists());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         System.out.println("ARG3: " + args[3]);
         System.out.println(String.format(ENTITY_MAP_SETUP, args[3]));
         new Exception(String.format(ENTITY_MAP_SETUP, args[3])).printStackTrace();
@@ -400,7 +406,7 @@ public class ReaderWriterGenerator {
                         + LS)
                 .append(String.format(READER_WRITER_MAPS, args[1] + "_proto"))
                 //                .append(String.format(ENTITY_MAP_SETUP, args[3], separator))
-                .append(String.format(ENTITY_MAP_SETUP, args[3]))
+                .append(String.format(ENTITY_MAP_SETUP, args[3]).replace("\\\\", "\\\\\\\\"))
                 .append("   @Override" + LS)
                 .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
                         + LS)
