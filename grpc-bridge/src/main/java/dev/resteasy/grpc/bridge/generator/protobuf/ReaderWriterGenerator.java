@@ -175,6 +175,7 @@ public class ReaderWriterGenerator {
                 + "        System.out.println(\"PATHs: \" + Paths.get(\"%1$s\", \"target\", \"entityTypes\"));%n"
                 //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
                 + "final Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
+                + " System.out.println(\"PATHs 2:\" + file);%n"
                 + "        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {%n"
                 + "            String line = reader.readLine();%n"
                 + "            while (line != null) {%n"
@@ -258,6 +259,7 @@ public class ReaderWriterGenerator {
             writeClass(wrappedClasses[0], args, sbHeader, sbBody);
         } catch (Exception e) {
             logger.error(e);
+
         }
     }
 
