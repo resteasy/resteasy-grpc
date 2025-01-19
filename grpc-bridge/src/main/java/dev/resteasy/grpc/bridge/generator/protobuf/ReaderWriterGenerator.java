@@ -169,6 +169,7 @@ public class ReaderWriterGenerator {
                 "   }" + LS + LS;
 
         ENTITY_MAP_SETUP = "   static {%n"
+        		+ "        System.out.println(\"PATH: %1$s\" + File.separator + \"target\" + File.separator + \"entityTypes\");%n"
                 + "        final Path file = Path.of(\"%1$s\" + File.separator + \"target\" + File.separator + \"entityTypes\");%n"
                 + "        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {%n"
                 + "            String line = reader.readLine();%n"
