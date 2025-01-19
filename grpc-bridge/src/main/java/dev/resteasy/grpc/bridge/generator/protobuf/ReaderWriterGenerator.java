@@ -357,6 +357,7 @@ public class ReaderWriterGenerator {
 
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) {
         String separator = File.separator.equals("\\") ? "\\\\" : "/";
+        System.out.println("FILE:" + Paths.get(args[3], "target", "entityTypes"));
         System.out.println("ARG3: " + args[3]);
         System.out.println(String.format(ENTITY_MAP_SETUP, args[3]));
         new Exception(String.format(ENTITY_MAP_SETUP, args[3])).printStackTrace();
