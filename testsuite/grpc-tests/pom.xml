@@ -396,10 +396,10 @@
                             <mainClass>dev.resteasy.grpc.bridge.generator.protobuf.JavabufTranslatorGenerator</mainClass>
                             <cleanupDaemonThreads>false</cleanupDaemonThreads>
                             <arguments>
-                                <argument>${project.basedir}/target/generated-sources/protobuf/java</argument>
+                                <argument>${project.basedir}${file.separator}target${file.separator}generated-sources${file.separator}protobuf${file.separator}java</argument>
                                 <argument>dev.resteasy.grpc.example.${root.class}</argument>
                                 <argument>${root.class}</argument>
-                                <argument>${project.basedir}/src/main/proto/CC1.proto</argument>
+                                <argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}proto${file.separator}CC1.proto</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>
@@ -420,11 +420,11 @@
                             <mainClass>dev.resteasy.grpc.bridge.generator.protobuf.ReaderWriterGenerator</mainClass>
                             <cleanupDaemonThreads>false</cleanupDaemonThreads>
                             <arguments>
-                                <argument>${project.build.directory}/generated-sources/protobuf/grpc-java</argument>
+                                <argument>${project.build.directory}${file.separator}generated-sources${file.separator}protobuf${file.separator}grpc-java</argument>
                                 <argument>dev.resteasy.grpc.example.${root.class}</argument>
                                 <argument>${root.class}</argument>
                                 <argument>${project.basedir}</argument>
-                                <argument>${project.basedir}/src/main/proto/CC1.proto</argument>
+                                <argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}proto${file.separator}CC1.proto</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>
@@ -448,8 +448,8 @@
                                 <argument>${root.class}</argument>
                                 <argument>${servlet.name}</argument>
                                 <argument>dev.resteasy.grpc.example</argument>
-                                <argument>${project.basedir}/src/main/proto</argument>
-                                <argument>${project.build.directory}/generated-sources/protobuf/grpc-java</argument>
+                                <argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}proto</argument>
+                                <argument>${project.build.directory}${file.separator}generated-sources${file.separator}protobuf${file.separator}grpc-java</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>

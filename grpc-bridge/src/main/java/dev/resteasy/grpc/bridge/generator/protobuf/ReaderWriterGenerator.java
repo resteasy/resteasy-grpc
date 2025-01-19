@@ -169,7 +169,7 @@ public class ReaderWriterGenerator {
                 "   }" + LS + LS;
 
         ENTITY_MAP_SETUP = "   static {%n"
-                + "        final Path file = Path.of(\"%1$s/target/entityTypes\");%n"
+                + "        final Path file = Path.of(\"%1$s\" + File.separator + \"target\" + File.separator + \"entityTypes\");%n"
                 + "        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {%n"
                 + "            String line = reader.readLine();%n"
                 + "            while (line != null) {%n"
@@ -265,6 +265,7 @@ public class ReaderWriterGenerator {
         sb.append("import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;" + LS)
                 .append("import java.io.BufferedReader;" + LS)
                 .append("import java.io.ByteArrayOutputStream;" + LS)
+                .append("import java.io.File;" + LS)
                 .append("import java.io.IOException;" + LS)
                 .append("import java.io.InputStream;" + LS)
                 .append("import java.io.OutputStream;" + LS)
