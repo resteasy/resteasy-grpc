@@ -388,7 +388,7 @@ public class ReaderWriterGenerator {
         }
 
         System.out.println("ARG3: " + args[3]);
-        System.out.println(String.format(ENTITY_MAP_SETUP, args[3]));
+        System.out.println(String.format(ENTITY_MAP_SETUP, args[3].replace("\\", "\\\\")));
         new Exception(String.format(ENTITY_MAP_SETUP, args[3])).printStackTrace();
         sb.append("@Provider" + LS)
                 .append("@Consumes({\"application/grpc-jaxrs;grpc-jaxrs=true\",\"application/grpc-part\"})" + LS)
@@ -406,7 +406,7 @@ public class ReaderWriterGenerator {
                         + LS)
                 .append(String.format(READER_WRITER_MAPS, args[1] + "_proto"))
                 //                .append(String.format(ENTITY_MAP_SETUP, args[3], separator))
-                .append(String.format(ENTITY_MAP_SETUP, args[3]).replace("\\\\", "\\\\\\\\"))
+                .append(String.format(ENTITY_MAP_SETUP, args[3]).replace("\\", "\\\\"))
                 .append("   @Override" + LS)
                 .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
                         + LS)
