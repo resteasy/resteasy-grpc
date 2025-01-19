@@ -62,7 +62,12 @@ jobs:
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
-          path: '**/surefire-reports/*.txt'
+          path: 'D:/a/resteasy-grpc/resteasy-grpc/testsuite/grpc-tests/target/entityTypes'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
+          path: 'D:/a/resteasy-grpc/resteasy-grpc/testsuite/grpc-tests/src/main/proto/CC1.proto'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
