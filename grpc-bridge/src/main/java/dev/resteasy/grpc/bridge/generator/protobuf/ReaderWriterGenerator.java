@@ -174,6 +174,7 @@ public class ReaderWriterGenerator {
                 //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
                 + "Path file = null;%n"
                 + "try {%n"
+                + "  System.out.println(\"SUB: %1$s\".replace(\"\\\", \"\\\\\"));%n"
                 + "        System.out.println(\"PATHs: \" + Paths.get(\"%1$s\", \"target\", \"entityTypes\"));%n"
                 //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
                 //                + "final Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
