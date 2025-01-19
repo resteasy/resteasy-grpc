@@ -5,6 +5,7 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -169,8 +170,11 @@ public class ReaderWriterGenerator {
                 "   }" + LS + LS;
 
         ENTITY_MAP_SETUP = "   static {%n"
-        		+ "        System.out.println(\"PATH: %1$s\" + File.separator + \"target\" + File.separator + \"entityTypes\");%n"
-                + "        final Path file = Path.of(\"%1$s\" + File.separator + \"target\" + File.separator + \"entityTypes\");%n"
+                //                + "        System.out.println(\"PATH: %1$s%2$starget%2$sentityTypes\");%n"
+                //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
+                + "        System.out.println(\"PATHs: \" + Paths.get(\"%1$s\", \"target\", \"entityTypes\"));%n"
+                //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
+                + "final Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
                 + "        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {%n"
                 + "            String line = reader.readLine();%n"
                 + "            while (line != null) {%n"
@@ -275,6 +279,7 @@ public class ReaderWriterGenerator {
                 .append("import java.lang.reflect.Type;" + LS)
                 .append("import java.nio.charset.StandardCharsets;" + LS)
                 .append("import java.nio.file.Files;" + LS)
+                .append("import java.nio.file.Paths;" + LS)
                 .append("import java.nio.file.Path;" + LS)
                 .append("import java.util.Map;" + LS)
                 .append("import java.util.HashMap;" + LS)
@@ -341,6 +346,7 @@ public class ReaderWriterGenerator {
     }
 
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) {
+        String separator = File.separator.equals("\\") ? "\\\\" : "/";
         sb.append("@Provider" + LS)
                 .append("@Consumes({\"application/grpc-jaxrs;grpc-jaxrs=true\",\"application/grpc-part\"})" + LS)
                 .append("@Produces(\"*/*;grpc-jaxrs=true\")" + LS)
@@ -356,6 +362,7 @@ public class ReaderWriterGenerator {
                 .append("   private static Map<String, String> PRIMITIVE_WRAPPER_MAP = new HashMap<String, String>();" + LS
                         + LS)
                 .append(String.format(READER_WRITER_MAPS, args[1] + "_proto"))
+                //                .append(String.format(ENTITY_MAP_SETUP, args[3], separator))
                 .append(String.format(ENTITY_MAP_SETUP, args[3]))
                 .append("   @Override" + LS)
                 .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
