@@ -372,13 +372,13 @@ public class ReaderWriterGenerator {
         Path file2 = Paths.get(args[3].replace("\\\\", "\\\\\\\\"), "target", "entityTypes");
         Path file3 = Paths.get(args[3].replace("\\", "\\\\"), "target", "entityTypes");
         try {
-        	System.out.println("EXISTS 1: " + file1.toFile().exists());
+        	System.out.println("EXISTS 1: " + file1.toString() + ": " +  file1.toFile().exists());
         } catch (Exception e) { e.printStackTrace(); }
         try {
-        	System.out.println("EXISTS 2: " + file2.toFile().exists());
+        	System.out.println("EXISTS 2: " + file1.toString() + ": " +  file1.toFile().exists());
         } catch (Exception e) { e.printStackTrace(); }
         try {
-        	System.out.println("EXISTS 3: " + file3.toFile().exists());
+        	System.out.println("EXISTS 3: " + file1.toString() + ": " +  file1.toFile().exists());
         } catch (Exception e) { e.printStackTrace(); }
         
         System.out.println("ARG3: " + args[3]);
