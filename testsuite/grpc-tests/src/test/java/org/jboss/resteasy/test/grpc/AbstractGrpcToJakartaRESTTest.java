@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
-
 import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.bridge.runtime.Utility;
@@ -33,13 +32,10 @@ import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
 import dev.resteasy.grpc.example.sub.CC8;
 import dev.resteasy.grpc.lists.sets.DD1;
-
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintWriter;
@@ -50,7 +46,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
