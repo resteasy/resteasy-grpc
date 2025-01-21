@@ -1,46 +1,15 @@
 package org.jboss.resteasy.test.grpc;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.Assert;
-
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
 import dev.resteasy.grpc.arrays.Array_proto;
-import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
+import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.example.CC1;
-import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
-import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
-import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
-import dev.resteasy.grpc.example.CC1_Server;
 import dev.resteasy.grpc.example.CC1_proto;
-import dev.resteasy.grpc.example.CC1_proto.FormMap;
-import dev.resteasy.grpc.example.CC1_proto.FormValues;
-import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
-import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
-import dev.resteasy.grpc.example.CC1_proto.ServletInfo;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC2;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC3;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC4;
@@ -48,15 +17,46 @@ import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC5;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC7;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC9;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___IntfImpl;
+import dev.resteasy.grpc.example.CC1_proto.FormMap;
+import dev.resteasy.grpc.example.CC1_proto.FormValues;
 import dev.resteasy.grpc.example.CC1_proto.gCookie;
+import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
+import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
 import dev.resteasy.grpc.example.CC1_proto.gHeader;
 import dev.resteasy.grpc.example.CC1_proto.gInteger;
 import dev.resteasy.grpc.example.CC1_proto.gNewCookie;
 import dev.resteasy.grpc.example.CC1_proto.gString;
+import dev.resteasy.grpc.example.CC1_proto.ServletInfo;
+import dev.resteasy.grpc.example.CC1_Server;
+import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
+import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
+import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
 import dev.resteasy.grpc.example.sub.CC8;
 import dev.resteasy.grpc.lists.sets.DD1;
+
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Assert;
 
 /**
  * @tpSubChapter gRPC bridge plus WildFly grpc subsystem
