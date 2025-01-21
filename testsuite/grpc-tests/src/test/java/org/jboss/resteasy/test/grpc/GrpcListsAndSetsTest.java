@@ -1,9 +1,17 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -55,8 +63,11 @@ public class GrpcListsAndSetsTest {
 
     private static CC1JavabufTranslator translator = new CC1JavabufTranslator();
     private static ManagedChannel channelPlaintext;
-
     private static CC1ServiceGrpc.CC1ServiceBlockingStub blockingStubPlaintext;
+    private static Set<String> entityClasses = new HashSet<String>();
+    private static Map<String, Class<?>> CLASS_MAP = new HashMap<String, Class<?>>();
+    private static Map<String, Method> GET_MAP = new HashMap<String, Method>();
+    private static Map<String, Method> SET_MAP = new HashMap<String, Method>();
 
     static {
         Class<?> clazz;
@@ -66,6 +77,65 @@ public class GrpcListsAndSetsTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static {
+        entityClasses.add("java.util.ArrayList<java.lang.Object>");
+        entityClasses.add("java.util.HashSet<java.lang.Object>");
+        entityClasses.add("java.util.HashSet<java.lang.String>");
+        entityClasses.add("java.util.ArrayList<java.util.List<java.lang.String>>");
+        entityClasses.add("java.util.ArrayList<java.util.ArrayList<java.lang.String>>");
+        entityClasses.add("java.util.ArrayList<java.util.HashSet<java.lang.Object>>");
+    }
+
+    static {
+        Class<?> clazz;
+        try {
+            Class<?> builder = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralEntityMessage$Builder");
+            Class<?> response = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralReturnMessage");
+            System.out.println("builddir: " + System.getProperty("builddir"));
+            final Path file = Path.of(System.getProperty("builddir").replace("\\", "\\\\") + File.separator + "entityTypes");
+            try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+                String line = reader.readLine();
+                while (line != null) {
+                    int n = line.indexOf(" ");
+                    String l1 = line.substring(0, n);
+                    String l2 = line.substring(n + 1);
+                    if (entityClasses.contains(l1)) {
+                        System.out.println("FOUND: " + l1);
+                        Class<?> javabufClass = Class.forName(l2);
+                        //                    	CLASS_MAP.put(l1, javabufClass);
+                        if (l2.contains("$")) {
+                            l2 = l2.substring(l2.lastIndexOf('$') + 1);
+                        }
+                        String methodSuffix = squashToCamel(l2) + "Field";
+                        GET_MAP.put(l1, response.getDeclaredMethod("get" + methodSuffix));
+                        SET_MAP.put(l1, builder.getDeclaredMethod("set" + methodSuffix, javabufClass));
+                        System.out.println("ENTITY: " + l1 + ": " + SET_MAP.get(l1));
+                        System.out.println("ENTITY: " + l1 + ": " + GET_MAP.get(l1));
+                    }
+                    line = reader.readLine();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static String squashToCamel(String name) {
+        StringBuilder sb = new StringBuilder();
+        boolean start = true;
+        for (int i = 0; i < name.length(); i++) {
+            if (name.charAt(i) == '_') {
+                start = true;
+                continue;
+            }
+            sb.append(start ? name.substring(i, i + 1).toUpperCase() : name.substring(i, i + 1));
+            start = false;
+        }
+        return sb.toString();
     }
 
     @Deployment
@@ -242,80 +312,86 @@ public class GrpcListsAndSetsTest {
     // Client: java.util.ArrayList<java.lang.Object>
     // Server: ArrayList<Object>
     @Test
-    public void testArraylistObjectGeneric() {
+    public void testArraylistObjectGeneric() throws Exception {
         List<Object> collection = new ArrayList<Object>();
         collection.add(new S1());
         GenericType<java.util.ArrayList<java.lang.Object>> type = new GenericType<java.util.ArrayList<java.lang.Object>>() {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilArrayList17Field((java_util___ArrayList17) m).build();
+
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.ArrayList<java.lang.Object>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest4(gem);
-        java_util___ArrayList17 result = response.getJavaUtilArrayList17Field();
+        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.lang.Object>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.Object>
     // Server: HashSet<T>
     @Test
-    public void testHashSetStringGenericTypeVariable() {
+    public void testHashSetStringGenericTypeVariable() throws Exception {
         java.util.HashSet<java.lang.String> set = new java.util.HashSet<java.lang.String>();
         set.add("abc");
         GenericType<java.util.HashSet<java.lang.Object>> type = new GenericType<java.util.HashSet<java.lang.Object>>() {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashSet2Field((java_util___HashSet2) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.Object>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest1(gem);
-        java_util___HashSet2 result = response.getJavaUtilHashSet2Field();
+        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.Object>
     // Server: HashSet<?>
     @Test
-    public void testHashSetStringGenericTypeWildcard() {
+    public void testHashSetStringGenericTypeWildcard() throws Exception {
         java.util.HashSet<java.lang.String> set = new java.util.HashSet<java.lang.String>();
         set.add("abc");
         GenericType<java.util.HashSet<java.lang.Object>> type = new GenericType<java.util.HashSet<java.lang.Object>>() {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashSet2Field((java_util___HashSet2) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.Object>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest2(gem);
-        java_util___HashSet2 result = response.getJavaUtilHashSet2Field();
+        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.String>
     // Server: HashSet<String>
     @Test
-    public void testHashSetStringGenericTypeString() {
+    public void testHashSetStringGenericTypeString() throws Exception {
         java.util.HashSet<java.lang.String> set = new java.util.HashSet<java.lang.String>();
         set.add("abc");
         GenericType<java.util.HashSet<java.lang.String>> type = new GenericType<java.util.HashSet<java.lang.String>>() {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashSet3Field((java_util___HashSet3) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.String>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest3(gem);
-        java_util___HashSet3 result = response.getJavaUtilHashSet3Field();
+        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.String>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.Object>
     // Server: HashSet<Object>
     @Test
-    public void testHashSetStringGenericTypeObject() {
+    public void testHashSetStringGenericTypeObject() throws Exception {
         java.util.HashSet<java.lang.String> set = new java.util.HashSet<java.lang.String>();
         set.add("abc");
         GenericType<java.util.HashSet<java.lang.Object>> type = new GenericType<java.util.HashSet<java.lang.Object>>() {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashSet2Field((java_util___HashSet2) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.Object>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest4(gem);
-        java_util___HashSet2 result = response.getJavaUtilHashSet2Field();
+        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
@@ -468,9 +544,10 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilArrayList17Field((java_util___ArrayList17) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.ArrayList<java.lang.Object>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest4(gem);
-        java_util___ArrayList17 result = response.getJavaUtilArrayList17Field();
+        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.lang.Object>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
@@ -560,7 +637,7 @@ public class GrpcListsAndSetsTest {
     // Client: java.util.ArrayList<java.util.List<java.lang.String>>
     // Server: ArrayList<List<String>>
     @Test
-    public void testArrayListListString() {
+    public void testArrayListListString() throws Exception {
         List<String> l1 = new ArrayList<String>();
         l1.add("abc");
         ArrayList<List<String>> l2 = new ArrayList<List<String>>();
@@ -569,17 +646,19 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(l2, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilArrayList20Field((java_util___ArrayList20) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP
+                .get("java.util.ArrayList<java.util.List<java.lang.String>>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistListTest3(gem);
-        java_util___ArrayList20 result = response.getJavaUtilArrayList20Field();
+        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.List<java.lang.String>>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(l2, translator.translateFromJavabuf(result)));
     }
 
-    // Client: ArrayList<java.util.ArrayList<java.lang.String>>
+    // Client: java.util.ArrayList<java.util.ArrayList<java.lang.String>>
     // Server: ArrayList<ArrayList<String>>
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void testArrayListArrayListStringGeneric() {
+    public void testArrayListArrayListStringGeneric() throws Exception {
         Collection collection = new ArrayList<java.util.ArrayList<java.lang.String>>();
         ArrayList<String> list = new ArrayList<String>();
         list.add("abc");
@@ -590,9 +669,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilArrayList23Field((java_util___ArrayList23) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP
+                .get("java.util.ArrayList<java.util.ArrayList<java.lang.String>>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistArraylistTest3(gem);
-        java_util___ArrayList23 result = response.getJavaUtilArrayList23Field();
+        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.ArrayList<java.lang.String>>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
@@ -635,7 +716,7 @@ public class GrpcListsAndSetsTest {
     // Client: java.util.ArrayList<java.util.HashSet<java.lang.Object>>
     // Server: ArrayList<HashSet<Object>>
     @Test
-    public void testArraylistHashSetObject() {
+    public void testArraylistHashSetObject() throws Exception {
         ArrayList<HashSet<Object>> collection = new ArrayList<HashSet<Object>>();
         HashSet<Object> set = new HashSet<Object>();
         set.add(new S1());
@@ -644,9 +725,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilArrayList13Field((java_util___ArrayList13) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP
+                .get("java.util.ArrayList<java.util.HashSet<java.lang.Object>>")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistHashsetTest4(gem);
-        java_util___ArrayList13 result = response.getJavaUtilArrayList13Field();
+        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.HashSet<java.lang.Object>>").invoke(response);
         Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
