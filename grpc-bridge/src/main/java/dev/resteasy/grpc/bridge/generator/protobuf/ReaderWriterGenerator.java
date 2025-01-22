@@ -428,7 +428,6 @@ public class ReaderWriterGenerator {
         }
         sb.append("      Message message = null;" + LS)
                 .append("      if (genericType != null) {" + LS)
-                //                .append("         message = translator.translateToJavabuf(t, new GenericType(genericType));" + LS)
                 .append("         GenericType gt =  new GenericType(genericType);" + LS)
                 .append("         if (gt.getRawType().isInterface()) {" + LS)
                 .append("            message = translator.translateToJavabuf(t);" + LS)
@@ -441,7 +440,6 @@ public class ReaderWriterGenerator {
                 .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);"
                         + LS)
                 .append("      if ((servletResponse != null && servletResponse.getHeader(ANY) != null)" + LS)
-                //                .append("            || new GenericType(genericType).getRawType().isInterface()) {" + LS)
                 .append("            || (genericType != null && new GenericType(genericType).getRawType().isInterface())) {"
                         + LS)
                 .append("         if (servletResponse instanceof HttpServletResponseImpl) {" + LS)
