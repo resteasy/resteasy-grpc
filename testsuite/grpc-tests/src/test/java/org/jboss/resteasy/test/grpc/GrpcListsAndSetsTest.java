@@ -93,7 +93,6 @@ public class GrpcListsAndSetsTest {
         try {
             Class<?> builder = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralEntityMessage$Builder");
             Class<?> response = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralReturnMessage");
-            System.out.println("builddir: " + System.getProperty("builddir"));
             final Path file = Path.of(System.getProperty("builddir").replace("\\", "\\\\") + File.separator + "entityTypes");
             try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                 String line = reader.readLine();
@@ -102,17 +101,13 @@ public class GrpcListsAndSetsTest {
                     String l1 = line.substring(0, n);
                     String l2 = line.substring(n + 1);
                     if (entityClasses.contains(l1)) {
-                        System.out.println("FOUND: " + l1);
                         Class<?> javabufClass = Class.forName(l2);
-                        //                    	CLASS_MAP.put(l1, javabufClass);
                         if (l2.contains("$")) {
                             l2 = l2.substring(l2.lastIndexOf('$') + 1);
                         }
                         String methodSuffix = squashToCamel(l2) + "Field";
                         GET_MAP.put(l1, response.getDeclaredMethod("get" + methodSuffix));
                         SET_MAP.put(l1, builder.getDeclaredMethod("set" + methodSuffix, javabufClass));
-                        System.out.println("ENTITY: " + l1 + ": " + SET_MAP.get(l1));
-                        System.out.println("ENTITY: " + l1 + ": " + GET_MAP.get(l1));
                     }
                     line = reader.readLine();
                 }

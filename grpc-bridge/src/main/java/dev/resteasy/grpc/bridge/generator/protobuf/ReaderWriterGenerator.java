@@ -5,7 +5,6 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -170,22 +169,7 @@ public class ReaderWriterGenerator {
                 "   }" + LS + LS;
 
         ENTITY_MAP_SETUP = "   static {%n"
-                //                + "        System.out.println(\"PATH: %1$s%2$starget%2$sentityTypes\");%n"
-                //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
-                //                + "Path file = null;%n"
-                //                + "try {%n"
-                //                + "  System.out.println(\"SUB: %1$s\".replace(\"\\\\\", \"\\\\\\\\\"));%n"
-                //                + "        System.out.println(\"PATHs: \" + Paths.get(\"%1$s\", \"target\", \"entityTypes\"));%n"
-                //                //                + "        final Path file = Path.of(\"%1$s%2$2target%2$sentityTypes\");%n"
-                //                //                + "final Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
-                //                + "file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
-                //                + "} catch (Exception e) {%n"
-                //                + "  System.out.println(\"PATHs 2: \" + \"%1$s\");%n"
-                //                + "  System.out.println(\"FILE: \" + file);%n"
-                //                + "   e.printStackTrace();%n"
-                //                + "}%n"
                 + "Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
-                + " System.out.println(\"PATHs 2:\" + file);%n"
                 + "        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {%n"
                 + "            String line = reader.readLine();%n"
                 + "            while (line != null) {%n"
@@ -193,7 +177,6 @@ public class ReaderWriterGenerator {
                 + "                String l1 = line.substring(0, n);%n"
                 + "                String l2 = line.substring(n + 1);%n"
                 + "                ENTITY_MAP.put(l1, getParser(l2));%n"
-                + " System.out.println(\"ENTITY_MAP: \" + l1 + \": \" + l2);%n"
                 + "                line = reader.readLine();%n"
                 + "            }%n"
                 + "        } catch (Exception e) {%n"
@@ -356,40 +339,8 @@ public class ReaderWriterGenerator {
         }
         sb.append("" + LS + LS);
     }
-    /*
-     * 2025-01-19T17:15:21.9775798Z REPLACE: D:\a\resteasy-grpc\resteasy-grpc\testsuite\grpc-tests
-     * 2025-01-19T17:15:21.9777852Z java.lang.Exception: static {
-     * 2025-01-19T17:15:21.9779556Z Path file = null;
-     * 2025-01-19T17:15:21.9780057Z REPLACE: D:\\a\\resteasy-grpc\\resteasy-grpc\\testsuite\\grpc-tests
-     */
 
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) {
-        String separator = File.separator.equals("\\") ? "\\\\" : "/";
-        System.out.println("FILE:" + Paths.get(args[3], "target", "entityTypes"));
-        System.out.println("REPLACE: " + args[3].replace("\\\\", "\\\\\\\\"));
-        System.out.println("REPLACE: " + args[3].replace("\\", "\\\\"));
-        Path file1 = Paths.get(args[3], "target", "entityTypes");
-        Path file2 = Paths.get(args[3].replace("\\\\", "\\\\\\\\"), "target", "entityTypes");
-        Path file3 = Paths.get(args[3].replace("\\", "\\\\"), "target", "entityTypes");
-        try {
-            System.out.println("EXISTS 1: " + file1.toString() + ": " + file1.toFile().exists());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            System.out.println("EXISTS 2: " + file1.toString() + ": " + file1.toFile().exists());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            System.out.println("EXISTS 3: " + file1.toString() + ": " + file1.toFile().exists());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("ARG3: " + args[3]);
-        System.out.println(String.format(ENTITY_MAP_SETUP, args[3].replace("\\", "\\\\")));
-        new Exception(String.format(ENTITY_MAP_SETUP, args[3])).printStackTrace();
         sb.append("@Provider" + LS)
                 .append("@Consumes({\"application/grpc-jaxrs;grpc-jaxrs=true\",\"application/grpc-part\"})" + LS)
                 .append("@Produces(\"*/*;grpc-jaxrs=true\")" + LS)
@@ -405,7 +356,6 @@ public class ReaderWriterGenerator {
                 .append("   private static Map<String, String> PRIMITIVE_WRAPPER_MAP = new HashMap<String, String>();" + LS
                         + LS)
                 .append(String.format(READER_WRITER_MAPS, args[1] + "_proto"))
-                //                .append(String.format(ENTITY_MAP_SETUP, args[3], separator))
                 .append(String.format(ENTITY_MAP_SETUP, args[3]).replace("\\", "\\\\"))
                 .append("   @Override" + LS)
                 .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
@@ -434,8 +384,6 @@ public class ReaderWriterGenerator {
                 .append("            Class clazz = Utility.extractTypeFromAny(any, getClass().getClassLoader(), \"")
                 .append(args[2]).append("_proto\");" + LS)
                 .append("            Message m = any.unpack(clazz);" + LS)
-                .append(" System.out.println(\"m(0): \" + m.getDescriptorForType().getFullName() + \": \" + m.toString());"
-                        + LS)
                 .append("            return ")
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (\"application/grpc-part\".equals(mediaType.toString())) {" + LS)
@@ -444,31 +392,12 @@ public class ReaderWriterGenerator {
                 .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
                 .append("            Message m = any.unpack(")
                 .append("translator.translateToJavabufClass(type));" + LS)
-                .append("  System.out.println(\"m(1): \" + m.getDescriptorForType().getFullName() + \": \" + m.toString());"
-                        + LS)
                 .append("            return ")
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         } else if (ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            GeneratedMessageV3 message = (GeneratedMessageV3) ENTITY_MAP.get(gt).invoke(null, entityStream);"
                         + LS)
-                .append("  System.out.println(\"m(2): \" + message.getDescriptorForType().getFullName() + \": \" + message.toString());"
-                        + LS)
                 .append("            return translator.translateFromJavabuf(message);" + LS)
-                //                .append("         } else if (type.isInterface()) {" + LS)
-                //                .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
-                //                .append("            Class clazz = Utility.extractTypeFromAny(any, getClass().getClassLoader(), \"")
-                //                .append(args[2]).append("_proto\");" + LS)
-                //                .append("            Message m = any.unpack(clazz);" + LS)
-                //                .append("            return ")
-                //                .append("translator.translateFromJavabuf(m);" + LS)
-                //                .append("         } else if (httpHeaders.getFirst(ANY) != null) {" + LS)
-                //                .append("            Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
-                //                .append("            Message m = any.unpack(")
-                //                .append("translator.translateToJavabufClass(type));" + LS)
-                //                .append("            return ")
-                //                .append("translator.translateFromJavabuf(m);" + LS)
-                //                .append("         } else if (\"application/grpc-part\".equals(mediaType.toString())) {" + LS)
-                //                .append("            return new String(entityStream.readAllBytes());" + LS)
                 .append("         } else {" + LS)
                 .append("            GeneratedMessageV3 message = (GeneratedMessageV3) ENTITY_MAP.get(type.getName()).invoke(null, entityStream);"
                         + LS)
@@ -501,9 +430,6 @@ public class ReaderWriterGenerator {
                 .append("      if (genericType != null) {" + LS)
                 //                .append("         message = translator.translateToJavabuf(t, new GenericType(genericType));" + LS)
                 .append("         GenericType gt =  new GenericType(genericType);" + LS)
-                .append("          System.out.println(\"t.getClass(): \" + t.getClass());" + LS)
-                .append("          System.out.println(\"type: \" + type.getName());" + LS)
-                .append("         System.out.println(\"gt.getRawType: \" + gt.getRawType().getName());" + LS)
                 .append("         if (gt.getRawType().isInterface()) {" + LS)
                 .append("            message = translator.translateToJavabuf(t);" + LS)
                 .append("         } else {" + LS)

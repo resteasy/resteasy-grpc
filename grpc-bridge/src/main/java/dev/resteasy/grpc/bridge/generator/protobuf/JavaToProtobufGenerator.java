@@ -575,7 +575,6 @@ public class JavaToProtobufGenerator {
             if (n < 0) {
                 throw new RuntimeException("bad syntax: " + filename);
             }
-            System.out.println("FILE: " + filename);
             String dir = filename.substring(0, n).trim();
             filename = dir + File.separator + filename.substring(n + 1).replace(".", File.separator) + ".java";
             CompilationUnit cu = StaticJavaParser.parse(new File(filename));
@@ -1119,9 +1118,6 @@ public class JavaToProtobufGenerator {
         for (Parameter p : md.getParameters()) {
             if (isEntity(p)) {
                 ResolvedType rt = p.getType().resolve();
-                if (rt.describe().contains("Intf")) {
-                    System.out.println("HERE");
-                }
                 if (rt.isReferenceType()) {
                     rt = objectify(rt.asReferenceType());
                 }
@@ -1168,7 +1164,6 @@ public class JavaToProtobufGenerator {
                 String s = fqnifyClass(rt, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
                 String javabufType = protoClass + s;
                 entityTypes.add(s);
-                System.out.println("ADDING 1: " + s);
                 entityTypesForFile.add("7" + javaType + " " + javabufType);
                 return s;
             }
@@ -1178,56 +1173,23 @@ public class JavaToProtobufGenerator {
     }
 
     private static boolean isInterface(ResolvedType rt) {
-        if (rt.describe().contains("CC7")) {
-            System.out.println("HERE 2");
-        }
         String name = rt.describe();
         if (name.contains("<")) {
             name = name.substring(0, name.indexOf("<"));
         }
         List<ResolvedMethodDeclaration> list = rt.asReferenceType().getAllMethods();
         for (ResolvedMethodDeclaration rmd : list) {
-            System.out.println(rmd.declaringType().getQualifiedName());
             if (rmd.declaringType().getQualifiedName().equals(name)) {
-                System.out.println("HERE 3");
                 return rmd.declaringType().isInterface();
             }
         }
-        System.out.println("");
         List<ResolvedFieldDeclaration> list2 = rt.asReferenceType().getAllFieldsVisibleToInheritors();
         for (ResolvedFieldDeclaration rmd : list2) {
-            System.out.println(rmd.declaringType().getQualifiedName());
             if (rmd.declaringType().getQualifiedName().equals(name)) {
-                System.out.println("HERE 3");
                 return rmd.declaringType().isInterface();
             }
         }
         return true;
-        //    		ResolvedMethodDeclaration rmd = rt.asReferenceType().getAllMethods().iterator().next();
-        //    		ResolvedReferenceTypeDeclaration rrtd = rmd.declaringType();
-        //    		boolean b = rrtd.isInterface();
-        //    		System.out.println(b);
-        //    	}
-        //        boolean b = rt.asReferenceType().getAllMethods().iterator().next().declaringType().isInterface();
-        //        System.out.println("NEW: " + rt.describe() + ": " + b);
-        //        System.out.println("INTERFACE 0: " + rt.describe());
-        //        if (rt.describe().contains("Intf")) {
-        ////            new Exception("INTERFACE 3").printStackTrace();
-        //        }
-        //        String name = rt.describe();
-        //        if (rt.describe().contains("<")) {
-        //            name = name.substring(0, name.indexOf('<'));
-        //        }
-        //        try {
-        //            Class<?> clazz = Class.forName(name);
-        //            System.out.println("INTERFACE 1: " + rt.describe() + ": " + clazz.getName() + ": " + clazz.isInterface());
-        //            return clazz.isInterface();
-        //        } catch (Exception e) {
-        //            //            throw new RuntimeException(e);
-        //            logger.info("INTERFACE 2: " + e);
-        //
-        //            return false;
-        //        }
     }
 
     private static boolean isEntity(Parameter p) {
@@ -1299,7 +1261,6 @@ public class JavaToProtobufGenerator {
                     return "google.protobuf.Any";
                 }
                 rt = objectify(rt.asReferenceType());
-                //                System.out.println("ADDING 2: " + rt.describe());
                 pendingTypes.add(rt);
                 return fqnifyClass(rt, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
             }

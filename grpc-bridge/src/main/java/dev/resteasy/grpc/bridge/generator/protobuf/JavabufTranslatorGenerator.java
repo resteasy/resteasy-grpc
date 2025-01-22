@@ -1390,11 +1390,7 @@ public class JavabufTranslatorGenerator {
                 .append("         s = message.getDescriptorForType().getFullName();" + LS)
                 .append("         s = s.substring(s.lastIndexOf(\".\") + 1);" + LS)
                 .append("         TranslateFromJavabuf tfj = fromJavabufMap.get(s);" + LS)
-                .append("         System.out.println(\"translateFromJavabuf(): \" + message.getClass() + \", \" + s + \" is not recognized\" + message.toString());"
-                        + LS)
                 .append("         if (tfj == null) {" + LS)
-
-                .append("            new Exception(\"translatefromJavabufClass()\").printStackTrace();" + LS)
                 .append("            throw new RuntimeException(\"translateFromJavabuf(): \" + message.getClass() + \", \" + s + \" is not recognized\" + message.toString());"
                         + LS)
                 .append("         }" + LS)
@@ -2101,7 +2097,6 @@ public class JavabufTranslatorGenerator {
             if (i >= 0) {
                 javaclassName = javaclassName.substring(0, i);
             }
-            System.out.println("FOR_NAME: 1" + javaclassName);
             Class<?> javaclass = Class.forName(javaclassName);
             String s = LISTS_SETS_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
             String t = null;
@@ -2134,7 +2129,6 @@ public class JavabufTranslatorGenerator {
             if (i >= 0) {
                 javaclassName = javaclassName.substring(0, i);
             }
-            System.out.println("FOR_NAME: 2" + javaclassName);
             Class<?> javaclass = Class.forName(javaclassName);
             String s = LISTS_SETS_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
             String t = null;
@@ -2291,25 +2285,21 @@ public class JavabufTranslatorGenerator {
     private static String originalSimpleName(String s) {
         int i = s.lastIndexOf("___");
         if (i >= 0) {
-            System.out.println("RETURNING 1: " + s.substring(i + 3).replace('$', '.'));
             return s.substring(i + 3).replace('$', '.');
         }
         // inner class
         i = s.indexOf("_INNER_");
         if (i >= 0) {
-            System.out.println("RETURNING 2: " + s.substring(i + "_INNER_".length()));
             new Exception("INNER").printStackTrace();
             return s.substring(i + "_INNER_".length());
         }
         i = s.indexOf("_HIDDEN_");
         if (i >= 0) {
-            System.out.println("RETURNING 3: " + s.substring(i + "_HIDDEN_".length()));
             return s.substring(i + "_HIDDEN_".length());
         }
         // primitive class
         i = s.lastIndexOf("$");
         if (i >= 0) {
-            System.out.println("RETURNING 4: " + s.substring(i + 1));
             return s.substring(i + 1);
         }
         if (PRIMITIVE_WRAPPER_TYPES.containsKey(s)) {

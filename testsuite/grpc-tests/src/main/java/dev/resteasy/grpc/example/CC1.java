@@ -80,7 +80,6 @@ public class CC1 {
     @Path("ready")
     @GET
     public String ready() {
-        System.out.println("gRPC server ready");
         return "ready";
     }
 
@@ -428,14 +427,6 @@ public class CC1 {
     public String m5() {
         return "m5";
     }
-
-    //   @Path("m6")
-    //   @POST
-    //   public CC4 m6(CC2 cc2) {
-    //      CC5 cc5 = new CC5(cc2.j);
-    //      System.out.println("cc2.s: " + cc2.s + ", cc5.k: " + cc5.k);
-    //      return new CC4(cc2.s, cc5);
-    //   }
 
     @Path("m7")
     @POST

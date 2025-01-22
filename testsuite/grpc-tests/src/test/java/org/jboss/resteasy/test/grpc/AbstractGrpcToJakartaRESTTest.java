@@ -82,7 +82,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
         Archive<?> ar = ShrinkWrap.create(WebArchive.class, deploymentName + ".war")
                 .addPackage(CC1_Server.class.getPackage())
                 .addPackage(AbstractGrpcToJakartaRESTTest.class.getPackage())
-                //                .addPackage(ExampleApp.class.getPackage())
                 .addPackage(CC1.class.getPackage())
                 .addPackage(CC8.class.getPackage())
                 .addPackage(DD1.class.getPackage())
@@ -90,19 +89,17 @@ abstract class AbstractGrpcToJakartaRESTTest {
                         .withoutTransitivity()
                         .asSingleFile())
                 .addClass(Array_proto.class)
-                //                .addPackage(ArrayUtility.class.getPackage())
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
         //        ar.as(ZipExporter.class).exportTo(
-        //        		new File("/tmp/collections.war"), true);
+        //           new File("/tmp/collections.war"), true);
         return ar;
     }
 
     static void accessServletContexts() {
-        try (//http://localhost:8080/grpc-test/grpcToJakartaRest/grpcserver/context
+        try (
                 Client client = ClientBuilder.newClient();
-                //                var response = client.target("http://localhost:8080/grpc-test/grpcserver/context")
                 var response = client.target("http://localhost:8080/grpc-test/grpcToJakartaRest/grpcserver/context")
                         .request()
                         .get()) {
@@ -1389,9 +1386,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
         CC1_proto.dev_resteasy_grpc_example___IntfImpl entity = CC1_proto.dev_resteasy_grpc_example___IntfImpl.newBuilder()
                 .setS("abc").build();
-        System.out.println("testInterfaceEntity(): " + entity.getDescriptorForType().getFullName());
         Any entityAny = Any.pack(entity);
-        System.out.println("testInterfaceEntity(): " + entityAny.getDescriptorForType().getFullName());
         GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/interface/entity")
                 .setAnyField(entityAny)
                 .build();
@@ -1559,13 +1554,10 @@ abstract class AbstractGrpcToJakartaRESTTest {
     //        dev_resteasy_grpc_arrays___Integer___Array m = (dev_resteasy_grpc_arrays___Integer___Array) translator
     //                .translateToJavabuf(ints);
     //        GeneralEntityMessage gem = builder.setDevResteasyGrpcArraysIntegerArrayField(m).build();
-    //        System.out.println("gem: " + gem.toString());
-    //        System.out.println("gem 2: " + gem);
     //        //        GeneralEntityMessage gem = builder.build();
     //        GeneralReturnMessage response;
     //        try {
     //            response = stub.arraysInt1(gem);
-    //            System.out.println("response: " + response.toString());
     //            dev_resteasy_grpc_arrays___Integer___Array as = response.getDevResteasyGrpcArraysIntegerArrayField();
     //            Object o = translator.translateFromJavabuf(as);
     //            int[] expected = new int[] { 2, 3, 4 };
@@ -1690,7 +1682,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
     //        HashMap<Integer, String> map = new HashMap<Integer, String>();
     //        map.put(Integer.valueOf(3), "three");
     //        map.put(Integer.valueOf(5), "five");
-    //        System.out.println("map: " + map);
     //        java_util___HashMap jbmap = (java_util___HashMap) translator.translateToJavabuf(map);
     //        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
     //        GeneralEntityMessage gem = builder.setJavaUtilHashMapField(jbmap).build();
@@ -1699,13 +1690,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
     //            response = stub.hashmap(gem);
     //            jbmap = response.getJavaUtilHashMapField();
     //            HashMap<Integer, String> map2 = (HashMap) translator.translateFromJavabuf(jbmap);
-    //            System.out.println("map2: " + map2);
     //            //            Assert.assertEquals(map, (HashMap) translator.translateFromJavabuf(jbmap));
     //            Assert.assertEquals(map.size(), map2.size());
-    //            for (Entry<Integer, String> e : map2.entrySet()) {
-    //                System.out.println(e);
-    //                System.out.println(e.getKey().getClass() + ", " + e.getValue().getClass());
-    //            }
     //            //            for (int key : map.keySet()) {
     //            //                Assert.assertEquals(map.get(key), map2.get(key));
     //            //            }
