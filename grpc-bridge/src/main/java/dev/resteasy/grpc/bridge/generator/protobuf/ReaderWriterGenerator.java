@@ -169,7 +169,7 @@ public class ReaderWriterGenerator {
                 "   }" + LS + LS;
 
         ENTITY_MAP_SETUP = "   static {%n"
-                + "Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
+                + "        Path file = Paths.get(\"%1$s\", \"target\", \"entityTypes\");%n"
                 + "        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {%n"
                 + "            String line = reader.readLine();%n"
                 + "            while (line != null) {%n"
@@ -230,13 +230,14 @@ public class ReaderWriterGenerator {
     }
 
     public static void main(String[] args) {
-        if (args == null || args.length != 5) {
-            logger.info("need five args:");
+        if (args == null || args.length != 6) {
+            logger.info("need six args:");
             logger.info("  arg[0]: root directory");
             logger.info("  arg[1]: javabuf wrapper class name");
             logger.info("  arg[2]: .proto file prefix");
             logger.info("  arg[3]: project base directory");
             logger.info("  arg[4): .proto file");
+            logger.info("  arg[5): base package");
             return;
         }
         try {
@@ -258,10 +259,10 @@ public class ReaderWriterGenerator {
 
     private static void classHeader(String[] args, String readerWriterClass, Class<?>[] wrappedClasses, StringBuilder sb) {
         sb.append("package ").append(wrappedClasses[0].getPackage().getName()).append(";" + LS + LS);
-        imports(wrappedClasses, args[2], sb);
+        imports(wrappedClasses, args[2], args[5], sb);
     }
 
-    private static void imports(Class<?>[] wrappedClasses, String rootClass, StringBuilder sb) {
+    private static void imports(Class<?>[] wrappedClasses, String rootClass, String rootPackage, StringBuilder sb) {
         sb.append("import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;" + LS)
                 .append("import java.io.BufferedReader;" + LS)
                 .append("import java.io.ByteArrayOutputStream;" + LS)
@@ -298,8 +299,8 @@ public class ReaderWriterGenerator {
                 .append("import ").append("dev.resteasy.grpc.bridge.runtime.Utility;" + LS)
                 .append("import ").append("dev.resteasy.grpc.arrays.Array_proto;" + LS)
                 .append("import ").append("dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;" + LS)
-                .append("import dev.resteasy.grpc.example." + rootClass + "_proto.GeneralEntityMessage;" + LS)
-                .append("import dev.resteasy.grpc.example." + rootClass + "_proto.GeneralReturnMessage;" + LS)
+                .append("import " + rootPackage + "." + rootClass + "_proto.GeneralEntityMessage;" + LS)
+                .append("import " + rootPackage + "." + rootClass + "_proto.GeneralReturnMessage;" + LS)
                 .append("import ").append(OutboundSseEventImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
                 .append("import org.jboss.resteasy.core.ResteasyContext;" + LS);
@@ -356,7 +357,7 @@ public class ReaderWriterGenerator {
                 .append("   private static Map<String, String> PRIMITIVE_WRAPPER_MAP = new HashMap<String, String>();" + LS
                         + LS)
                 .append(String.format(READER_WRITER_MAPS, args[1] + "_proto"))
-                .append(String.format(ENTITY_MAP_SETUP, args[3]).replace("\\", "\\\\"))
+                .append(String.format(ENTITY_MAP_SETUP, args[3], args[5] + "." + args[2]).replace("\\", "\\\\"))
                 .append("   @Override" + LS)
                 .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {"
                         + LS)
@@ -366,7 +367,7 @@ public class ReaderWriterGenerator {
                 .append("         return true;" + LS)
                 .append("      } else {" + LS)
                 .append("         return ")
-                .append("translator.handlesFromJavabuf(type);" + LS)
+                .append("translator.handlesFromJavabuf(genericType, type);" + LS)
                 .append("      }" + LS)
                 .append("   }" + LS + LS)
                 .append("   @SuppressWarnings(\"unchecked\")" + LS)
@@ -413,7 +414,7 @@ public class ReaderWriterGenerator {
                 .append("      if (type.isArray() && type.isArray()) {" + LS)
                 .append("         return true;" + LS)
                 .append("      } else {" + LS)
-                .append("         return translator.handlesToJavabuf(type);" + LS)
+                .append("         return translator.handlesToJavabuf(genericType, type);" + LS)
                 .append("      }" + LS)
                 .append("   }" + LS + LS)
                 .append("   @Override" + LS)

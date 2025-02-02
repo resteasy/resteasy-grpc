@@ -2,6 +2,7 @@ package dev.resteasy.grpc.bridge.runtime.protobuf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 
 import jakarta.ws.rs.core.GenericType;
 
@@ -9,9 +10,9 @@ import com.google.protobuf.Message;
 
 public interface JavabufTranslator {
 
-    boolean handlesFromJavabuf(Class<?> clazz);
+    boolean handlesFromJavabuf(Type genericType, Class<?> clazz);
 
-    boolean handlesToJavabuf(Class<?> clazz);
+    boolean handlesToJavabuf(Type genericType, Class<?> clazz);
 
     Object translateFromJavabuf(Message message);
 

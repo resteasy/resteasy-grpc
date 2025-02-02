@@ -11,8 +11,8 @@
     </parent>
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-	    <maven.compiler.source>11</maven.compiler.source>
-	    <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
         <!-- Provisioning properties -->
         <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
@@ -33,6 +33,7 @@
 
         <!-- For compiling the test project -->
         <root.class>CC1</root.class>
+        <root.package>dev.resteasy.grpc.example</root.package>
         <servlet.name>GrpcServlet</servlet.name>
     </properties>
     <artifactId>grpc-tests</artifactId>
@@ -233,9 +234,9 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-			  <compilerArgs>
+              <compilerArgs>
                   <arg>-J--add-opens java.base/jdk.internal.misc=ALL-UNNAMED -J--add-opens java.base/java.util=ALL-UNNAMED</arg>
-               </compilerArgs>
+              </compilerArgs>
           </configuration>
         </plugin>
             <plugin>
@@ -426,6 +427,7 @@
                                 <argument>${root.class}</argument>
                                 <argument>${project.basedir}</argument>
                                 <argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}proto${file.separator}CC1.proto</argument>
+                                <argument>${root.package}</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>

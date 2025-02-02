@@ -630,7 +630,7 @@ public class JavabufTranslatorGenerator {
             + "      @Override%n"
             + "      public Object parseFromJavabuf(InputStream is) throws IOException%n"
             + "      {%n"
-            + "         Message m = dev_resteasy_grpc_lists_sets___L2.parseFrom(is);%n"
+            + "         Message m = %1$s.parseFrom(is);%n"
             + "         return assignFromJavabuf(m);%n"
             + "      }%n";
 
@@ -671,7 +671,7 @@ public class JavabufTranslatorGenerator {
             + "      @Override%n"
             + "      public Object parseFromJavabuf(InputStream is) throws IOException%n"
             + "      {%n"
-            + "         Message m = dev_resteasy_grpc_lists_sets___L2.parseFrom(is);%n"
+            + "         Message m = %1$s.parseFrom(is);%n"
             + "         return assignFromJavabuf(m);%n"
             + "      }%n";
 
@@ -882,7 +882,7 @@ public class JavabufTranslatorGenerator {
     public static void main(String[] args) {
         if (args == null || args.length != 4) {
             logger.info("need four args:");
-            logger.info("  arg[0]: root directory");
+            logger.info("  arg[0]: output directory");
             logger.info("  arg[1]: javabuf wrapper class name");
             logger.info("  arg[2]: prefix");
             logger.info("  arg[3): .proto file");
@@ -1118,7 +1118,7 @@ public class JavabufTranslatorGenerator {
 
     private static void classBody(String[] args, Class<?>[] wrappedClasses, StringBuilder sb) throws Exception {
         privateVariables(sb, args);
-        staticInit(wrappedClasses, sb);
+        staticInit(wrappedClasses, args, sb);
         publicMethods(sb, wrappedClasses[0], args);
         privateMethods(sb, wrappedClasses, args);
         for (Class<?> clazz : wrappedClasses) {
@@ -1133,7 +1133,7 @@ public class JavabufTranslatorGenerator {
         }
     }
 
-    private static void staticInit(Class<?>[] classes, StringBuilder sb) throws ClassNotFoundException {
+    private static void staticInit(Class<?>[] classes, String[] args, StringBuilder sb) throws ClassNotFoundException {
         sb.append("   static {" + LS);
         Iterator<String> iteratorTo = ARRAY_CLASSES_TO_JAVABUF.keySet().iterator();
         Iterator<String> iteratorFrom = ARRAY_CLASSES_FROM_JAVABUF.keySet().iterator();
@@ -1226,6 +1226,10 @@ public class JavabufTranslatorGenerator {
                         .append(simpleName)
                         .append("_ToJavabuf());" + LS);
                 if (!isAbstract) {
+                    sb.append(LS + "      toJavabufMap.put(\"")
+                            .append(originalClassName(simpleName) + "\" , new ")
+                            .append(simpleName)
+                            .append("_ToJavabuf());" + LS);
                     sb.append("      fromJavabufMap.put(")
                             .append("\"" + simpleName + "\"")
                             .append(", new ")
@@ -1317,11 +1321,17 @@ public class JavabufTranslatorGenerator {
     }
 
     private static void publicMethods(StringBuilder sb, Class<?> clazz, String[] args) {
-        sb.append("   public boolean handlesToJavabuf(Class<?> clazz) {" + LS)
-                .append("      return clazz.isPrimitive() || toJavabufMap.containsKey(clazz.getName());" + LS)
+        sb.append("   public boolean handlesToJavabuf(Type genericType, Class<?> clazz) {" + LS)
+                .append("      return clazz.isPrimitive() || " + LS)
+                .append("         (genericType != null && toJavabufMap.containsKey(simplifyTypeName(genericType.getTypeName()))) || "
+                        + LS)
+                .append("         toJavabufMap.containsKey(clazz.getName());" + LS)
                 .append("   }" + LS + LS)
-                .append("   public boolean handlesFromJavabuf(Class<?> clazz) {" + LS)
-                .append("      return clazz.isPrimitive() || toJavabufMap.containsKey(clazz.getName());" + LS)
+                .append("   public boolean handlesFromJavabuf(Type genericType, Class<?> clazz) {" + LS)
+                .append("      return clazz.isPrimitive() || " + LS)
+                .append("         (genericType != null && toJavabufMap.containsKey(simplifyTypeName(genericType.getTypeName()))) || "
+                        + LS)
+                .append("         toJavabufMap.containsKey(clazz.getName());" + LS)
                 .append("   }" + LS + LS)
                 .append("   public Message translateToJavabuf(Object o) {" + LS)
                 .append("      return translateToJavabuf(o, null);" + LS)
@@ -1426,7 +1436,7 @@ public class JavabufTranslatorGenerator {
     }
 
     private static void privateVariables(StringBuilder sb, String[] args) {
-        sb.append("   private static JavabufTranslator INSTANCE = new CC1JavabufTranslator();" + LS);
+        sb.append("   private static JavabufTranslator INSTANCE = new " + args[2] + "JavabufTranslator();" + LS);
         sb.append(
                 "   private static Map<String, TranslateToJavabuf> toJavabufMap = new HashMap<String, TranslateToJavabuf>();"
                         + LS);
@@ -1697,6 +1707,9 @@ public class JavabufTranslatorGenerator {
                 .append("      cons.setAccessible(true);" + LS)
                 .append("      constructors.put(classname, cons);" + LS)
                 .append("      return cons;" + LS)
+                .append("   }" + LS + LS);
+        sb.append("   private static String simplifyTypeName(String name) {" + LS)
+                .append("      return name.replace(\"class \", \"\").replace(\"interface \", \"\");" + LS)
                 .append("   }" + LS + LS);
         sb.append(String.format(OBJECT_MAP));
         sb.append("   static String squashName(String name) {" + LS)
@@ -2375,7 +2388,6 @@ public class JavabufTranslatorGenerator {
         String className = null;
         try {
             className = javabufToJava(clazz.getName(), originalName, false);
-            System.out.println("FOR_NAME: 3" + className);
             Class<?> originalClazz = Class.forName(className);
             if (Modifier.isAbstract(originalClazz.getModifiers())) {
                 return null;
@@ -2475,7 +2487,6 @@ public class JavabufTranslatorGenerator {
             if (simpleName.contains("_HIDDEN_")) {
                 String classname = originalInnerClassName(simpleName);
                 try {
-                    System.out.println("FOR_NAME: 4" + classname);
                     Class<?> clazz = Class.forName(classname);
                     return "getReturnNonPublicJavaClass(\"" + clazz.getName() + "\").getJavaClass()";
                 } catch (Exception e) {

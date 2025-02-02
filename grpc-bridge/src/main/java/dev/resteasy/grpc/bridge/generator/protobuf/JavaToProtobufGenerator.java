@@ -250,6 +250,10 @@ public class JavaToProtobufGenerator {
     private static Set<String> HTTP_VERBS = new HashSet<String>();
     private static String prefix;
     private static boolean needEmpty = false;
+    private static boolean needList = true;
+    private static boolean needSet = true;
+    private static boolean needArrayList = true;
+    private static boolean needHashSet = true;
 
     private static Set<ResolvedType> pendingTypes = ConcurrentHashMap.newKeySet();
     private static Set<String> entityMessageTypes = new HashSet<String>();
@@ -302,6 +306,34 @@ public class JavaToProtobufGenerator {
             + "message dev_resteasy_grpc_arrays___ArrayHolder___WArray {%n"
             + "   string componentType = 1;%n"
             + "   repeated dev_resteasy_grpc_arrays___ArrayHolder___wrapper wrapper___field = 2;%n"
+            + "}%n%n";
+
+    private static String LIST_DEF = "// List: java.util.List<java.lang.Object>%n"
+            + "message java_util___List {%n"
+            + "  string classname = 1;%n"
+            + "  //java.lang.Object%n"
+            + "  repeated google.protobuf.Any data = 2;%n"
+            + "}%n%n";
+
+    private static String SET_DEF = "// Set: java.util.Set<java.lang.Object>%n"
+            + "message java_util___Set {%n"
+            + "  string classname = 1;%n"
+            + "  //java.lang.Object%n"
+            + "  repeated google.protobuf.Any data = 2;%n"
+            + "}%n%n";
+
+    private static String ARRAYLIST_DEF = "// List: java.util.ArrayList<java.lang.Object>%n"
+            + "message java_util___ArrayList {%n"
+            + "  string classname = 1;%n"
+            + "  //java.lang.Object%n"
+            + "  repeated google.protobuf.Any data = 2;%n"
+            + "}%n%n";
+
+    private static String HASHSET_DEF = "// Set: java.util.HashSet<java.lang.Object>%n"
+            + "message java_util___HashSet {%n"
+            + "  string classname = 1;%n"
+            + "  //java.lang.Object%n"
+            + "  repeated google.protobuf.Any data = 2;%n"
             + "}%n%n";
 
     static {
@@ -396,6 +428,7 @@ public class JavaToProtobufGenerator {
 
         ANNOTATIONS.add("Context");
         ANNOTATIONS.add("CookieParam");
+        ANNOTATIONS.add("FormParam");
         ANNOTATIONS.add("HeaderParam");
         ANNOTATIONS.add("MatrixParam");
         ANNOTATIONS.add("PathParam");
@@ -603,8 +636,28 @@ public class JavaToProtobufGenerator {
             counter = 1;
             sb.append(LS).append(wrapper.replace("$V$", String.valueOf(counter++)));
         }
+        entityMessageTypes.add("java_util___List");
+        returnMessageTypes.add("java_util___List");
+        entityMessageTypes.add("java_util___Set");
+        returnMessageTypes.add("java_util___Set");
+        entityMessageTypes.add("java_util___ArrayList");
+        returnMessageTypes.add("java_util___ArrayList");
+        entityMessageTypes.add("java_util___HashSet");
+        returnMessageTypes.add("java_util___HashSet");
         createGeneralEntityMessageType(sb);
         createGeneralReturnMessageType(sb);
+        if (needList) {
+            sb.append(String.format(LIST_DEF));
+        }
+        if (needSet) {
+            sb.append(String.format(SET_DEF));
+        }
+        if (needArrayList) {
+            sb.append(String.format(ARRAYLIST_DEF));
+        }
+        if (needHashSet) {
+            sb.append(String.format(HASHSET_DEF));
+        }
     }
 
     private static void createGeneralEntityMessageType(StringBuilder sb) {
@@ -931,6 +984,18 @@ public class JavaToProtobufGenerator {
                 String innerClass = isInnerClass(resolvedType.asReferenceType().getTypeDeclaration().get());
                 String javabufName = fqnifyClass(objectified, innerClass);
                 sb.append(LS + "message ").append(javabufName).append(" {" + LS);
+                if ("java_util___List".equals(javabufName)) {
+                    needList = false;
+                }
+                if ("java_util___Set".equals(javabufName)) {
+                    needSet = false;
+                }
+                if ("java_util___ArrayList".equals(javabufName)) {
+                    needArrayList = false;
+                }
+                if ("java_util___HashSet".equals(javabufName)) {
+                    needHashSet = false;
+                }
             }
             // Handle set or list
             if (isList || isSet) {

@@ -314,7 +314,6 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-
         GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.ArrayList<java.lang.Object>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest4(gem);
