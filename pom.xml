@@ -82,7 +82,7 @@
         <version.org.jboss.logging.jboss-logging-tools>2.2.1.Final</version.org.jboss.logging.jboss-logging-tools>
         <version.org.jboss.resteasy>6.2.6.Final</version.org.jboss.resteasy>
 
-        <version.org.wildfly>28.0.0.Final</version.org.wildfly>
+        <version.org.wildfly>30.0.0.Final</version.org.wildfly>
 
         <!-- Test only dependencies -->
         <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>

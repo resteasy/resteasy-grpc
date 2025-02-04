@@ -1,66 +1,164 @@
 syntax = "proto3";
 package dev.resteasy.grpc.arrays;
 import "google/protobuf/any.proto";
+//import "dev/resteasy/grpc/primitives/primitives.proto";
 option java_package = "dev.resteasy.grpc.arrays";
 option java_outer_classname = "Array_proto";
 
-message dev_resteasy_grpc_arrays___BooleanArray {
-   repeated bool bool_field = 1;
+//=====
+message dev_resteasy_grpc_arrays___NONE {
+   bool boolean_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___ByteArray {
-   bytes bytes_field = 1;
+//=====
+message dev_resteasy_grpc_arrays___Boolean___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      bool boolean_field = 2;
+   }
 }
 
-message dev_resteasy_grpc_arrays___ShortArray {
+message dev_resteasy_grpc_arrays___Boolean___Array {
+   repeated bool boolean_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___Boolean___WArray {
+   repeated dev_resteasy_grpc_arrays___Boolean___wrapper wrapper_field = 1;
+}
+
+//=====
+message dev_resteasy_grpc_arrays___Byte___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      bytes byte_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Byte___Array {
+   bytes byte_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___Byte___WArray {
+   repeated dev_resteasy_grpc_arrays___Byte___wrapper wrapper_field = 1;
+}
+
+//=====
+message dev_resteasy_grpc_arrays___Short___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      int32 short_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Short___Array {
    repeated int32 short_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___IntArray {
+message dev_resteasy_grpc_arrays___Short___WArray {
+   repeated dev_resteasy_grpc_arrays___Short___wrapper wrapper_field = 1;
+}
+
+//=====
+message dev_resteasy_grpc_arrays___Integer___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      sfixed32 integer_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Integer___Array {
    repeated sfixed32 int_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___LongArray {
+message dev_resteasy_grpc_arrays___Integer___WArray {
+   repeated dev_resteasy_grpc_arrays___Integer___wrapper wrapper_field = 1;
+}
+
+//=====
+message dev_resteasy_grpc_arrays___Long___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      sfixed64 long_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Long___Array {
    repeated sfixed64 long_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___FloatArray {
+message dev_resteasy_grpc_arrays___Long___WArray {
+   repeated dev_resteasy_grpc_arrays___Long___wrapper wrapper_field = 1;
+}
+
+//=====
+message dev_resteasy_grpc_arrays___Float___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      float float_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Float___Array {
    repeated float float_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___DoubleArray {
+message dev_resteasy_grpc_arrays___Float___WArray {
+   repeated dev_resteasy_grpc_arrays___Float___wrapper wrapper_field = 1;
+}
+
+//=====
+message dev_resteasy_grpc_arrays___Double___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      double double_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Double___Array {
    repeated double double_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___CharArray {
+message dev_resteasy_grpc_arrays___Double___WArray {
+   repeated dev_resteasy_grpc_arrays___Double___wrapper wrapper_field = 1;
+}
+
+//=====
+message dev_resteasy_grpc_arrays___Character___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      string character_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Character___Array {
    repeated string char_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___StringArray {
-   repeated string string_field = 1;
+message dev_resteasy_grpc_arrays___Character___WArray {
+   repeated dev_resteasy_grpc_arrays___Character___wrapper wrapper_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___AnyArray {
-  repeated google.protobuf.Any any_field = 1;
+//=====
+message dev_resteasy_grpc_arrays___String___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      string String_field = 2;
+   }
 }
 
-message dev_resteasy_grpc_arrays___ArrayHolderArray {
-  repeated dev_resteasy_grpc_arrays___ArrayHolder arrayHolder_field = 1;
+message dev_resteasy_grpc_arrays___String___WArray {
+   repeated dev_resteasy_grpc_arrays___String___wrapper wrapper_field = 1;
 }
 
-message dev_resteasy_grpc_arrays___ArrayHolder {
-  string componentClass = 1;
-  oneof messageType {
-     dev_resteasy_grpc_arrays___BooleanArray booleanArray_field = 3;
-     dev_resteasy_grpc_arrays___ByteArray byteArray_field = 4;
-     dev_resteasy_grpc_arrays___ShortArray shortArray_field = 5;
-     dev_resteasy_grpc_arrays___IntArray   intArray_field = 6;
-     dev_resteasy_grpc_arrays___LongArray  longArray_field = 7;
-     dev_resteasy_grpc_arrays___FloatArray floatArray_field = 8;
-     dev_resteasy_grpc_arrays___DoubleArray doubleArray_field = 9;
-     dev_resteasy_grpc_arrays___CharArray   charArray_field = 10;
-     dev_resteasy_grpc_arrays___StringArray stringArray_field = 11;
-     dev_resteasy_grpc_arrays___AnyArray anyArray_field = 12;
-     dev_resteasy_grpc_arrays___ArrayHolderArray arrayHolderArray_field = 13;
-  }
+//=====
+message dev_resteasy_grpc_arrays___Any___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      google.protobuf.Any any_field = 2;
+   }
 }
+
+message dev_resteasy_grpc_arrays___Any___WArray {
+   repeated dev_resteasy_grpc_arrays___Any___wrapper wrapper_field = 1;
+}
+

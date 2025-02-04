@@ -1,0 +1,1 @@
+Dependencies: org.wildfly.extension.grpc,org.wildfly.grpc-dependency,io.grpc,com.google.protobuf

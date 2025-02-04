@@ -292,7 +292,12 @@ public class ServiceGrpcExtender {
                     sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;" + LS);
                     imports.add("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder");
                 } else {
-                    sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
+                    if (actualEntityClass.startsWith("dev.resteasy.grpc.arrays")) {
+                        String simpleName = actualEntityClass.substring(actualEntityClass.lastIndexOf(".") + 1);
+                        sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto." + simpleName + ";" + LS);
+                    } else {
+                        sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
+                    }
                     imports.add(actualEntityClass);
                 }
             }
@@ -308,7 +313,11 @@ public class ServiceGrpcExtender {
                     sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;");
                     imports.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder");
                 } else {
-                    sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
+                    if (actualReturnClass.contains(".")) {
+                        sbHeader.append("import " + actualReturnClass + ";" + LS);
+                    } else {
+                        sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
+                    }
                     imports.add(actualReturnClass);
                 }
             }
@@ -327,6 +336,9 @@ public class ServiceGrpcExtender {
 
     private void rpcBody(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass,
             String method, String syncType, StringBuilder sb, String retn) {
+        if (actualReturnClass.contains(".")) {
+            actualReturnClass = actualReturnClass.substring(actualReturnClass.lastIndexOf(".") + 1);
+        }
         sb.append("      HttpServletRequest request = null;" + LS)
                 .append("      try {" + LS)
                 .append("         HttpServletResponseImpl response = new HttpServletResponseImpl(\"")
@@ -360,6 +372,15 @@ public class ServiceGrpcExtender {
                     .append("         ").append(retn)
                     .append(".Builder grmb = createGeneralReturnMessageBuilder(response);" + LS)
                     .append("         ").append(getSetterMethod(actualReturnClass)).append("(reply);" + LS)
+                    .append("         responseObserver.onNext(grmb.build());" + LS);
+        } else if (isInterface(actualReturnClass)) {
+            sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();" + LS)
+                    .append("         ByteArrayOutputStream baos = msos.getDelegate();" + LS)
+                    .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());" + LS)
+                    .append("         Any reply = Any.parseFrom(bais);" + LS)
+                    .append("         ").append(retn)
+                    .append(".Builder grmb = createGeneralReturnMessageBuilder(response);" + LS)
+                    .append("         ").append("grmb.setAnyField(reply);" + LS)
                     .append("         responseObserver.onNext(grmb.build());" + LS);
         } else if ("completionStage".equals(syncType)) {
             sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();"
@@ -629,7 +650,7 @@ public class ServiceGrpcExtender {
                 .append("            cookieBuilder.clear();" + LS)
                 .append("         }" + LS)
                 .append("      }" + LS)
-                .append("      grmBuilder.setStatus(gInteger.newBuilder().setValue(response.getStatus()).build());" + LS)
+                .append("      grmBuilder.setStatus(response.getStatus());" + LS)
                 .append("      return grmBuilder;" + LS)
                 .append("   }" + LS + LS);
         sb.append("   private static gNewCookie parseNewCookie(gNewCookie.Builder ncb, String s) throws ParseException {" + LS)
@@ -692,10 +713,26 @@ public class ServiceGrpcExtender {
     }
 
     private String getGetterMethod(String actualEntityClass) {
+        if ("com.google.protobuf.Any".equals(actualEntityClass)
+                || "google.protobuf.Any".equals(actualEntityClass)
+                || "Any".equals(actualEntityClass)) {
+            return "getAnyField()";
+        }
         if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
             actualEntityClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
         }
+        if (actualEntityClass.contains(".")) {
+            actualEntityClass = actualEntityClass.substring(actualEntityClass.lastIndexOf(".") + 1);
+        }
         actualEntityClass = actualEntityClass.replaceAll("___", "_");
+        String interfaceTestClass = actualEntityClass.replaceAll("_", ".");
+        try {
+            if (Class.forName(interfaceTestClass).isInterface()) {
+                return "getAnyField()";
+            }
+        } catch (Exception e) {
+            logger.error("No class: " + actualEntityClass);
+        }
         StringBuilder sb = new StringBuilder("get");
         sb.append(actualEntityClass.substring(0, 1).toUpperCase());
         for (int i = 1; i < actualEntityClass.length();) {
@@ -711,16 +748,36 @@ public class ServiceGrpcExtender {
         return sb.toString();
     }
 
+    private boolean isInterface(String classname) {
+        try {
+            String interfaceTestClass = classname.replaceAll("___", "_");
+            interfaceTestClass = interfaceTestClass.replaceAll("_", ".");
+            return Class.forName(interfaceTestClass).isInterface();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private String getSetterMethod(String actualReturnClass) {
         if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
             actualReturnClass = "dev_resteasy_grpc_arrays_dev_resteasy_grpc_arrays___ArrayHolder";
         }
         if ("com.google.protobuf.Any".equals(actualReturnClass) || "Any".equals(actualReturnClass)) {
-            return "grmb.setGoogleProtobufAnyField";
+            return "grmb.setAnyField";
+        }
+        try {
+            String interfaceTestClass = actualReturnClass.replaceAll("___", "_");
+            interfaceTestClass = interfaceTestClass.replaceAll("_", ".");
+            if (Class.forName(interfaceTestClass).isInterface()) {
+                return "grmb.setAnyField";
+            }
+        } catch (Exception e) {
+            logger.error("No class: " + actualReturnClass);
         }
         if (actualReturnClass.contains("___") || actualReturnClass.contains("_INNER_")) {
             return "grmb.set" + camelize(actualReturnClass) + "Field";
         }
+
         return "grmb.set" + actualReturnClass.substring(0, 1).toUpperCase() + actualReturnClass.substring(1) + "Field";
     }
 

@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
@@ -599,7 +600,12 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
-        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getParts()"));
+        List<Part> list = new ArrayList<Part>();
+        for (Entry<String, String[]> entry : formParameters.entrySet()) {
+            Part part = new PartImpl(entry.getKey(), entry.getValue()[0]);
+            list.add(part);
+        }
+        return list;
     }
 
     @Override

@@ -75,5 +75,4 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
         doAsyncTest(asyncStubPlaintext);
         doFutureTest(futureStubPlaintext);
     }
-
 }
