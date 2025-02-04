@@ -10,7 +10,7 @@ public class CC4 {
     }
 
     public boolean equals(Object o) {
-        if (!CC4.class.equals(o.getClass())) {
+        if (o == null || !CC4.class.equals(o.getClass())) {
             return false;
         }
         CC4 cc4 = (CC4) o;

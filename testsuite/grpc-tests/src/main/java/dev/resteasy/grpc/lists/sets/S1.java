@@ -77,7 +77,7 @@ public class S1 implements Set<String> {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof S1)) {
+        if (other == null || !(other instanceof S1)) {
             return false;
         }
         S1 s1 = (S1) other;

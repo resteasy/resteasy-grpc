@@ -93,7 +93,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
         //        ar.as(ZipExporter.class).exportTo(
-        //           new File("/tmp/collections.war"), true);
+        //                new File("/tmp/collections.war"), true);
         return ar;
     }
 
@@ -110,20 +110,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
     /****************************************************************************************/
     /****************************************************************************************/
-    void doBlockingTestx(CC1ServiceBlockingStub stub) throws Exception {
-        this.testInterfaceEntity(stub);
-        this.testLocatorPost(stub);
-        this.testServletParams(stub);
-        this.testSSE(stub);
-        this.testInterfaceReturn(stub);
-        this.testConstructor(stub);
-        this.testCopy(stub);
-        this.testSuspend(stub);
-        this.testParamsSet(stub);
-        this.testBoolean(stub);
-        this.testInnerClass(stub);
-    }
-
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
         this.testBoolean(stub);
         this.testBooleanWithUnnecessaryURL(stub);

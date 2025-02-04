@@ -38,7 +38,7 @@ public class D3 {
     List<HashSet<S3<Long>>> l44 = new ArrayList<HashSet<S3<Long>>>();
 
     public boolean equals(Object o) {
-        if (!D3.class.equals(o.getClass())) {
+        if (o == null || !D3.class.equals(o.getClass())) {
             return false;
         }
         D3 d3 = (D3) o;

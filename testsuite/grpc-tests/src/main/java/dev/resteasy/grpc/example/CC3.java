@@ -12,7 +12,7 @@ public class CC3 {
     }
 
     public boolean equals(Object other) {
-        if (!CC3.class.equals(other.getClass())) {
+        if (other == null || !CC3.class.equals(other.getClass())) {
             return false;
         }
         CC3 cc3 = (CC3) other;

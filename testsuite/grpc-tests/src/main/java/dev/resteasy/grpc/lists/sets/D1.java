@@ -40,7 +40,7 @@ public class D1<T> {
     ArrayList l51 = new ArrayList();
 
     public boolean equals(Object o) {
-        if (!D1.class.equals(o.getClass())) {
+        if (o == null || !D1.class.equals(o.getClass())) {
             return false;
         }
         D1 d1 = (D1) o;

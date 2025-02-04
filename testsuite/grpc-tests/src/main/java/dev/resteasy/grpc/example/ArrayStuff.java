@@ -178,7 +178,7 @@ public class ArrayStuff {
     }
 
     public boolean equals(Object other) {
-        if (!ArrayStuff.class.equals(other.getClass())) {
+        if (other == null || !ArrayStuff.class.equals(other.getClass())) {
             return false;
         }
         ArrayStuff as = (ArrayStuff) other;

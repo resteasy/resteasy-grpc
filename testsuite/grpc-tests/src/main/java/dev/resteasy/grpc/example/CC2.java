@@ -10,7 +10,7 @@ public class CC2 extends CC3 {
     }
 
     public boolean equals(Object other) {
-        if (!CC2.class.equals(other.getClass())) {
+        if (other == null || !CC2.class.equals(other.getClass())) {
             return false;
         }
         CC2 cc2 = (CC2) other;

@@ -65,7 +65,6 @@ public class GrpcListsAndSetsTest {
     private static ManagedChannel channelPlaintext;
     private static CC1ServiceGrpc.CC1ServiceBlockingStub blockingStubPlaintext;
     private static Set<String> entityClasses = new HashSet<String>();
-    private static Map<String, Class<?>> CLASS_MAP = new HashMap<String, Class<?>>();
     private static Map<String, Method> GET_MAP = new HashMap<String, Method>();
     private static Map<String, Method> SET_MAP = new HashMap<String, Method>();
 
@@ -89,7 +88,6 @@ public class GrpcListsAndSetsTest {
     }
 
     static {
-        Class<?> clazz;
         try {
             Class<?> builder = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralEntityMessage$Builder");
             Class<?> response = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralReturnMessage");

@@ -720,46 +720,46 @@ public class CC1 {
     ///////////////////////////////////////////////////////////////////////////////////////
     ////////////////////                  array tests                  ////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
-    @GET
-    @Path("arrays/int/1")
-    public int[] arraysInt1(int[] ints) {
-        for (int i = 0; i < ints.length; i++) {
-            ints[i]++;
-        }
-        return ints;
-    }
-
-    @GET
-    @Path("arrays/float/1")
-    public float[] arraysFloat1(float[] floats) {
-        for (int i = 0; i < floats.length; i++) {
-            floats[i]++;
-        }
-        return floats;
-    }
-
-    @GET
-    @Path("arrays/int/2")
-    public int[][] arraysInt2(int[][] ints) {
-        for (int i = 0; i < ints.length; i++) {
-            for (int j = 0; j < ints[i].length; j++)
-                ints[i][j]++;
-        }
-        return ints;
-    }
-
-    @GET
-    @Path("arrays/int/5")
-    public int[][][][][] arraysInt5(int[][][][][] intsssss) {
-        for (int i = 0; i < intsssss.length; i++) {
-            for (int j = 0; j < intsssss[i].length; j++)
-                for (int k = 0; k < intsssss[i][j].length; k++)
-                    for (int l = 0; l < intsssss[i][j][k].length; l++)
-                        for (int m = 0; m < intsssss[i][j][k][l].length; m++)
-                            intsssss[i][j][k][l][m]++;
-        }
-        return intsssss;
-    }
+    //    @GET
+    //    @Path("arrays/int/1")
+    //    public int[] arraysInt1(int[] ints) {
+    //        for (int i = 0; i < ints.length; i++) {
+    //            ints[i]++;
+    //        }
+    //        return ints;
+    //    }
+    //
+    //    @GET
+    //    @Path("arrays/float/1")
+    //    public float[] arraysFloat1(float[] floats) {
+    //        for (int i = 0; i < floats.length; i++) {
+    //            floats[i]++;
+    //        }
+    //        return floats;
+    //    }
+    //
+    //    @GET
+    //    @Path("arrays/int/2")
+    //    public int[][] arraysInt2(int[][] ints) {
+    //        for (int i = 0; i < ints.length; i++) {
+    //            for (int j = 0; j < ints[i].length; j++)
+    //                ints[i][j]++;
+    //        }
+    //        return ints;
+    //    }
+    //
+    //    @GET
+    //    @Path("arrays/int/5")
+    //    public int[][][][][] arraysInt5(int[][][][][] intsssss) {
+    //        for (int i = 0; i < intsssss.length; i++) {
+    //            for (int j = 0; j < intsssss[i].length; j++)
+    //                for (int k = 0; k < intsssss[i][j].length; k++)
+    //                    for (int l = 0; l < intsssss[i][j][k].length; l++)
+    //                        for (int m = 0; m < intsssss[i][j][k][l].length; m++)
+    //                            intsssss[i][j][k][l][m]++;
+    //        }
+    //        return intsssss;
+    //    }
 
     //    @GET
     //    @Path("arrays/stuff")
@@ -822,5 +822,30 @@ public class CC1 {
     //    public HashMap hashmap(HashMap map) {
     //        return map;
     //    }
+
+    //    @GET
+    //    @Path("grimble/raw")
+    //    public void gr_raw(Grimble g1) {
+    //    }
     //
+    //    @GET
+    //    @Path("grimble/wildcard")
+    //    public void gr_wildcard(Grimble<?> g1) {
+    //    }
+    //
+    //    @GET
+    //    @Path("grimble/variable")
+    //    public <T> void gr_variable(Grimble<T> g1) {
+    //    }
+    //
+    //    @GET
+    //    @Path("grimble/string")
+    //    public void gr_string(Grimble<String> g1) {
+    //    }
+    //
+    //    @GET
+    //    @Path("grimble/integer")
+    //    public void gr_integer(Grimble<Integer> g1) {
+    //    }
+
 }

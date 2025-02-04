@@ -560,6 +560,7 @@ public class JavaToProtobufGenerator {
         sb.append("syntax = \"proto3\";" + LS);
         sb.append("package " + args[1].replace('-', '.') + ";" + LS);
         sb.append("import \"google/protobuf/any.proto\";" + LS);
+        sb.append("import \"google/protobuf/empty.proto\";" + LS);
         sb.append("import \"google/protobuf/timestamp.proto\";" + LS);
         sb.append("import \"dev/resteasy/grpc/arrays/arrays.proto\";" + LS);
         sb.append("option java_package = \"" + args[2] + "\";" + LS);
@@ -983,6 +984,9 @@ public class JavaToProtobufGenerator {
             if (start) {
                 String innerClass = isInnerClass(resolvedType.asReferenceType().getTypeDeclaration().get());
                 String javabufName = fqnifyClass(objectified, innerClass);
+                if (!isList && !isSet) {
+                    sb.append(LS).append("// Type: ").append(objectified.describe());
+                }
                 sb.append(LS + "message ").append(javabufName).append(" {" + LS);
                 if ("java_util___List".equals(javabufName)) {
                     needList = false;
@@ -1278,7 +1282,7 @@ public class JavaToProtobufGenerator {
                     continue;
                 }
                 if (node instanceof VoidType) {
-                    return "google.protobuf.Any"; // ??
+                    return "google.protobuf.Empty";
                 }
                 String rawType = ((Type) node).asString();
                 int open = rawType.indexOf("<");
@@ -1470,7 +1474,7 @@ public class JavaToProtobufGenerator {
         if (classnameMap.containsKey(rt.describe())) {
             return classnameMap.get(rt.describe());
         }
-        String fqn = fqnifyClass(rt.describe(), separator);
+        String fqn = fqnifyClass(objectify(rt.asReferenceType()).describe(), separator);
         classnameMap.put(rt.describe(), fqn);
         return fqn;
     }

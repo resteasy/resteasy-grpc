@@ -39,7 +39,7 @@ public class D2 {
     HashSet s51 = new HashSet();
 
     public boolean equals(Object o) {
-        if (!D2.class.equals(o.getClass())) {
+        if (o == null || !D2.class.equals(o.getClass())) {
             return false;
         }
         D2 d2 = (D2) o;
