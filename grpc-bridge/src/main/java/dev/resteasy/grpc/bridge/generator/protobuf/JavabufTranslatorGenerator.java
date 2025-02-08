@@ -2321,7 +2321,6 @@ public class JavabufTranslatorGenerator {
         // inner class
         i = s.indexOf("_INNER_");
         if (i >= 0) {
-            new Exception("INNER").printStackTrace();
             return s.substring(i + "_INNER_".length());
         }
         i = s.indexOf("_HIDDEN_");

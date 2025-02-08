@@ -731,14 +731,6 @@ public class ServiceGrpcExtender {
             actualEntityClass = actualEntityClass.substring(actualEntityClass.lastIndexOf(".") + 1);
         }
         actualEntityClass = actualEntityClass.replaceAll("___", "_");
-        String interfaceTestClass = actualEntityClass.replaceAll("_", ".");
-        try {
-            if (Class.forName(interfaceTestClass).isInterface()) {
-                return "getAnyField()";
-            }
-        } catch (Exception e) {
-            logger.error("No class: " + actualEntityClass);
-        }
         StringBuilder sb = new StringBuilder("get");
         sb.append(actualEntityClass.substring(0, 1).toUpperCase());
         for (int i = 1; i < actualEntityClass.length();) {
@@ -770,15 +762,6 @@ public class ServiceGrpcExtender {
         }
         if ("com.google.protobuf.Any".equals(actualReturnClass) || "Any".equals(actualReturnClass)) {
             return "grmb.setAnyField";
-        }
-        try {
-            String interfaceTestClass = actualReturnClass.replaceAll("___", "_");
-            interfaceTestClass = interfaceTestClass.replaceAll("_", ".");
-            if (Class.forName(interfaceTestClass).isInterface()) {
-                return "grmb.setAnyField";
-            }
-        } catch (Exception e) {
-            logger.error("No class: " + actualReturnClass);
         }
         if (actualReturnClass.contains("___") || actualReturnClass.contains("_INNER_")) {
             return "grmb.set" + camelize(actualReturnClass) + "Field";
