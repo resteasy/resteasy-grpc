@@ -1456,7 +1456,6 @@ example, that can be accomplished in a web.xml file as follows:
               org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider,
               org.jboss.resteasy.plugins.providers.CompletionStageProvider,
               org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter,
-              org.jboss.resteasy.plugins.providers.jackson.UnrecognizedPropertyExceptionHandler,
               org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder,
               org.jboss.resteasy.plugins.providers.jsonp.JsonpPatchMethodFilter,
               org.jboss.resteasy.plugins.providers.ReactiveStreamProvider,
