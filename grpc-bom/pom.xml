@@ -30,10 +30,6 @@
 
     <artifactId>resteasy-grpc-bom</artifactId>
     <packaging>pom</packaging>
-    
-    <properties>
-		<protoc-gen-grpc-java.version>1.51.1</protoc-gen-grpc-java.version>
-	</properties>
 
     <dependencyManagement>
         <dependencies>
@@ -89,7 +85,7 @@
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>protoc-gen-grpc-java</artifactId>
-                <version>${protoc-gen-grpc-java.version}</version>
+                <version>${version.io.grpc}</version>
                 <type>pom</type>
             </dependency>
 
@@ -141,6 +137,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 
 </project>

@@ -166,7 +166,9 @@ public class GrpcToJakartaRESTTwoWaySslTest extends AbstractGrpcToJakartaRESTTes
 
     @AfterClass
     public static void afterClass() throws InterruptedException {
-        channelSslTwoway.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        if (channelSslTwoway != null) {
+            channelSslTwoway.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
     }
 
     @Test

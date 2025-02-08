@@ -66,7 +66,9 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
 
     @AfterClass
     public static void afterClass() throws InterruptedException {
-        channelPlaintext.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        if (channelPlaintext != null) {
+            channelPlaintext.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
     }
 
     @Test

@@ -182,7 +182,9 @@ public class GrpcListsAndSetsTest {
 
     @AfterClass
     public static void afterClass() throws InterruptedException {
-        channelPlaintext.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        if (channelPlaintext != null) {
+            channelPlaintext.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
     }
 
     static void accessServletContexts() {
