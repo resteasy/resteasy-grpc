@@ -25,12 +25,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.arquillian.setup.SnapshotServerSetupTask;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
-import org.jboss.resteasy.setup.SnapshotServerSetupTask;
-import org.jboss.resteasy.utils.ServerReload;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -51,8 +51,7 @@ import io.grpc.TlsChannelCredentials;
 @ServerSetup(GrpcToJakartaRESTOneWaySslTest.OneWaySslConfiguration.class)
 public class GrpcToJakartaRESTOneWaySslTest extends AbstractGrpcToJakartaRESTTest {
 
-    public static class OneWaySslConfiguration extends SnapshotServerSetupTask {
-        @Override
+    public static class OneWaySslConfiguration extends SnapshotServerSetupTask implements ServerSetupTask {
         protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
             final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
 
@@ -126,7 +125,6 @@ public class GrpcToJakartaRESTOneWaySslTest extends AbstractGrpcToJakartaRESTTes
             if (!Operations.isSuccessfulOutcome(result)) {
                 throw new RuntimeException("Failed to configure SSL context: " + Operations.getFailureDescription(result));
             }
-            ServerReload.reloadIfRequired(client.getControllerClient());
         }
     }
 
@@ -157,7 +155,9 @@ public class GrpcToJakartaRESTOneWaySslTest extends AbstractGrpcToJakartaRESTTes
 
     @AfterClass
     public static void afterClass() throws InterruptedException {
-        channelSslOneway.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        if (channelSslOneway != null) {
+            channelSslOneway.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
     }
 
     @Test

@@ -1,3 +1,21 @@
+/*
+ * JBoss, Home of Professional Open Source.
+ *
+ * Copyright 2025 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dev.resteasy.grpc.bridge.generator.protobuf;
 
 import static dev.resteasy.grpc.bridge.runtime.Constants.ANY;
@@ -560,6 +578,7 @@ public class JavaToProtobufGenerator {
         sb.append("syntax = \"proto3\";" + LS);
         sb.append("package " + args[1].replace('-', '.') + ";" + LS);
         sb.append("import \"google/protobuf/any.proto\";" + LS);
+        sb.append("import \"google/protobuf/empty.proto\";" + LS);
         sb.append("import \"google/protobuf/timestamp.proto\";" + LS);
         sb.append("import \"dev/resteasy/grpc/arrays/arrays.proto\";" + LS);
         sb.append("option java_package = \"" + args[2] + "\";" + LS);
@@ -983,6 +1002,9 @@ public class JavaToProtobufGenerator {
             if (start) {
                 String innerClass = isInnerClass(resolvedType.asReferenceType().getTypeDeclaration().get());
                 String javabufName = fqnifyClass(objectified, innerClass);
+                if (!isList && !isSet) {
+                    sb.append(LS).append("// Type: ").append(objectified.describe());
+                }
                 sb.append(LS + "message ").append(javabufName).append(" {" + LS);
                 if ("java_util___List".equals(javabufName)) {
                     needList = false;
@@ -1278,7 +1300,7 @@ public class JavaToProtobufGenerator {
                     continue;
                 }
                 if (node instanceof VoidType) {
-                    return "google.protobuf.Any"; // ??
+                    return "google.protobuf.Empty";
                 }
                 String rawType = ((Type) node).asString();
                 int open = rawType.indexOf("<");
@@ -1470,7 +1492,7 @@ public class JavaToProtobufGenerator {
         if (classnameMap.containsKey(rt.describe())) {
             return classnameMap.get(rt.describe());
         }
-        String fqn = fqnifyClass(rt.describe(), separator);
+        String fqn = fqnifyClass(objectify(rt.asReferenceType()).describe(), separator);
         classnameMap.put(rt.describe(), fqn);
         return fqn;
     }

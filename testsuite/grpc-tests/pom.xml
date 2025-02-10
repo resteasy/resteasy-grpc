@@ -9,6 +9,10 @@
         <version>1.0.0.Alpha6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+    
+    <artifactId>grpc-tests</artifactId>
+    <name>RESTEasy Main testsuite: gRPC tests</name>
+    
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <maven.compiler.source>11</maven.compiler.source>
@@ -36,8 +40,7 @@
         <root.package>dev.resteasy.grpc.example</root.package>
         <servlet.name>GrpcServlet</servlet.name>
     </properties>
-    <artifactId>grpc-tests</artifactId>
-    <name>RESTEasy Main testsuite: gRPC tests</name>
+
     <profiles>
         <!--
         Name:  download
@@ -86,7 +89,7 @@
                 <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
                 <!--server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version-->
-                <server.test.feature.pack.version>30.0.0.Final</server.test.feature.pack.version>
+                <server.test.feature.pack.version>35.0.0.Final</server.test.feature.pack.version>
             </properties>
         </profile>
         <profile>
@@ -127,17 +130,15 @@
         <dependency>
             <groupId>dev.resteasy.grpc</groupId>
             <artifactId>grpc-bridge</artifactId>
-            <version>1.0.0.Alpha6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>dev.resteasy.grpc</groupId>
             <artifactId>grpc-bridge-runtime</artifactId>
-            <version>1.0.0.Alpha6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
-            <version>6.2.6.Final</version>
+            <version>6.2.11.Final</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -204,6 +205,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-depchain</artifactId>
+            <type>pom</type>
+        </dependency>
     </dependencies>
     <build>
         <extensions>
@@ -233,11 +239,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-              <compilerArgs>
-                  <arg>-J--add-opens java.base/jdk.internal.misc=ALL-UNNAMED -J--add-opens java.base/java.util=ALL-UNNAMED</arg>
-              </compilerArgs>
-          </configuration>
         </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -259,11 +260,7 @@
                         <server.config.dir>${jboss.home}/standalone/configuration</server.config.dir>
                         <builddir>${project.build.directory}</builddir>
                     </systemPropertyVariables>
-                    <!--argLine>
-                       -add-opens java.base/java.lang=ALL-UNNAMED
-                       -add-opens java.base/java.util=ALL-UNNAMED
-                    </argLine-->
-                    <argLine>--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
+                    <argLine>--add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -373,7 +370,7 @@
                             <mainClass>dev.resteasy.grpc.bridge.generator.protobuf.JavaToProtobufGenerator</mainClass>
                             <cleanupDaemonThreads>false</cleanupDaemonThreads>
                             <!--additionalClasspathElements>${project.build.directory}/classes</additionalClasspathElements-->
-                            <commandlineArgs>${project.basedir} dev.resteasy.grpc.example dev.resteasy.grpc.example ${root.class} -D"--add-opens java.base/java.util=ALL-UNNAMED"</commandlineArgs>
+                            <commandlineArgs>${project.basedir} dev.resteasy.grpc.example dev.resteasy.grpc.example ${root.class} -D&quot;--add-opens java.base/java.util=ALL-UNNAMED&quot;</commandlineArgs>
                             <systemProperties>
                                 <systemProperty>
                                     <key>exec.cleanupDaemonThreads</key>
@@ -470,9 +467,9 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>
                 <configuration>
-                    <protocArtifact>com.google.protobuf:protoc:3.21.7:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${version.com.google.protobuf}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.54.1:exe:${os.detected.classifier}</pluginArtifact>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${version.io.grpc}:exe:${os.detected.classifier}</pluginArtifact>
                     <protoSourceRoot>src/main/proto</protoSourceRoot>
                     <clearOutputDirectory>true</clearOutputDirectory>
                     <!--includes>${project.basedir}/src/main/proto/**/*</includes-->

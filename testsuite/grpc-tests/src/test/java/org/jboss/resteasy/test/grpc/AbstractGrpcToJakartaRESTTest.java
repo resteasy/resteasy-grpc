@@ -1,3 +1,21 @@
+/*
+ * JBoss, Home of Professional Open Source.
+ *
+ * Copyright 2025 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jboss.resteasy.test.grpc;
 
 import java.io.ByteArrayInputStream;
@@ -93,7 +111,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
         //        ar.as(ZipExporter.class).exportTo(
-        //           new File("/tmp/collections.war"), true);
+        //                new File("/tmp/collections.war"), true);
         return ar;
     }
 
@@ -110,20 +128,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
     /****************************************************************************************/
     /****************************************************************************************/
-    void doBlockingTestx(CC1ServiceBlockingStub stub) throws Exception {
-        this.testInterfaceEntity(stub);
-        this.testLocatorPost(stub);
-        this.testServletParams(stub);
-        this.testSSE(stub);
-        this.testInterfaceReturn(stub);
-        this.testConstructor(stub);
-        this.testCopy(stub);
-        this.testSuspend(stub);
-        this.testParamsSet(stub);
-        this.testBoolean(stub);
-        this.testInnerClass(stub);
-    }
-
     void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
         this.testBoolean(stub);
         this.testBooleanWithUnnecessaryURL(stub);

@@ -286,6 +286,7 @@ public class ServiceGrpcExtender {
                     && !"google.protobuf.Any".equals(actualEntityClass)
                     && !"gInteger".equals(actualEntityClass)
                     && !"gEmpty".equals(actualEntityClass)
+                    && "google.protobuf.Empty".equals(actualEntityClass)
                     && !ANY.equals(actualEntityClass)
                     && !PROTOBUF_PRIMITIVES.contains(actualEntityClass)) {
                 if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualEntityClass)) {
@@ -307,6 +308,7 @@ public class ServiceGrpcExtender {
                     && !"google.protobuf.Any".equals(actualReturnClass)
                     && !"gInteger".equals(actualReturnClass)
                     && !"gEmpty".equals(actualReturnClass)
+                    && !"google.protobuf.Empty".equals(actualReturnClass)
                     && !ANY.equals(actualReturnClass)
                     && !PROTOBUF_PRIMITIVES.contains(actualReturnClass)) {
                 if ("dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder".equals(actualReturnClass)) {
@@ -422,13 +424,17 @@ public class ServiceGrpcExtender {
         } else {
             sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();" + LS)
                     .append("         ByteArrayOutputStream baos = msos.getDelegate();" + LS)
-                    .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());" + LS)
-                    .append("         ").append(actualReturnClass).append(" reply = ").append(actualReturnClass)
-                    .append(".parseFrom(bais);" + LS)
-                    .append("         ").append(retn)
-                    .append(".Builder grmb = createGeneralReturnMessageBuilder(response);" + LS)
-                    .append("         ").append(getSetterMethod(actualReturnClass)).append("(reply);" + LS)
-                    .append("         responseObserver.onNext(grmb.build());" + LS);
+                    .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());" + LS);
+            if (!"Empty".equals(actualReturnClass)) {
+                sb.append("         ").append(actualReturnClass).append(" reply = ").append(actualReturnClass)
+                        .append(".parseFrom(bais);" + LS);
+            }
+            sb.append("         ").append(retn)
+                    .append(".Builder grmb = createGeneralReturnMessageBuilder(response);" + LS);
+            if (!"Empty".equals(actualReturnClass)) {
+                sb.append("         ").append(getSetterMethod(actualReturnClass)).append("(reply);" + LS);
+            }
+            sb.append("         responseObserver.onNext(grmb.build());" + LS);
         }
         sb.append("      } catch (Exception e) {" + LS)
                 .append("         responseObserver.onError(e);" + LS)
@@ -725,14 +731,6 @@ public class ServiceGrpcExtender {
             actualEntityClass = actualEntityClass.substring(actualEntityClass.lastIndexOf(".") + 1);
         }
         actualEntityClass = actualEntityClass.replaceAll("___", "_");
-        String interfaceTestClass = actualEntityClass.replaceAll("_", ".");
-        try {
-            if (Class.forName(interfaceTestClass).isInterface()) {
-                return "getAnyField()";
-            }
-        } catch (Exception e) {
-            logger.error("No class: " + actualEntityClass);
-        }
         StringBuilder sb = new StringBuilder("get");
         sb.append(actualEntityClass.substring(0, 1).toUpperCase());
         for (int i = 1; i < actualEntityClass.length();) {
@@ -764,15 +762,6 @@ public class ServiceGrpcExtender {
         }
         if ("com.google.protobuf.Any".equals(actualReturnClass) || "Any".equals(actualReturnClass)) {
             return "grmb.setAnyField";
-        }
-        try {
-            String interfaceTestClass = actualReturnClass.replaceAll("___", "_");
-            interfaceTestClass = interfaceTestClass.replaceAll("_", ".");
-            if (Class.forName(interfaceTestClass).isInterface()) {
-                return "grmb.setAnyField";
-            }
-        } catch (Exception e) {
-            logger.error("No class: " + actualReturnClass);
         }
         if (actualReturnClass.contains("___") || actualReturnClass.contains("_INNER_")) {
             return "grmb.set" + camelize(actualReturnClass) + "Field";

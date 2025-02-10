@@ -72,15 +72,14 @@
         <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
 
         <version.com.github.javaparser>3.18.0</version.com.github.javaparser>
-        <version.com.google.protobuf>3.22.3</version.com.google.protobuf>
-        
-        <protoc-gen-grpc-java.version>1.51.1</protoc-gen-grpc-java.version>
+        <version.com.google.protobuf>3.21.7</version.com.google.protobuf>
+        <version.io.grpc>1.70.0</version.io.grpc>
 
         <version.io.undertow>2.3.10.Final</version.io.undertow>
 
         <version.org.jboss.logging.jboss-logging>3.5.3.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-tools>2.2.1.Final</version.org.jboss.logging.jboss-logging-tools>
-        <version.org.jboss.resteasy>6.2.6.Final</version.org.jboss.resteasy>
+        <version.org.jboss.resteasy>6.2.11.Final</version.org.jboss.resteasy>
 
         <version.org.wildfly>30.0.0.Final</version.org.wildfly>
 
