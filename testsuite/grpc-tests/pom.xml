@@ -15,8 +15,6 @@
     
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
         <!-- Provisioning properties -->
         <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
