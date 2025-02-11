@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
@@ -32,10 +32,10 @@ import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
 import io.grpc.ChannelCredentials;
@@ -46,7 +46,7 @@ import io.grpc.TlsChannelCredentials;
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(GrpcToJakartaRESTTwoWaySslTest.TwoWaySslConfiguration.class)
 public class GrpcToJakartaRESTTwoWaySslTest extends AbstractGrpcToJakartaRESTTest {
@@ -147,7 +147,7 @@ public class GrpcToJakartaRESTTwoWaySslTest extends AbstractGrpcToJakartaRESTTes
         return doDeploy(GrpcToJakartaRESTTwoWaySslTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         accessServletContexts();
         ChannelCredentials creds = TlsChannelCredentials.newBuilder()
@@ -163,7 +163,7 @@ public class GrpcToJakartaRESTTwoWaySslTest extends AbstractGrpcToJakartaRESTTes
         futureStubSslTwoway = CC1ServiceGrpc.newFutureStub(channelSslTwoway);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws InterruptedException {
         if (channelSslTwoway != null) {
             channelSslTwoway.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);

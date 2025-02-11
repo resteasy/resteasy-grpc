@@ -35,6 +35,7 @@
         <version.org.jboss.arquillian>1.9.3.Final</version.org.jboss.arquillian>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
         <version.org.jboss.shrinkwrap.resolver>3.3.3</version.org.jboss.shrinkwrap.resolver>
+        <version.org.junit>5.11.4</version.org.junit>
         <version.org.wildfly.arquillian>5.1.0.Beta9</version.org.wildfly.arquillian>
     </properties>
 
@@ -70,6 +71,13 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${version.org.junit}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-bom</artifactId>
                 <version>${version.org.wildfly.arquillian}</version>
@@ -96,14 +104,6 @@
                 <artifactId>protoc-gen-grpc-java</artifactId>
                 <version>${version.io.grpc}</version>
                 <type>pom</type>
-            </dependency>
-
-            <!-- TODO (jrp) migrate to JUnit 5 -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.2</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

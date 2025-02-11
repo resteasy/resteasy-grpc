@@ -23,12 +23,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
 import io.grpc.ManagedChannel;
@@ -37,7 +37,7 @@ import io.grpc.ManagedChannelBuilder;
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
 
@@ -54,7 +54,7 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
 
     private static CC1ServiceGrpc.CC1ServiceFutureStub futureStubPlaintext;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         accessServletContexts();
         channelPlaintext = ManagedChannelBuilder.forTarget("localhost:9555").usePlaintext().build();
@@ -64,7 +64,7 @@ public class GrpcToJakartaRESTTest extends AbstractGrpcToJakartaRESTTest {
         futureStubPlaintext = CC1ServiceGrpc.newFutureStub(channelPlaintext);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws InterruptedException {
         if (channelPlaintext != null) {
             channelPlaintext.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
