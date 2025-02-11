@@ -18,11 +18,14 @@
  */
 package dev.resteasy.grpc.bridge.generator.i18n;
 
+import java.lang.invoke.MethodHandles;
+
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.MessageLogger;
 
-@MessageLogger(projectCode = "RESTEASY")
+@MessageLogger(projectCode = "RESTEASY-GRPC")
 public interface LogMessages extends BasicLogger {
-    LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackage().getName());
+    LogMessages LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
+            LogMessages.class.getPackage().getName());
 }

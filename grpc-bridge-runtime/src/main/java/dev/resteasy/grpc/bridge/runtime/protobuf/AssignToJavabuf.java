@@ -19,12 +19,12 @@
 
 package dev.resteasy.grpc.bridge.runtime.protobuf;
 
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.GeneratedMessage;
 
 /**
  * A method for translating a Java class to its corresponding javabuf form
  */
 public interface AssignToJavabuf {
 
-    void assign(Object from, GeneratedMessageV3.Builder builder);
+    void assign(Object from, GeneratedMessage.Builder<?> builder);
 }

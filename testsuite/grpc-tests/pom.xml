@@ -15,25 +15,17 @@
     
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
         <!-- Provisioning properties -->
         <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
 
-        <!-- RESTEasy properties -->
-        <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-        <resteasy.test.feature.pack.artifactId>galleon-feature-pack</resteasy.test.feature.pack.artifactId>
-        <resteasy.test.feature.pack.version>${version.org.jboss.resteasy}</resteasy.test.feature.pack.version>
-
         <!-- Server properties -->
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
-        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+        <server.test.feature.pack.artifactId>wildfly-galleon-pack</server.test.feature.pack.artifactId>
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
         <!-- For grpc-bridge test -->
         <wildfly.grpc.test.feature.pack.groupId>org.wildfly.extras.grpc</wildfly.grpc.test.feature.pack.groupId>
         <wildfly.grpc.test.feature.pack.artifactId>wildfly-grpc-feature-pack</wildfly.grpc.test.feature.pack.artifactId>
-        <wildfly.grpc.test.feature.pack.version>0.1.3.Final</wildfly.grpc.test.feature.pack.version>
+        <wildfly.grpc.test.feature.pack.version>0.1.11.Final</wildfly.grpc.test.feature.pack.version>
 
         <!-- For compiling the test project -->
         <root.class>CC1</root.class>
@@ -61,7 +53,6 @@
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
-                        <version>5.1.1.Final</version>
                         <executions>
                             <execution>
                                 <id>server-provisioning</id>
@@ -83,13 +74,7 @@
                 </property>
             </activation>
             <properties>
-                <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-                <resteasy.test.feature.pack.artifactId>galleon-preview-feature-pack</resteasy.test.feature.pack.artifactId>
-                <resteasy.test.feature.pack.version>${version.org.jboss.resteasy}</resteasy.test.feature.pack.version>
-                <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
-                <!--server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version-->
-                <server.test.feature.pack.version>35.0.0.Final</server.test.feature.pack.version>
             </properties>
         </profile>
         <profile>
@@ -138,7 +123,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
-            <version>6.2.11.Final</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -162,11 +146,6 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>arquillian-utils</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -266,7 +245,6 @@
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <version>5.1.1.Final</version>
                 <configuration>
                     <jboss-home>${jboss.home}</jboss-home>
                     <provisioning-dir>${jboss.home}</provisioning-dir>
@@ -275,12 +253,6 @@
                             <groupId>${server.test.feature.pack.groupId}</groupId>
                             <artifactId>${server.test.feature.pack.artifactId}</artifactId>
                             <version>${server.test.feature.pack.version}</version>
-                        </feature-pack>
-                        <feature-pack>
-                            <groupId>${resteasy.test.feature.pack.groupId}</groupId>
-                            <artifactId>${resteasy.test.feature.pack.artifactId}</artifactId>
-                            <version>${resteasy.test.feature.pack.version}</version>
-                            <inherit-configs>false</inherit-configs>
                         </feature-pack>
                         <feature-pack>
                             <groupId>${wildfly.grpc.test.feature.pack.groupId}</groupId>
@@ -294,6 +266,10 @@
                         <layer>grpc</layer>
                         <layer>undertow</layer>
                     </layers>
+                    <galleon-options>
+                        <jboss-fork-embedded>true</jboss-fork-embedded>
+                        <stability-level>preview</stability-level>
+                    </galleon-options>
                 </configuration>
             </plugin>
 
@@ -484,19 +460,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>  
-            <!--plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin-->
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -43,7 +43,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.GeneratedMessage;
 
 import dev.resteasy.grpc.bridge.runtime.i18n.Messages;
 
@@ -66,7 +66,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private static final String RFC1123_PATTERN = "EEE, dd MMM yyyy HH:mm:ss z";
     private static final SimpleDateFormat SDF = new SimpleDateFormat(RFC1123_PATTERN, Locale.US);
 
-    private GeneratedMessageV3.Builder<?> builder;
+    private GeneratedMessage.Builder<?> builder;
     private FieldDescriptor fd;
     private MockServletOutputStream msos;
     private MultivaluedMap<String, String> headers = new MultivaluedHashMap<String, String>();
@@ -80,7 +80,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private ResponseState responseState = ResponseState.NONE;
 
     public HttpServletResponseImpl(final String retn, final String async, final ServletContext servletContext,
-            final GeneratedMessageV3.Builder<?> builder, final FieldDescriptor fd) {
+            final GeneratedMessage.Builder<?> builder, final FieldDescriptor fd) {
         if ("com.google.protobuf.Any".equals(retn) || "Any".equals(retn)) {
             List<String> list = new ArrayList<String>();
             list.add("true");

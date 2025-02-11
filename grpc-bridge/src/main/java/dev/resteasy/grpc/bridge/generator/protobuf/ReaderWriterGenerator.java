@@ -307,7 +307,7 @@ public class ReaderWriterGenerator {
                 .append("import jakarta.ws.rs.ext.MessageBodyReader;" + LS)
                 .append("import jakarta.ws.rs.ext.MessageBodyWriter;" + LS)
                 .append("import jakarta.ws.rs.ext.Provider;" + LS)
-                .append("import com.google.protobuf.GeneratedMessageV3;" + LS)
+                .append("import com.google.protobuf.GeneratedMessage;" + LS)
                 .append("import com.google.protobuf.Any;" + LS)
                 .append("import com.google.protobuf.Message;" + LS)
                 .append("import com.google.protobuf.CodedInputStream;" + LS)
@@ -409,11 +409,11 @@ public class ReaderWriterGenerator {
                 .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\");"
                         + LS)
                 .append("         if (ENTITY_MAP.containsKey(gt)) {" + LS)
-                .append("            GeneratedMessageV3 message = (GeneratedMessageV3) ENTITY_MAP.get(gt).invoke(null, entityStream);"
+                .append("            GeneratedMessage message = (GeneratedMessage) ENTITY_MAP.get(gt).invoke(null, entityStream);"
                         + LS)
                 .append("            return translator.translateFromJavabuf(message);" + LS)
                 .append("         } else {" + LS)
-                .append("            GeneratedMessageV3 message = (GeneratedMessageV3) ENTITY_MAP.get(type.getName()).invoke(null, entityStream);"
+                .append("            GeneratedMessage message = (GeneratedMessage) ENTITY_MAP.get(type.getName()).invoke(null, entityStream);"
                         + LS)
                 .append("            return translator.translateFromJavabuf(message);" + LS)
                 .append("         }" + LS)

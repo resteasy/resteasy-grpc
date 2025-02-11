@@ -157,7 +157,7 @@ public class ServiceGrpcExtender {
     private void imports(Scanner scanner, StringBuilder sb, String fileName) {
         sb
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
-                .append("import com.google.protobuf.GeneratedMessageV3;" + LS)
+                .append("import com.google.protobuf.GeneratedMessage;" + LS)
                 .append("import com.google.protobuf.Timestamp;" + LS)
                 .append("import io.grpc.stub.StreamObserver;" + LS)
                 .append("import java.io.ByteArrayInputStream;" + LS)
@@ -350,7 +350,7 @@ public class ServiceGrpcExtender {
                 .append("\", ")
                 .append(root)
                 .append("_Server.getServletContext(), builder, fd);" + LS)
-                .append("         GeneratedMessageV3 actualParam = param.")
+                .append("         GeneratedMessage actualParam = param.")
                 .append(getGetterMethod(actualEntityClass))
                 .append(";" + LS)
                 .append("         request = getHttpServletRequest(param, actualParam, \"")
@@ -506,7 +506,7 @@ public class ServiceGrpcExtender {
                 .append(".")
                 .append(root)
                 .append(
-                        "_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, String path, HttpServletResponse response, String verb, String type) throws Exception {"
+                        "_proto.GeneralEntityMessage param, GeneratedMessage actualParam, String path, HttpServletResponse response, String verb, String type) throws Exception {"
                                 + LS)
                 .append("      String url = \"\".equals(param.getURL()) ? \"http://localhost:8080\" + path : param.getURL();"
                         + LS)
