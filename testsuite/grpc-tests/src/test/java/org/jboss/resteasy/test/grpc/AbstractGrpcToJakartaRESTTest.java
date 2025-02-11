@@ -37,7 +37,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
@@ -122,7 +122,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                         .request()
                         .get()) {
             final var message = response.getStatus() + ": " + response.readEntity(String.class);
-            Assert.assertEquals(message, 204, response.getStatus());
+            Assertions.assertEquals(204, response.getStatus(), message);
         }
     }
 
@@ -217,11 +217,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.getBoolean(gem);
             dev.resteasy.grpc.example.CC1_proto.gBoolean expected = dev.resteasy.grpc.example.CC1_proto.gBoolean.newBuilder()
                     .setValue(true).build();
-            Assert.assertEquals(expected, response.getGBooleanField());
+            Assertions.assertEquals(expected, response.getGBooleanField());
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -238,11 +238,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.getBoolean(gem);
             dev.resteasy.grpc.example.CC1_proto.gBoolean expected = dev.resteasy.grpc.example.CC1_proto.gBoolean.newBuilder()
                     .setValue(true).build();
-            Assert.assertEquals(expected, response.getGBooleanField());
+            Assertions.assertEquals(expected, response.getGBooleanField());
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -259,11 +259,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.getBooleanWrapper(gem);
             dev.resteasy.grpc.example.CC1_proto.gBoolean expected = dev.resteasy.grpc.example.CC1_proto.gBoolean.newBuilder()
                     .setValue(true).build();
-            Assert.assertEquals(expected, response.getGBooleanField());
+            Assertions.assertEquals(expected, response.getGBooleanField());
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -280,12 +280,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gByte expected = dev.resteasy.grpc.example.CC1_proto.gByte.newBuilder()
                     .setValue(4)
                     .build();
-            Assert.assertEquals(expected, response.getGByteField());
+            Assertions.assertEquals(expected, response.getGByteField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -302,12 +302,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gByte expected = dev.resteasy.grpc.example.CC1_proto.gByte.newBuilder()
                     .setValue(8)
                     .build();
-            Assert.assertEquals(expected, response.getGByteField());
+            Assertions.assertEquals(expected, response.getGByteField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -325,12 +325,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gShort expected = dev.resteasy.grpc.example.CC1_proto.gShort.newBuilder()
                     .setValue(4)
                     .build();
-            Assert.assertEquals(expected, response.getGShortField());
+            Assertions.assertEquals(expected, response.getGShortField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -348,12 +348,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gShort expected = dev.resteasy.grpc.example.CC1_proto.gShort.newBuilder()
                     .setValue(8)
                     .build();
-            Assert.assertEquals(expected, response.getGShortField());
+            Assertions.assertEquals(expected, response.getGShortField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -371,12 +371,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gInteger expected = dev.resteasy.grpc.example.CC1_proto.gInteger.newBuilder()
                     .setValue(4)
                     .build();
-            Assert.assertEquals(expected, response.getGIntegerField());
+            Assertions.assertEquals(expected, response.getGIntegerField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -394,12 +394,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gInteger expected = dev.resteasy.grpc.example.CC1_proto.gInteger.newBuilder()
                     .setValue(4)
                     .build();
-            Assert.assertEquals(expected, response.getGIntegerField());
+            Assertions.assertEquals(expected, response.getGIntegerField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -417,12 +417,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gLong expected = dev.resteasy.grpc.example.CC1_proto.gLong.newBuilder()
                     .setValue(4L)
                     .build();
-            Assert.assertEquals(expected, response.getGLongField());
+            Assertions.assertEquals(expected, response.getGLongField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -440,12 +440,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gLong expected = dev.resteasy.grpc.example.CC1_proto.gLong.newBuilder()
                     .setValue(4L)
                     .build();
-            Assert.assertEquals(expected, response.getGLongField());
+            Assertions.assertEquals(expected, response.getGLongField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -463,12 +463,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gFloat expected = dev.resteasy.grpc.example.CC1_proto.gFloat.newBuilder()
                     .setValue(4.0f)
                     .build();
-            Assert.assertEquals(expected, response.getGFloatField());
+            Assertions.assertEquals(expected, response.getGFloatField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -486,12 +486,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gFloat expected = dev.resteasy.grpc.example.CC1_proto.gFloat.newBuilder()
                     .setValue(4.0f)
                     .build();
-            Assert.assertEquals(expected, response.getGFloatField());
+            Assertions.assertEquals(expected, response.getGFloatField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -509,12 +509,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gDouble expected = dev.resteasy.grpc.example.CC1_proto.gDouble.newBuilder()
                     .setValue(4.0d)
                     .build();
-            Assert.assertEquals(expected, response.getGDoubleField());
+            Assertions.assertEquals(expected, response.getGDoubleField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -532,12 +532,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gDouble expected = dev.resteasy.grpc.example.CC1_proto.gDouble.newBuilder()
                     .setValue(4.0d)
                     .build();
-            Assert.assertEquals(expected, response.getGDoubleField());
+            Assertions.assertEquals(expected, response.getGDoubleField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -555,12 +555,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gCharacter expected = dev.resteasy.grpc.example.CC1_proto.gCharacter
                     .newBuilder()
                     .setValue("A").build();
-            Assert.assertEquals(expected, response.getGCharacterField());
+            Assertions.assertEquals(expected, response.getGCharacterField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -580,12 +580,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             dev.resteasy.grpc.example.CC1_proto.gCharacter expected = dev.resteasy.grpc.example.CC1_proto.gCharacter
                     .newBuilder()
                     .setValue("A").build();
-            Assert.assertEquals(expected, response.getGCharacterField());
+            Assertions.assertEquals(expected, response.getGCharacterField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -602,12 +602,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.getString(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("ABC").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -631,12 +631,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
                     .setC("7")
                     .setCc3(cc3)
                     .build();
-            Assert.assertEquals(expected, response.getDevResteasyGrpcExampleCC9Field());
+            Assertions.assertEquals(expected, response.getDevResteasyGrpcExampleCC9Field());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -650,12 +650,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.produces(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("produces").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -669,12 +669,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.produces(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("consumes").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -688,12 +688,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.pathParams(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("xaaybbz").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -707,12 +707,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.queryParams(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("xaybz").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -726,12 +726,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.matrixParams(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("waxbycz").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -752,12 +752,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.cookieParams(gem);
-            Assert.assertEquals("xc1=v1;d1,a/b,0yc2=v2;,,0z", response.getGStringField().getValue());
+            Assertions.assertEquals("xc1=v1;d1,a/b,0yc2=v2;,,0z", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -776,12 +776,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.headerParams(gem);
-            Assert.assertEquals("xv1.1yv2z", response.getGStringField().getValue());
+            Assertions.assertEquals("xv1.1yv2z", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -795,12 +795,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.paramsList(gem);
             gString expected = gString.newBuilder().setValue("hv1hv2mv1mv2pv1pv2qv1qv2").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -814,12 +814,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.paramsSet(gem);
             gString expected = gString.newBuilder().setValue("hv1hv2mv1mv2pv1pv2qv1qv2").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -835,12 +835,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.paramsSortedSet(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("hv1hv2mv1mv2pv1pv2qv1qv2").build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -855,12 +855,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
                     .setS("cc7")
                     .build();
             Any any = response.getAnyField();
-            Assert.assertEquals(cc7, any.unpack(dev_resteasy_grpc_example___CC7.class));
+            Assertions.assertEquals(cc7, any.unpack(dev_resteasy_grpc_example___CC7.class));
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -875,12 +875,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Any any = response.getAnyField();
             gString gS = any.unpack(gString.class);
             String s = gS.getValue();
-            Assert.assertEquals("suspend", s);
+            Assertions.assertEquals("suspend", s);
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -892,12 +892,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralEntityMessage gem = messageBuilder.build();
         try {
             GeneralReturnMessage response = stub.getResponseCompletionStage(gem);
-            Assert.assertEquals("cs", response.getGStringField().getValue());
+            Assertions.assertEquals("cs", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -908,12 +908,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.contextPath(gem);
-            Assert.assertEquals("/grpc-test", response.getGStringField().getValue());
+            Assertions.assertEquals("/grpc-test", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -925,12 +925,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.servletContext(gem);
-            Assert.assertEquals("/grpcToJakartaRest", response.getGStringField().getValue());
+            Assertions.assertEquals("/grpcToJakartaRest", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -942,12 +942,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.servletConfig(gem);
-            Assert.assertEquals("GrpcServlet", response.getGStringField().getValue());
+            Assertions.assertEquals("GrpcServlet", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -960,7 +960,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.sse(gem);
         } catch (StatusRuntimeException e) {
-            Assert.fail("fail");
+            Assertions.fail("fail");
             return;
         }
         ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> list = new ArrayList<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent>();
@@ -968,20 +968,20 @@ abstract class AbstractGrpcToJakartaRESTTest {
             CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = response.next();
             list.add(sseEvent);
         }
-        Assert.assertEquals(4, list.size());
+        Assertions.assertEquals(4, list.size());
         for (int k = 0; k < 3; k++) {
             CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(k);
-            Assert.assertEquals("name" + (k + 1), sseEvent.getName());
+            Assertions.assertEquals("name" + (k + 1), sseEvent.getName());
             Any any = sseEvent.getData();
             gString gString = any.unpack(gString.class);
-            Assert.assertEquals("event" + (k + 1), gString.getValue());
+            Assertions.assertEquals("event" + (k + 1), gString.getValue());
         }
         CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = list.get(3);
-        Assert.assertEquals("name4", sseEvent.getName());
+        Assertions.assertEquals("name4", sseEvent.getName());
         Any any = sseEvent.getData();
         dev_resteasy_grpc_example___CC5 cc5 = (dev_resteasy_grpc_example___CC5) any
                 .unpack(dev_resteasy_grpc_example___CC5.class);
-        Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
+        Assertions.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
     }
 
     void testInheritance(CC1ServiceBlockingStub stub) throws Exception {
@@ -996,12 +996,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.inheritance(gem);
             cc2 = dev_resteasy_grpc_example___CC2.newBuilder().setJ(18).setS("xthagy").build();
-            Assert.assertEquals(cc2, response.getDevResteasyGrpcExampleCC2Field());
+            Assertions.assertEquals(cc2, response.getDevResteasyGrpcExampleCC2Field());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1020,12 +1020,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.referenceField(gem);
             cc5 = dev_resteasy_grpc_example___CC5.newBuilder().setK(12).build();
             cc4 = dev_resteasy_grpc_example___CC4.newBuilder().setS("xgrogy").setCc5(cc5).build();
-            Assert.assertEquals(cc4, response.getDevResteasyGrpcExampleCC4Field());
+            Assertions.assertEquals(cc4, response.getDevResteasyGrpcExampleCC4Field());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1043,12 +1043,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .setGStringField(gstring).build();
         try {
             GeneralReturnMessage response = stub.testServletInfo(gem);
-            Assert.assertEquals("UTF-16|1.2.3.5|BLUEMONKEY|7778", response.getGStringField().getValue());
+            Assertions.assertEquals("UTF-16|1.2.3.5|BLUEMONKEY|7778", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1063,7 +1063,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.serverCookies(gem);
             List<gNewCookie> list = response.getCookiesList();
-            Assert.assertEquals(2, list.size());
+            Assertions.assertEquals(2, list.size());
             gNewCookie c1 = gNewCookie.newBuilder()
                     .setDomain("d1")
                     .setMaxAge(-1)
@@ -1081,18 +1081,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
                     .setSecure(true)
                     .build();
             if ("n1".equals(list.get(0).getName())) {
-                Assert.assertEquals(c1, list.get(0));
-                Assert.assertEquals(c2, list.get(1));
+                Assertions.assertEquals(c1, list.get(0));
+                Assertions.assertEquals(c2, list.get(1));
             } else {
-                Assert.assertEquals(c1, list.get(1));
-                Assert.assertEquals(c2, list.get(0));
+                Assertions.assertEquals(c1, list.get(1));
+                Assertions.assertEquals(c2, list.get(0));
             }
-            Assert.assertEquals("cookies", response.getGStringField().getValue());
+            Assertions.assertEquals("cookies", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1105,15 +1105,15 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.serverHeaders(gem);
             Map<String, CC1_proto.gHeader> headers = response.getHeadersMap();
             gHeader gh1 = gHeader.newBuilder().addValues("v1a").addValues("v1b").build();
-            Assert.assertEquals(gh1, headers.get("h1"));
+            Assertions.assertEquals(gh1, headers.get("h1"));
             gHeader gh2 = gHeader.newBuilder().addValues("v2").build();
-            Assert.assertEquals(gh2, headers.get("h2"));
-            Assert.assertEquals("headers", response.getGStringField().getValue());
+            Assertions.assertEquals(gh2, headers.get("h2"));
+            Assertions.assertEquals("headers", response.getGStringField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1134,18 +1134,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
                 // servlet path
                 int j = result.indexOf('|', i + 1);
-                Assert.assertEquals("", result.substring(i + 1, j));
+                Assertions.assertEquals("", result.substring(i + 1, j));
 
                 // path
                 i = j + 1;
                 j = result.indexOf('|', i);
-                Assert.assertEquals(result.substring(i, j), "/p/servletPath");
+                Assertions.assertEquals("/p/servletPath", result.substring(i, j));
 
                 // HttpServletRequest.getPathTranslated()
-                Assert.assertTrue(result.substring(j + 1)
+                Assertions.assertTrue(result.substring(j + 1)
                         .contains(File.separator + "p" + File.separator + "servletPath"));
             } catch (StatusRuntimeException e) {
-                Assert.fail("fail");
+                Assertions.fail("fail");
                 return;
             }
         }
@@ -1160,22 +1160,22 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
                 // context path
                 int i = result.indexOf('|');
-                Assert.assertEquals(contextPath, result.substring(0, i));
+                Assertions.assertEquals(contextPath, result.substring(0, i));
 
                 // servlet path
                 int j = result.indexOf('|', i + 1);
-                Assert.assertEquals("/grpcToJakartaRest", result.substring(i + 1, j));
+                Assertions.assertEquals("/grpcToJakartaRest", result.substring(i + 1, j));
 
                 // path
                 i = j + 1;
                 j = result.indexOf('|', i);
-                Assert.assertEquals(result.substring(i, j), "/p/servletPath");
+                Assertions.assertEquals("/p/servletPath", result.substring(i, j));
 
                 // HttpServletRequest.getPathTranslated()
-                Assert.assertTrue(result.substring(j + 1)
+                Assertions.assertTrue(result.substring(j + 1)
                         .contains(File.separator + "p" + File.separator + "servletPath"));
             } catch (StatusRuntimeException e) {
-                Assert.fail("fail");
+                Assertions.fail("fail");
                 return;
             }
         }
@@ -1202,15 +1202,15 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.servletParams(gem);
             String s = response.getGStringField().getValue();
-            Assert.assertTrue(s.startsWith("q1|q2|f2a|f3a"));
-            Assert.assertTrue(s.contains("p1->q1"));
-            Assert.assertTrue(s.contains("p2->f2af2bq2"));
-            Assert.assertTrue(s.contains("p3->f3af3b"));
+            Assertions.assertTrue(s.startsWith("q1|q2|f2a|f3a"));
+            Assertions.assertTrue(s.contains("p1->q1"));
+            Assertions.assertTrue(s.contains("p2->f2af2bq2"));
+            Assertions.assertTrue(s.contains("p3->f3af3b"));
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1224,7 +1224,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.jaxrsResponse(gem);
-            Assert.assertEquals(2, response.getCookiesCount());
+            Assertions.assertEquals(2, response.getCookiesCount());
             gNewCookie expectedCookie1 = gNewCookie.newBuilder()
                     .setDomain("d1")
                     .setName("n1")
@@ -1245,19 +1245,20 @@ abstract class AbstractGrpcToJakartaRESTTest {
                     .setSecure(true)
                     .setVersion(1)
                     .build();
-            Assert.assertTrue(expectedCookie1.equals(response.getCookies(0)) && expectedCookie2.equals(response.getCookies(1))
+            Assertions.assertTrue(expectedCookie1.equals(response.getCookies(0))
+                    && expectedCookie2.equals(response.getCookies(1))
                     || expectedCookie1.equals(response.getCookies(1)) && expectedCookie2.equals(response.getCookies(0)));
             Map<String, CC1_proto.gHeader> headers = response.getHeadersMap();
-            Assert.assertEquals(1, headers.get("h1").getValuesCount());
-            Assert.assertEquals("v1", headers.get("h1").getValues(0));
-            Assert.assertEquals(222, response.getStatus());
-            Assert.assertEquals(1, headers.get("Content-Type").getValuesCount());
-            Assert.assertEquals("x/y", headers.get("Content-Type").getValues(0));
+            Assertions.assertEquals(1, headers.get("h1").getValuesCount());
+            Assertions.assertEquals("v1", headers.get("h1").getValues(0));
+            Assertions.assertEquals(222, response.getStatus());
+            Assertions.assertEquals(1, headers.get("Content-Type").getValuesCount());
+            Assertions.assertEquals("x/y", headers.get("Content-Type").getValues(0));
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1270,41 +1271,41 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.servletResponse(gem);
             Map<String, CC1_proto.gHeader> headers = response.getHeadersMap();
 
-            Assert.assertEquals(1, headers.get("d1").getValuesCount());
-            Assert.assertEquals(1, headers.get("h1").getValuesCount());
-            Assert.assertEquals(1, headers.get("i1").getValuesCount());
+            Assertions.assertEquals(1, headers.get("d1").getValuesCount());
+            Assertions.assertEquals(1, headers.get("h1").getValuesCount());
+            Assertions.assertEquals(1, headers.get("i1").getValuesCount());
 
-            Assert.assertEquals(2, headers.get("d2").getValuesCount());
-            Assert.assertEquals(2, headers.get("h2").getValuesCount());
-            Assert.assertEquals(2, headers.get("i2").getValuesCount());
+            Assertions.assertEquals(2, headers.get("d2").getValuesCount());
+            Assertions.assertEquals(2, headers.get("h2").getValuesCount());
+            Assertions.assertEquals(2, headers.get("i2").getValuesCount());
 
-            Assert.assertEquals(1, headers.get("d3").getValuesCount());
-            Assert.assertEquals(1, headers.get("h3").getValuesCount());
-            Assert.assertEquals(1, headers.get("i3").getValuesCount());
+            Assertions.assertEquals(1, headers.get("d3").getValuesCount());
+            Assertions.assertEquals(1, headers.get("h3").getValuesCount());
+            Assertions.assertEquals(1, headers.get("i3").getValuesCount());
 
-            Assert.assertTrue(headers.get("d1").getValues(0).contains("02 Jan 1970"));
-            Assert.assertEquals("v1", headers.get("h1").getValues(0));
-            Assert.assertEquals("13", headers.get("i1").getValues(0));
+            Assertions.assertTrue(headers.get("d1").getValues(0).contains("02 Jan 1970"));
+            Assertions.assertEquals("v1", headers.get("h1").getValues(0));
+            Assertions.assertEquals("13", headers.get("i1").getValues(0));
 
-            Assert.assertTrue(headers.get("d2").getValues(0).contains("03 Jan 1970"));
-            Assert.assertTrue(headers.get("d2").getValues(1).contains("04 Jan 1970"));
-            Assert.assertEquals("v2a", headers.get("h2").getValues(0));
-            Assert.assertEquals("v2b", headers.get("h2").getValues(1));
-            Assert.assertEquals("19", headers.get("i2").getValues(0));
-            Assert.assertEquals("29", headers.get("i2").getValues(1));
+            Assertions.assertTrue(headers.get("d2").getValues(0).contains("03 Jan 1970"));
+            Assertions.assertTrue(headers.get("d2").getValues(1).contains("04 Jan 1970"));
+            Assertions.assertEquals("v2a", headers.get("h2").getValues(0));
+            Assertions.assertEquals("v2b", headers.get("h2").getValues(1));
+            Assertions.assertEquals("19", headers.get("i2").getValues(0));
+            Assertions.assertEquals("29", headers.get("i2").getValues(1));
 
-            Assert.assertTrue(headers.get("d3").getValues(0).contains("06 Jan 1970"));
-            Assert.assertEquals("v3b", headers.get("h3").getValues(0));
-            Assert.assertEquals("41", headers.get("i3").getValues(0));
+            Assertions.assertTrue(headers.get("d3").getValues(0).contains("06 Jan 1970"));
+            Assertions.assertEquals("v3b", headers.get("h3").getValues(0));
+            Assertions.assertEquals("41", headers.get("i3").getValues(0));
 
-            Assert.assertEquals(1, response.getCookiesCount());
+            Assertions.assertEquals(1, response.getCookiesCount());
             gNewCookie expectedCookie = gNewCookie.newBuilder().setDomain("d1").setMaxAge(3).setName("n1").setPath("p1")
                     .setValue("v1").build();
-            Assert.assertEquals(expectedCookie, response.getCookies(0));
+            Assertions.assertEquals(expectedCookie, response.getCookies(0));
 
-            Assert.assertEquals(223, response.getStatus());
+            Assertions.assertEquals(223, response.getStatus());
         } catch (StatusRuntimeException e) {
-            Assert.fail("fail 2");
+            Assertions.fail("fail 2");
             return;
         }
     }
@@ -1318,12 +1319,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass.Builder builder = CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass
                     .newBuilder();
             CC1_proto.dev_resteasy_grpc_example_CC1_INNER_InnerClass inner = builder.setI(3).setS("three").build();
-            Assert.assertEquals(inner, response.getDevResteasyGrpcExampleCC1INNERInnerClassField());
+            Assertions.assertEquals(inner, response.getDevResteasyGrpcExampleCC1INNERInnerClassField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1335,13 +1336,13 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.locator(gem);
-            Assert.assertEquals("/p/locator/get",
+            Assertions.assertEquals("/p/locator/get",
                     response.getAnyField().unpack(CC1_proto.gString.class).getValue());
         } catch (Exception e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1354,14 +1355,14 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.locator(gem);
-            Assert.assertEquals("abc|xyz", response.getAnyField()
+            Assertions.assertEquals("abc|xyz", response.getAnyField()
                     .unpack(CC1_proto.gString.class)
                     .getValue());
         } catch (Exception e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1376,12 +1377,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
             CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("abc")
                     .build();
-            Assert.assertEquals(expected, response.getGStringField());
+            Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1398,11 +1399,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             response = stub.intfEntity(gem);
             gString gs = response.getGStringField();
-            Assert.assertEquals("abc", gs.getValue());
+            Assertions.assertEquals("abc", gs.getValue());
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1416,11 +1417,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Any any = response.getAnyField();
             Class clazz = Utility.extractTypeFromAny(any, CC1_proto.class.getClassLoader(), "CC1_proto");
             dev_resteasy_grpc_example___IntfImpl impl = (dev_resteasy_grpc_example___IntfImpl) any.unpack(clazz);
-            Assert.assertEquals("xyz", impl.getS());
+            Assertions.assertEquals("xyz", impl.getS());
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1475,12 +1476,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             asyncStub.getInt(gem, responseObserver);
             latch.await();
-            Assert.assertEquals((Integer) 4, grmh.getValue());
+            Assertions.assertEquals((Integer) 4, grmh.getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }
@@ -1510,24 +1511,24 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             asyncStub.sse(gem, responseObserver);
             latch.await();
-            Assert.assertEquals(4, grmh.size());
+            Assertions.assertEquals(4, grmh.size());
             Iterator<CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent> it = grmh.iterator();
             for (int i = 0; i < 3; i++) {
                 CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = it.next();
-                Assert.assertEquals("name" + (i + 1), sseEvent.getName());
+                Assertions.assertEquals("name" + (i + 1), sseEvent.getName());
                 byte[] bytes = sseEvent.getData().toByteArray();
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
                 Any any = Any.parseFrom(CodedInputStream.newInstance(bais));
                 gString gString = any.unpack(gString.class);
-                Assert.assertEquals("event" + (i + 1), gString.getValue());
+                Assertions.assertEquals("event" + (i + 1), gString.getValue());
             }
             CC1_proto.dev_resteasy_grpc_bridge_runtime_sse___SseEvent sseEvent = it.next();
-            Assert.assertEquals("name4", sseEvent.getName());
+            Assertions.assertEquals("name4", sseEvent.getName());
             Any any = sseEvent.getData();
             dev_resteasy_grpc_example___CC5 cc5 = any.unpack(dev_resteasy_grpc_example___CC5.class);
-            Assert.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
+            Assertions.assertEquals(dev_resteasy_grpc_example___CC5.newBuilder().setK(4).build(), cc5);
         } catch (StatusRuntimeException e) {
-            Assert.fail("fail");
+            Assertions.fail("fail");
             return;
         }
     }
@@ -1538,12 +1539,12 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralEntityMessage gem = builder.setGIntegerField(n).build();
         try {
             ListenableFuture<GeneralReturnMessage> future = futureStub.getInt(gem);
-            Assert.assertEquals(4, future.get().getGIntegerField().getValue());
+            Assertions.assertEquals(4, future.get().getGIntegerField().getValue());
         } catch (StatusRuntimeException e) {
 
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
     }

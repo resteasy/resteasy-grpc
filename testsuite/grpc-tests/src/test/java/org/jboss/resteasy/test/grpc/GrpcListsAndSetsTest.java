@@ -39,17 +39,17 @@ import jakarta.ws.rs.core.GenericType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;
@@ -75,7 +75,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 @SuppressWarnings("deprecation")
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class GrpcListsAndSetsTest {
 
@@ -173,14 +173,14 @@ public class GrpcListsAndSetsTest {
         return ar;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         accessServletContexts();
         channelPlaintext = ManagedChannelBuilder.forTarget("localhost:9555").usePlaintext().build();
         blockingStubPlaintext = CC1ServiceGrpc.newBlockingStub(channelPlaintext);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws InterruptedException {
         if (channelPlaintext != null) {
             channelPlaintext.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
@@ -194,7 +194,7 @@ public class GrpcListsAndSetsTest {
                 var response = client.target("http://localhost:8080/grpc-test/grpcToJakartaRest/grpcserver/context")
                         .request()
                         .get()) {
-            Assert.assertEquals(204, response.getStatus());
+            Assertions.assertEquals(204, response.getStatus());
         }
     }
 
@@ -219,7 +219,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listTest4(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(coll, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(coll, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.List<java.lang.String>
@@ -237,7 +237,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listTest3(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertEquals(coll, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(coll, translator.translateFromJavabuf(result));
     }
 
     // Client: java.util.List<java.lang.Object>
@@ -255,7 +255,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listTest1(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertEquals(coll, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(coll, translator.translateFromJavabuf(result));
     }
 
     // Client: java.util.List<java.lang.Object>
@@ -273,7 +273,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listTest2(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertEquals(coll, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(coll, translator.translateFromJavabuf(result));
     }
 
     // Client: java.util.List<java.lang.Object>
@@ -291,7 +291,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listTest4(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertEquals(coll, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(coll, translator.translateFromJavabuf(result));
     }
 
     // Client: null
@@ -305,7 +305,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilArrayListField((java_util___ArrayList) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest5(gem);
         java_util___ArrayList result = response.getJavaUtilArrayListField();
-        Assert.assertEquals(coll, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(coll, translator.translateFromJavabuf(result));
     }
 
     // Client: null
@@ -319,7 +319,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilArrayListField((java_util___ArrayList) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest5(gem);
         java_util___ArrayList result = response.getJavaUtilArrayListField();
-        Assert.assertEquals(coll, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(coll, translator.translateFromJavabuf(result));
     }
 
     // Client: java.util.ArrayList<java.lang.Object>
@@ -336,7 +336,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest4(gem);
         Message result = (Message) GET_MAP.get("java.util.ArrayList<java.lang.Object>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.Object>
@@ -353,7 +353,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest1(gem);
         Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.Object>
@@ -370,7 +370,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest2(gem);
         Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.String>
@@ -387,7 +387,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest3(gem);
         Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.String>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet<java.lang.Object>
@@ -404,7 +404,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest4(gem);
         Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.HashSet
@@ -420,7 +420,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilHashSetField((java_util___HashSet) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest5(gem);
         java_util___HashSet result = response.getJavaUtilHashSetField();
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: null
@@ -434,7 +434,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilHashSetField((java_util___HashSet) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest5(gem);
         java_util___HashSet result = response.getJavaUtilHashSetField();
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.Set<java.lang.Object>
@@ -452,7 +452,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.setTest1(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.Set<java.lang.Object>
@@ -470,7 +470,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.setTest2(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.Set<java.lang.String>
@@ -488,7 +488,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.setTest3(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.Set<java.lang.Object>
@@ -506,7 +506,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.setTest4(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.Set<java.lang.String>
@@ -524,7 +524,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.setTest3(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: null
@@ -538,7 +538,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilHashSetField((java_util___HashSet) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest5(gem);
         java_util___HashSet result = response.getJavaUtilHashSetField();
-        Assert.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.ArrayList<java.lang.Object>
@@ -560,7 +560,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest4(gem);
         Message result = (Message) GET_MAP.get("java.util.ArrayList<java.lang.Object>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: null
@@ -579,7 +579,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilArrayListField((java_util___ArrayList) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest5(gem);
         java_util___ArrayList result = response.getJavaUtilArrayListField();
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     //=======================================================================================
@@ -606,7 +606,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.setHashsetTest3(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(s2, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(s2, translator.translateFromJavabuf(result)));
     }
 
     // Client: null
@@ -622,7 +622,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilHashSetField((java_util___HashSet) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest5(gem);
         java_util___HashSet result = response.getJavaUtilHashSetField();
-        Assert.assertTrue(CollectionEquals.equals(s2, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(s2, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.List<java.util.List<java.lang.String>>
@@ -643,7 +643,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listListTest3(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(l2, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(l2, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.ArrayList<java.util.List<java.lang.String>>
@@ -663,7 +663,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistListTest3(gem);
         Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.List<java.lang.String>>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(l2, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(l2, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.ArrayList<java.util.ArrayList<java.lang.String>>
@@ -686,7 +686,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistArraylistTest3(gem);
         Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.ArrayList<java.lang.String>>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: null
@@ -704,7 +704,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilArrayListField((java_util___ArrayList) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest5(gem);
         java_util___ArrayList result = response.getJavaUtilArrayListField();
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: null
@@ -722,7 +722,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setJavaUtilArrayListField((java_util___ArrayList) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest5(gem);
         java_util___ArrayList result = response.getJavaUtilArrayListField();
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.ArrayList<java.util.HashSet<java.lang.Object>>
@@ -742,7 +742,7 @@ public class GrpcListsAndSetsTest {
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistHashsetTest4(gem);
         Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.HashSet<java.lang.Object>>").invoke(response);
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.Set<java.util.ArrayList<java.lang.String>>
@@ -763,7 +763,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.setArraylistTest3(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     //=======================================================================================
@@ -793,7 +793,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listL3S3SetTest1(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>> type = new GenericType<java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>>
@@ -817,7 +817,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listL3S3SetTest2(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>> type = new GenericType<java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<String>>>>>
@@ -841,7 +841,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listL3S3SetTest3(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>> type = new GenericType<java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>>
@@ -865,7 +865,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listL3S3SetTest4(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     // Client: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>>> type = new GenericType<java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set>>>>
@@ -890,7 +890,7 @@ public class GrpcListsAndSetsTest {
         GeneralReturnMessage response = blockingStubPlaintext.listL3S3SetTest5(gem);
         any = response.getAnyField();
         Message result = any.unpack((Class) Utility.extractClassFromAny(any, translator));
-        Assert.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
+        Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
     //=======================================================================================
@@ -909,7 +909,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setDevResteasyGrpcListsSetsD1Field((dev_resteasy_grpc_lists_sets___D1) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.d1Integer(gem);
         dev_resteasy_grpc_lists_sets___D1 result = response.getDevResteasyGrpcListsSetsD1Field();
-        Assert.assertEquals(d1, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(d1, translator.translateFromJavabuf(result));
     }
 
     @Test
@@ -920,7 +920,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setDevResteasyGrpcListsSetsD1Field((dev_resteasy_grpc_lists_sets___D1) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.d1Raw(gem);
         dev_resteasy_grpc_lists_sets___D1 result = response.getDevResteasyGrpcListsSetsD1Field();
-        Assert.assertEquals(d1, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(d1, translator.translateFromJavabuf(result));
     }
 
     @Test
@@ -931,7 +931,7 @@ public class GrpcListsAndSetsTest {
         GeneralEntityMessage gem = builder.setDevResteasyGrpcListsSetsD3Field((dev_resteasy_grpc_lists_sets___D3) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.d3(gem);
         dev_resteasy_grpc_lists_sets___D3 result = response.getDevResteasyGrpcListsSetsD3Field();
-        Assert.assertEquals(d3, translator.translateFromJavabuf(result));
+        Assertions.assertEquals(d3, translator.translateFromJavabuf(result));
     }
 
     //////////////////////////////////////////////////////////
