@@ -88,6 +88,9 @@
         <!-- Test only dependencies -->
         <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
 
+        <!-- Plugin Versions -->
+        <version.org.wildfly.wildfly-maven-plugin>5.1.2.Final</version.org.wildfly.wildfly-maven-plugin>
+
         <!-- Plugin Versions, please keep in alphabetical order -->
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
@@ -111,6 +114,15 @@
     </modules>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.wildfly-maven-plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!-- Format source files -->
             <plugin>
