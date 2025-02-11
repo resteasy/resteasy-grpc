@@ -50,14 +50,14 @@ the output is a several hundred line class called `org.greet.Greet_proto`:
         public final class Greet_proto {
 
            public static final class Greeting extends
-                 com.google.protobuf.GeneratedMessageV3 implements GreetingOrBuilder {
+                 com.google.protobuf.GeneratedMessage implements GreetingOrBuilder {
 
               public java.lang.String getS() {
                  ...
               }
 
               public static final class Builder extends
-                    com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+                    com.google.protobuf.GeneratedMessage.Builder<Builder> implements
                     org.jboss.greeting.Greeting_proto.GreetingOrBuilder {
 
                  public Builder setS() {
@@ -798,7 +798,7 @@ will be overridden by
            HttpServletRequest request = null;
            try {
               HttpServletResponseImpl response = new HttpServletResponseImpl("org_greet___Greeting", "sync", Greet_Server.getContext(), builder, fd); // 1
-              GeneratedMessageV3 actualParam = param.getGStringField();
+              GeneratedMessage actualParam = param.getGStringField();
               request = getHttpServletRequest(param, actualParam, "//greet", response, "GET", "org_greet___Greeting"); // 2
               HttpServletDispatcher servlet = getServlet(); // 3
               activateRequestContext(); // 4
@@ -899,7 +899,7 @@ multiple return messages:
             HttpServletRequest request = null;
             try {
                 HttpServletResponseImpl response = new HttpServletResponseImpl("org_jboss_resteasy_grpc_sse_runtime___SseEvent", "sse", Greet_Server.getContext(), builder, fd);
-                GeneratedMessageV3 actualParam = param.getGEmptyField();
+                GeneratedMessage actualParam = param.getGEmptyField();
                 request = getHttpServletRequest(param, actualParam, "/stream", response, "GET", "org_jboss_resteasy_grpc_sse_runtime___SseEvent");
                 HttpServletDispatcher servlet = getServlet();
                 activateRequestContext();

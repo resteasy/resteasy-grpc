@@ -19,19 +19,14 @@
         <!-- Provisioning properties -->
         <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
 
-        <!-- RESTEasy properties -->
-        <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-        <resteasy.test.feature.pack.artifactId>galleon-feature-pack</resteasy.test.feature.pack.artifactId>
-        <resteasy.test.feature.pack.version>${version.org.jboss.resteasy}</resteasy.test.feature.pack.version>
-
         <!-- Server properties -->
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
-        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+        <server.test.feature.pack.artifactId>wildfly-galleon-pack</server.test.feature.pack.artifactId>
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
         <!-- For grpc-bridge test -->
         <wildfly.grpc.test.feature.pack.groupId>org.wildfly.extras.grpc</wildfly.grpc.test.feature.pack.groupId>
         <wildfly.grpc.test.feature.pack.artifactId>wildfly-grpc-feature-pack</wildfly.grpc.test.feature.pack.artifactId>
-        <wildfly.grpc.test.feature.pack.version>0.1.3.Final</wildfly.grpc.test.feature.pack.version>
+        <wildfly.grpc.test.feature.pack.version>0.1.11.Final</wildfly.grpc.test.feature.pack.version>
 
         <!-- For compiling the test project -->
         <root.class>CC1</root.class>
@@ -81,13 +76,7 @@
                 </property>
             </activation>
             <properties>
-                <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-                <resteasy.test.feature.pack.artifactId>galleon-preview-feature-pack</resteasy.test.feature.pack.artifactId>
-                <resteasy.test.feature.pack.version>${version.org.jboss.resteasy}</resteasy.test.feature.pack.version>
-                <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
-                <!--server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version-->
-                <server.test.feature.pack.version>35.0.0.Final</server.test.feature.pack.version>
             </properties>
         </profile>
         <profile>
@@ -275,12 +264,6 @@
                             <version>${server.test.feature.pack.version}</version>
                         </feature-pack>
                         <feature-pack>
-                            <groupId>${resteasy.test.feature.pack.groupId}</groupId>
-                            <artifactId>${resteasy.test.feature.pack.artifactId}</artifactId>
-                            <version>${resteasy.test.feature.pack.version}</version>
-                            <inherit-configs>false</inherit-configs>
-                        </feature-pack>
-                        <feature-pack>
                             <groupId>${wildfly.grpc.test.feature.pack.groupId}</groupId>
                             <artifactId>${wildfly.grpc.test.feature.pack.artifactId}</artifactId>
                             <version>${wildfly.grpc.test.feature.pack.version}</version>
@@ -292,6 +275,10 @@
                         <layer>grpc</layer>
                         <layer>undertow</layer>
                     </layers>
+                    <galleon-options>
+                        <jboss-fork-embedded>true</jboss-fork-embedded>
+                        <stability-level>preview</stability-level>
+                    </galleon-options>
                 </configuration>
             </plugin>
 
