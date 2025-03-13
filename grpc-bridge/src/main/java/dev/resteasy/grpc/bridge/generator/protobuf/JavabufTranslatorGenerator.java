@@ -156,9 +156,12 @@ public class JavabufTranslatorGenerator {
     private static final Map<String, String> BUILTIN_TO_JAVABUF = new HashMap<String, String>();
 
     private static final Map<String, String> LISTS = new HashMap<String, String>();
-    private static final Map<String, String> LISTS_SETS_INV = new HashMap<String, String>();
+    private static final Map<String, String> AGGREGATES_INV = new HashMap<String, String>();
     private static final Map<String, String> SETS = new HashMap<String, String>();
+    private static final Map<String, String> MAPS = new HashMap<String, String>();
     private static final Map<String, String> COLLECTION_TYPE = new HashMap<String, String>();
+    private static final Map<String, String> KEY_TYPE = new HashMap<String, String>();
+    private static final Map<String, String> VALUE_TYPE = new HashMap<String, String>();
     private static final Map<String, String> CLASSNAMES = new HashMap<String, String>();
 
     private static final String ArrayPrimitiveBuilderClass = "      public Message assignToJavabuf(Object x) {%n"
@@ -341,7 +344,6 @@ public class JavabufTranslatorGenerator {
             + "             ahWBuilder.addWrapperField(holderWrapperBuilder);%n"
             + "          }%n"
             + "          return ahWBuilder.setComponentType(x.getClass().getComponentType().getName()).build();%n"
-            //            + "          return ahWBuilder.build();%n"
             + "       } catch (Exception e) {%n"
             + "          throw new RuntimeException(e);%n"
             + "       }%n"
@@ -693,6 +695,109 @@ public class JavabufTranslatorGenerator {
             + "         return assignFromJavabuf(m);%n"
             + "      }%n";
 
+    /*
+     * %1: key type
+     * %2: value type
+     * %3: javabuf type
+     * %4: key translation
+     * %5: value translation
+     */
+    private static final String MAP_TO_JAVABUF = "%n"
+            + "       @Override%n"
+            + "       public Message assignToJavabuf(Object o) {%n"
+            + "           if (o == null) {%n"
+            + "              return null;%n"
+            + "           }%n"
+            + "           java.util.Map<%1$s, %2$s> map = (java.util.Map<%1$s, %2$s>) o;%n"
+            + "           %3$s.Builder builder = %3$s.newBuilder();%n"
+            + "           builder.setClassname(o.getClass().getName());%n"
+            + "           %3$s.pair.Builder pairBuilder = %3$s.pair.newBuilder();%n"
+            + "           FieldDescriptor fd = %3$s.getDescriptor().findFieldByName(\"data\");%n"
+            + "           for (java.util.Map.Entry<%1$s, %2$s> entry : map.entrySet()) {%n"
+            + "               builder.addRepeatedField(fd, pairBuilder.setKey(%4$s).setValue(%5$s).build());%n"
+            + "               pairBuilder.clear();%n"
+            + "           }%n"
+            + "           return builder.build();%n"
+            + "       }%n"
+            + "%n"
+            + "      public void clear() {%n"
+            + "      }%n";
+
+    /*
+     * builder.addRepeatedField(fd, pairBuilder.setKey((java_util___ArrayList)
+     * translator.translateToJavabuf(entry.getKey())).setValue((java_util___Set)
+     * translator.translateToJavabuf(entry.getValue())).build());
+     * %1: javabuf class name
+     * %2: key type
+     * %3: value type
+     * %4: key translation
+     * %5: value translation
+     */
+    private static final String MAP_FROM_JAVABUF = "   public static class %1$s_FromJavabuf implements TranslateFromJavabuf {%n"
+            + "%n"
+            + "      @Override%n"
+            + "      public Object assignFromJavabuf(Message message) throws IOException {%n"
+            + "         try {%n"
+            + "            %1$s m = (%1$s) message;%n"
+            + "            String classname = m.getClassname();%n"
+            + "            Map<%2$s, %3$s> map = (Map<%2$s, %3$s>) Class.forName(classname).newInstance();%n"
+            + "            for (%1$s.pair pair : m.getDataList()) {%n"
+            + "               map.put((%2$s) %4$s, (%3$s) %5$s);%n"
+            + "            }%n"
+            + "            return map;%n"
+            + "         } catch (Exception e) {%n"
+            + "            java_util___HashMap2 m = (java_util___HashMap2) message;%n"
+            + "            String classname = m.getClassname();%n"
+            + "            throw new RuntimeException(classname + \" \" + e);%n"
+            + "         }%n"
+            + "      }%n"
+            + "%n"
+            + "      @Override%n"
+            + "      public void assignExistingFromJavabuf(Message message, Object obj) throws IOException {%n"
+            + "         try {%n"
+            + "            %1$s m = (%1$s) message;%n"
+            + "            Map<%2$s, %3$s> map = (Map<%2$s, %3$s>) obj;%n"
+            + "            for (%1$s.pair pair : m.getDataList()) {%n"
+            + "                map.put((%2$s) %4$s, (%3$s) %5$s);%n"
+            + "            }%n"
+            + "         } catch (Exception e) {%n"
+            + "            throw new RuntimeException(e);%n"
+            + "         }%n"
+            + "      }%n"
+            + "%n"
+            + "      @Override%n"
+            + "      public Object parseFromJavabuf(InputStream is) throws IOException {%n"
+            + "         Message m = %1$s.parseFrom(is);%n"
+            + "         return assignFromJavabuf(m);%n"
+            + "      }%n";
+
+    private static final String RAW_AGGREGATE_TO_JAVABUF = "   private static TranslateToJavabuf rawAggregateTranslationToJavabuf(Object o) {%n"
+            + "      if (List.class.isAssignableFrom(o.getClass())) {%n"
+            + "         return new java_util___List_ToJavabuf();%n"
+            + "      } else if (Set.class.isAssignableFrom(o.getClass())) {%n"
+            + "         return new java_util___Set_ToJavabuf();%n"
+            + "      } else if (Map.class.isAssignableFrom(o.getClass())) {%n"
+            + "         return new java_util___Map_ToJavabuf();%n"
+            + "      }%n"
+            + "      return null;%n"
+            + "   }%n%n";
+
+    private static final String RAW_AGGREGATE_FROM_JAVABUF = "   private static TranslateFromJavabuf rawAggregateTranslationFromJavabuf(String classname, Object o) {%n"
+            + "      try {%n"
+            + "         Class<?> clazz = Class.forName(classname);%n"
+            + "         if (List.class.isAssignableFrom(clazz)) {%n"
+            + "            return new java_util___List_FromJavabuf();%n"
+            + "         } else if (Set.class.isAssignableFrom(clazz)) {%n"
+            + "            return new java_util___Set_FromJavabuf();%n"
+            + "         } else if (Map.class.isAssignableFrom(clazz)) {%n"
+            + "            return new java_util___Map_FromJavabuf();%n"
+            + "         }%n"
+            + "         return null;%n"
+            + "      } catch (Exception e) {%n"
+            + "         throw new RuntimeException(e);%n"
+            + "      }%n"
+            + "   }%n%n";
+
     static {
         PRIMITIVE_WRAPPER_TYPES.put("gByte", byte.class);
         PRIMITIVE_WRAPPER_TYPES.put("gShort", short.class);
@@ -907,7 +1012,7 @@ public class JavabufTranslatorGenerator {
             return;
         }
         try {
-            getListsAndSets(args[3]);
+            getAggregates(args[3]);
             getClassnameMap(args);
             int index = args[1].lastIndexOf('.');
             String simpleName = index < 0 ? args[1] : args[1].substring(index + 1);
@@ -924,7 +1029,7 @@ public class JavabufTranslatorGenerator {
         }
     }
 
-    static void getListsAndSets(String path) {
+    static void getAggregates(String path) {
         Path file = Paths.get(path);
         try (BufferedReader reader = Files.newBufferedReader(file)) {
             String line = null;
@@ -933,16 +1038,22 @@ public class JavabufTranslatorGenerator {
                     String javaClassname = getJavaClassnameList(line);
                     String javabufClassname = getJavabufClassname(reader);
                     String collectionType = getCollectionType(reader);
-                    LISTS_SETS_INV.put(javaClassname, javabufClassname);
+                    AGGREGATES_INV.put(javaClassname, javabufClassname);
                     LISTS.put(javabufClassname, javaClassname);
                     COLLECTION_TYPE.put(javabufClassname, collectionType);
                 } else if (line.startsWith("// Set: ")) {
                     String javaClassname = getJavaClassnameSet(line);
                     String javabufClassname = getJavabufClassname(reader);
                     String collectionType = getCollectionType(reader);
-                    LISTS_SETS_INV.put(javaClassname, javabufClassname);
+                    AGGREGATES_INV.put(javaClassname, javabufClassname);
                     SETS.put(javabufClassname, javaClassname);
                     COLLECTION_TYPE.put(javabufClassname, collectionType);
+                } else if (line.startsWith("// Map: ")) {
+                    String javaClassname = getJavaClassnameSet(line);
+                    String javabufClassname = getJavabufClassname(reader);
+                    AGGREGATES_INV.put(javaClassname, javabufClassname);
+                    MAPS.put(javabufClassname, javaClassname);
+                    processMapTypes(reader, javabufClassname);
                 }
             }
         } catch (Exception e) {
@@ -986,6 +1097,15 @@ public class JavabufTranslatorGenerator {
 
     private static String getJavaClassnameSet(String line) throws Exception {
         return line.substring(8);
+    }
+
+    private static void processMapTypes(BufferedReader reader, String javabufClassname) throws IOException {
+        String line = reader.readLine();
+        line = reader.readLine();
+        String keyType = line.substring(4, line.indexOf("->"));
+        String valueType = line.substring(line.indexOf("->") + 2);
+        KEY_TYPE.put(javabufClassname, keyType);
+        VALUE_TYPE.put(javabufClassname, valueType);
     }
 
     public static Class<?>[] getWrappedClasses(String[] args) throws ClassNotFoundException {
@@ -1152,7 +1272,7 @@ public class JavabufTranslatorGenerator {
     }
 
     private static void staticInit(Class<?>[] classes, String[] args, StringBuilder sb) throws ClassNotFoundException {
-        sb.append("   static {" + LS);
+        sb.append(LS + "   static {" + LS);
         Iterator<String> iteratorTo = ARRAY_CLASSES_TO_JAVABUF.keySet().iterator();
         Iterator<String> iteratorFrom = ARRAY_CLASSES_FROM_JAVABUF.keySet().iterator();
         Iterator<String> iteratorStream = ARRAY_CLASSES_FROM_JAVABUF_STREAM.keySet().iterator();
@@ -1239,10 +1359,6 @@ public class JavabufTranslatorGenerator {
                         .append(simpleName)
                         .append("_FromJavabuf());" + LS);
             } else {
-                sb.append(LS + "      toJavabufMap.put(\"")
-                        .append(originalClassName(simpleName) + "\" , new ")
-                        .append(simpleName)
-                        .append("_ToJavabuf());" + LS);
                 if (!isAbstract) {
                     sb.append(LS + "      toJavabufMap.put(\"")
                             .append(originalClassName(simpleName) + "\" , new ")
@@ -1271,15 +1387,15 @@ public class JavabufTranslatorGenerator {
             }
         }
         sb.append(LS);
-        for (String s : LISTS_SETS_INV.keySet()) {
+        for (String s : AGGREGATES_INV.keySet()) {
             sb.append(LS + "      toJavabufMap.put(\"")
                     .append(s + "\" , new ")
-                    .append(LISTS_SETS_INV.get(s))
+                    .append(AGGREGATES_INV.get(s))
                     .append("_ToJavabuf());" + LS);
             sb.append("      fromJavabufMap.put(\"")
-                    .append(LISTS_SETS_INV.get(s))
+                    .append(AGGREGATES_INV.get(s))
                     .append("\", new ")
-                    .append(LISTS_SETS_INV.get(s))
+                    .append(AGGREGATES_INV.get(s))
                     .append("_FromJavabuf());" + LS);
         }
         for (Entry<String, String> entry : BUILTIN_TO_JAVABUF.entrySet()) {
@@ -1335,6 +1451,9 @@ public class JavabufTranslatorGenerator {
         String className = javabufToJava(clazz.getName(), originalName, false);
         Class<?> c = Class.forName(className, true,
                 Thread.currentThread().getContextClassLoader());
+        if (List.class.isAssignableFrom(c) || Map.class.isAssignableFrom(c) || Set.class.isAssignableFrom(c)) {
+            return false;
+        }
         return Modifier.isAbstract(c.getModifiers()) || c.isInterface();
     }
 
@@ -1370,6 +1489,9 @@ public class JavabufTranslatorGenerator {
                 .append("      }" + LS)
                 .append("      if (ttj == null) {" + LS)
                 .append("         ttj = toJavabufMap.get(o.getClass().getName());" + LS)
+                .append("      }" + LS)
+                .append("      if (ttj == null) {" + LS)
+                .append("         ttj = rawAggregateTranslationToJavabuf(o);" + LS)
                 .append("      }" + LS)
                 .append("      if (ttj == null) {" + LS)
                 .append("         throw new RuntimeException(\"translateToJavabuf(): \" + o.getClass().getName() + \" is not recognized\");"
@@ -1418,6 +1540,9 @@ public class JavabufTranslatorGenerator {
                 .append("         s = message.getDescriptorForType().getFullName();" + LS)
                 .append("         s = s.substring(s.lastIndexOf(\".\") + 1);" + LS)
                 .append("         TranslateFromJavabuf tfj = fromJavabufMap.get(s);" + LS)
+                .append("         if (tfj == null) {" + LS)
+                .append("            tfj = rawAggregateTranslationFromJavabuf(s, message);" + LS)
+                .append("         }" + LS)
                 .append("         if (tfj == null) {" + LS)
                 .append("            throw new RuntimeException(\"translateFromJavabuf(): \" + message.getClass() + \", \" + s + \" is not recognized\" + message.toString());"
                         + LS)
@@ -1479,8 +1604,7 @@ public class JavabufTranslatorGenerator {
                 + LS);
         sb.append("   private static Set<String> hiddenClasses = new HashSet<String>();" + LS);
         sb.append("   private static final Map<Class<?>, Method> arraySetters = new HashMap<Class<?>, Method>();" + LS);
-        sb.append(
-                "       private static Map<String, Constructor<?>> constructors = new HashMap<String, Constructor<?>>();" + LS);
+        sb.append("   private static Map<String, Constructor<?>> constructors = new HashMap<String, Constructor<?>>();" + LS);
     }
 
     private static void privateMethods(StringBuilder sb, Class<?>[] classes, String[] args) {
@@ -1817,6 +1941,8 @@ public class JavabufTranslatorGenerator {
                 }
             }
         }
+        sb.append(String.format(RAW_AGGREGATE_TO_JAVABUF));
+        sb.append(String.format(RAW_AGGREGATE_FROM_JAVABUF));
     }
 
     static String squashToCamel(String name) {
@@ -1981,6 +2107,13 @@ public class JavabufTranslatorGenerator {
                     clazz.getSimpleName(),
                     SETS.get(clazz.getSimpleName()),
                     assignment));
+        } else if (MAPS.containsKey(clazz.getSimpleName())) {
+            sb.append(String.format(MAP_TO_JAVABUF,
+                    KEY_TYPE.get(clazz.getSimpleName()),
+                    VALUE_TYPE.get(clazz.getSimpleName()),
+                    clazz.getSimpleName(),
+                    getMapAssignmentToJavabuf(clazz.getSimpleName(), KEY_TYPE, "Key"),
+                    getMapAssignmentToJavabuf(clazz.getSimpleName(), VALUE_TYPE, "Value")));
         } else {
             sb.append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName())
                     .append(".getDescriptor();" + LS)
@@ -2129,7 +2262,7 @@ public class JavabufTranslatorGenerator {
                 javaclassName = javaclassName.substring(0, i);
             }
             Class<?> javaclass = Class.forName(javaclassName);
-            String s = LISTS_SETS_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
+            String s = AGGREGATES_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
             String t = null;
             if ("java.lang.Object".equals(COLLECTION_TYPE.get(clazz.getSimpleName()))) {
                 s = "Any";
@@ -2161,7 +2294,7 @@ public class JavabufTranslatorGenerator {
                 javaclassName = javaclassName.substring(0, i);
             }
             Class<?> javaclass = Class.forName(javaclassName);
-            String s = LISTS_SETS_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
+            String s = AGGREGATES_INV.get(COLLECTION_TYPE.get(clazz.getSimpleName()));
             String t = null;
             if ("java.lang.Object".equals(COLLECTION_TYPE.get(clazz.getSimpleName()))) {
                 s = "Any";
@@ -2186,6 +2319,23 @@ public class JavabufTranslatorGenerator {
                         s,
                         t));
             }
+        } else if (MAPS.containsKey(clazz.getSimpleName())) {
+            /*
+             * %1: javabuf class name
+             * %2: key type
+             * %3: value type
+             * %4: key translation
+             * %5: value translation
+             *
+             * KEY_TYPE.put(javabufClassname, keyType);
+             * VALUE_TYPE.put(javabufClassname, valueType);
+             */
+            sb.append(String.format(MAP_FROM_JAVABUF,
+                    clazz.getSimpleName(),
+                    KEY_TYPE.get(clazz.getSimpleName()),
+                    VALUE_TYPE.get(clazz.getSimpleName()),
+                    getMapAssignmentFromJavabuf(clazz.getSimpleName(), KEY_TYPE, "Key"),
+                    getMapAssignmentFromJavabuf(clazz.getSimpleName(), VALUE_TYPE, "Value")));
         } else {
             Constructor<?> cons = null;
             try {
@@ -2519,5 +2669,34 @@ public class JavabufTranslatorGenerator {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    private static String getMapAssignmentToJavabuf(String javabufName, Map<String, String> map, String field) {
+        String assignment = null;
+        if (JAVA_WRAPPER_TYPES.contains(map.get(javabufName))) {
+            assignment = "entry.get" + field + "()";
+        } else if ("java.lang.Object".equals(map.get(javabufName))) {
+            assignment = "Any.pack(translator.translateToJavabuf(entry.get" + field + "()))";
+        } else if (map.get(javabufName).contains("<")) {
+            String generic = map.get(javabufName);
+            assignment = "(" + AGGREGATES_INV.get(map.get(javabufName)) + ") translator.translateToJavabuf(entry.get" + field
+                    + "(), new GenericType<" + generic + ">(){})";
+        } else {
+            assignment = "(" + AGGREGATES_INV.get(map.get(javabufName)) + ") translator.translateToJavabuf(entry.get" + field
+                    + "())";
+        }
+        return assignment;
+    }
+
+    private static String getMapAssignmentFromJavabuf(String javabufName, Map<String, String> map, String field) {
+        String assignment = null;
+        if (JAVA_WRAPPER_TYPES.contains(map.get(javabufName))) {
+            assignment = "pair.get" + field + "()";
+        } else if ("java.lang.Object".equals(map.get(javabufName))) {
+            assignment = "translator.translateFromJavabuf(Utility.unpack(pair.get" + field + "(),  translator))";
+        } else {
+            assignment = "translator.translateFromJavabuf(pair.get" + field + "())";
+        }
+        return assignment;
     }
 }

@@ -43,6 +43,7 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.AfterAll;
@@ -71,6 +72,7 @@ import dev.resteasy.grpc.lists.sets.DD1;
 import dev.resteasy.grpc.lists.sets.L3;
 import dev.resteasy.grpc.lists.sets.S1;
 import dev.resteasy.grpc.lists.sets.S3;
+import dev.resteasy.grpc.maps.MapResource;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -160,6 +162,7 @@ public class GrpcListsAndSetsTest {
                 .addPackage(CC1.class.getPackage())
                 .addPackage(CC8.class.getPackage())
                 .addPackage(DD1.class.getPackage())
+                .addPackage(MapResource.class.getPackage())
                 .addAsLibrary(resolver.resolve("dev.resteasy.grpc:grpc-bridge-runtime")
                         .withoutTransitivity()
                         .asSingleFile())
@@ -845,7 +848,7 @@ public class GrpcListsAndSetsTest {
     }
 
     // Client: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>> type = new GenericType<java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>>
-    // Server: List<L3<S3<Set<?>>>>
+    // Server: List<L3<S3<Set<Object>>>>
     @Test
     public void testListL3S3SetObject() throws Exception {
         Set<Object> set = new HashSet<Object>();

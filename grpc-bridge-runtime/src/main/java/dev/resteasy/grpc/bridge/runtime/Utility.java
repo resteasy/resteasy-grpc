@@ -57,6 +57,13 @@ public final class Utility {
         // restrict instantiation
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Message unpack(Any any, JavabufTranslator translator) throws Exception {
+        Class clazz = extractClassFromAny(any, translator);
+        return any.unpack(clazz);
+    }
+
+    @SuppressWarnings("rawtypes")
     public static Class extractClassFromAny(Any any, JavabufTranslator translator) {
         String s = extractStringTypeFromAny(any);
         if (s == "" || s == null) {
@@ -69,6 +76,9 @@ public final class Utility {
         Class<?> c = translator.translatefromJavabufClass(classname);
         if (WRAPPER_CLASSES.containsKey(c)) {
             c = WRAPPER_CLASSES.get(c);
+        }
+        if (c == null) {
+            throw new RuntimeException("Unable to process Any: " + any);
         }
         return translator.translateToJavabufClass(c);
     }
