@@ -406,7 +406,7 @@ public class ReaderWriterGenerator {
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         }" + LS)
                 .append("         Type oType = Utility.objectify(genericType);" + LS)
-                .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\");"
+                .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\").replace(\" \", \"\");"
                         + LS)
                 .append("         if (ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            GeneratedMessage message = (GeneratedMessage) ENTITY_MAP.get(gt).invoke(null, entityStream);"
@@ -513,30 +513,6 @@ public class ReaderWriterGenerator {
         }
         Files.writeString(path, sbHeader.toString(), StandardCharsets.UTF_8);
         Files.writeString(path, sbBody.toString(), StandardCharsets.UTF_8, CREATE, APPEND, WRITE);
-    }
-
-    private static String javabufToJavaClass(String classname) {
-        int i = classname.indexOf("___");
-        if (i >= 0) {
-            String simpleName = classname.substring(i + 3);
-            if (primitives.containsKey(simpleName) && !"gEmpty".equals(simpleName)) {
-                return "java.lang." + simpleName.substring(1);
-            }
-            return simpleName;
-        } else {
-            i = classname.indexOf("_INNER_");
-            if (i >= 0) {
-                return classname.substring(i + "_INNER_".length());
-            } else {
-                i = classname.indexOf("_HIDDEN_");
-                if (i >= 0) {
-                    return classname.substring(i + "_HIDDEN_".length());
-                } else if (primitives.containsKey(classname) && !"gEmpty".equals(classname)) {
-                    return "java.lang." + classname.substring(1);
-                }
-                return classname;
-            }
-        }
     }
 
     private static String originalClassName(String s) {
