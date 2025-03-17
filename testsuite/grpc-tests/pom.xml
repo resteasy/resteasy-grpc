@@ -358,7 +358,7 @@
                                 </systemProperty>
                                 <systemProperty>
 									<key>jars</key>
-									<value>/home/rsigal/.m2/repository.clean/jakarta/ws/rs/jakarta.ws.rs-api/3.1.0/jakarta.ws.rs-api-3.1.0.jar</value>
+									<value>${project.build.directory}/wildfly/modules/system/layers/base/jakarta/ws/rs/api/main/jakarta.ws.rs-api-3.1.0.jar</value>
 								</systemProperty>
                             </systemProperties>
                             <!--additionalClasspathElements>${project.build.outputDirectory}</additionalClasspathElements-->
