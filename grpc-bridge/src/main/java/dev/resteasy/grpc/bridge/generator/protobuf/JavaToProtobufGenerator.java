@@ -275,6 +275,8 @@ public class JavaToProtobufGenerator {
     private static boolean needHashSet = true;
     private static boolean needMap = true;
     private static boolean needHashMap = true;
+    private static boolean needMultiMap = true;
+    private static boolean needMultiHashMap = true;
 
     private static Set<ResolvedType> pendingTypes = ConcurrentHashMap.newKeySet();
     private static Set<String> entityMessageTypes = new HashSet<String>();
@@ -350,12 +352,23 @@ public class JavaToProtobufGenerator {
     private static String MAP_DEF = "// Map: java.util.Map<java.lang.Object, java.lang.Object>%n"
             + "message java_util___Map {%n"
             + "  string classname = 1;%n"
-            + "  //java.lang.Object->java.lang.Object"
-            + "  message pair {%n"
+            + "  //java.lang.Object->java.lang.Object%n"
+            + "  message Pair {%n"
             + "    google.protobuf.Any key = 2;%n"
             + "    google.protobuf.Any value = 3;%n"
             + "  }%n"
-            + "  repeated pair data = 4;%n"
+            + "  repeated Pair data = 4;%n"
+            + "}%n%n";
+
+    private static String MULTIMAP_DEF = "// Multimap: jakarta.ws.rs.core.MultivaluedMap<java.lang.Object, java.lang.Object>%n"
+            + "message jakarta_ws_rs_core___MultivaluedMap {%n"
+            + "  string classname = 1;%n"
+            + "  //java.lang.Object->java.lang.Object%n"
+            + "  message Pair {%n"
+            + "    google.protobuf.Any key = 2;%n"
+            + "    google.protobuf.Any value = 3;%n"
+            + "  }%n"
+            + "  repeated Pair data = 4;%n"
             + "}%n%n";
 
     private static String ARRAYLIST_DEF = "// List: java.util.ArrayList<java.lang.Object>%n"
@@ -375,12 +388,23 @@ public class JavaToProtobufGenerator {
     private static String HASHMAP_DEF = "// Map: java.util.MashMap<java.lang.Object, java.lang.Object>%n"
             + "message java_util___HashMap {%n"
             + "  string classname = 1;%n"
-            + "  //java.lang.Object->java.lang.Object"
-            + "  message pair {%n"
+            + "  //java.lang.Object->java.lang.Object%n"
+            + "  message Pair {%n"
             + "    google.protobuf.Any key = 2;%n"
             + "    google.protobuf.Any value = 3;%n"
             + "  }%n"
-            + "  repeated pair data = 4;%n"
+            + "  repeated Pair data = 4;%n"
+            + "}%n%n";
+
+    private static String MULTIMAP_IMPL_DEF = "// Multimap: jakarta.ws.rs.core.MultivaluedHashMap<java.lang.Object, java.lang.Object>%n"
+            + "message jakarta_ws_rs_core___MultivaluedHashMap {%n"
+            + "  string classname = 1;%n"
+            + "  //java.lang.Object->java.lang.Object%n"
+            + "  message Pair {%n"
+            + "    google.protobuf.Any key = 2;%n"
+            + "    google.protobuf.Any value = 3;%n"
+            + "  }%n"
+            + "  repeated Pair data = 4;%n"
             + "}%n%n";
 
     static {
@@ -706,6 +730,9 @@ public class JavaToProtobufGenerator {
         if (needMap) {
             sb.append(String.format(MAP_DEF));
         }
+        if (needMultiMap) {
+            sb.append(String.format(MULTIMAP_DEF));
+        }
         if (needArrayList) {
             sb.append(String.format(ARRAYLIST_DEF));
         }
@@ -714,6 +741,9 @@ public class JavaToProtobufGenerator {
         }
         if (needHashMap) {
             sb.append(String.format(HASHMAP_DEF));
+        }
+        if (needMultiHashMap) {
+            sb.append(String.format(MULTIMAP_IMPL_DEF));
         }
     }
 
@@ -1029,12 +1059,15 @@ public class JavaToProtobufGenerator {
             }
             boolean isList = isList(clazz);
             boolean isSet = isSet(clazz);
+            boolean isMultiMap = isMultiMap(clazz);
             boolean isMap = isMap(clazz);
             ResolvedType objectified = objectify(clazz);
             if (isList) {
                 sb.append(LS).append("// List: ").append(objectified.describe());
             } else if (isSet) {
                 sb.append(LS).append("// Set: ").append(objectified.describe());
+            } else if (isMultiMap) {
+                sb.append(LS).append("// Multimap: ").append(objectified.describe());
             } else if (isMap) {
                 sb.append(LS).append("// Map: ").append(objectified.describe());
             } else if ("java.lang.Object".equals(objectified.describe())) {
@@ -1049,21 +1082,20 @@ public class JavaToProtobufGenerator {
                 sb.append(LS + "message ").append(javabufName).append(" {" + LS);
                 if ("java_util___List".equals(javabufName)) {
                     needList = false;
-                }
-                if ("java_util___Set".equals(javabufName)) {
-                    needSet = false;
-                }
-                if ("java_util___ArrayList".equals(javabufName)) {
+                } else if ("java_util___ArrayList".equals(javabufName)) {
                     needArrayList = false;
-                }
-                if ("java_util___HashSet".equals(javabufName)) {
+                } else if ("java_util___Set".equals(javabufName)) {
+                    needSet = false;
+                } else if ("java_util___HashSet".equals(javabufName)) {
                     needHashSet = false;
-                }
-                if ("java_util___Map".equals(javabufName)) {
+                } else if ("java_util___Map".equals(javabufName)) {
                     needMap = false;
-                }
-                if ("java_util___HashMap".equals(javabufName)) {
+                } else if ("java_util___HashMap".equals(javabufName)) {
                     needHashMap = false;
+                } else if ("jakarta_ws_rs_core___MultivaluedMap".equals(javabufName)) {
+                    needMultiMap = false;
+                } else if ("jakarta_ws_rs_core___MultivaluedHashMap".equals(javabufName)) {
+                    needMultiHashMap = false;
                 }
             }
             // Handle set or list
@@ -1078,6 +1110,16 @@ public class JavaToProtobufGenerator {
                 return;
             }
             if (isMap) {
+                sb.append("  string classname = ")
+                        .append(counter++)
+                        .append(";" + LS);
+                visitMap(objectified, sb);
+                if (start) {
+                    sb.append("}" + LS);
+                }
+                return;
+            }
+            if (isMultiMap) {
                 sb.append("  string classname = ")
                         .append(counter++)
                         .append(";" + LS);
@@ -1200,6 +1242,9 @@ public class JavaToProtobufGenerator {
     private static void visitMap(ResolvedType resolvedType, StringBuilder sb) {
         Pair<ResolvedTypeParameterDeclaration, ResolvedType> pairKey = getParameterType(resolvedType, 0);
         ResolvedType rtKey = pairKey.b;
+        if (rtKey.isReference()) {
+            rtKey = objectify(rtKey.asReferenceType());
+        }
         String fqnKey = fqnifyClass(rtKey, "___");
         if (!"google.protobuf.Any".equals(fqnKey)) {
             classnameMap.put(rtKey.describe(), fqnKey);
@@ -1207,17 +1252,20 @@ public class JavaToProtobufGenerator {
         }
         Pair<ResolvedTypeParameterDeclaration, ResolvedType> pairValue = getParameterType(resolvedType, 1);
         ResolvedType rtValue = pairValue.b;
+        if (rtValue.isReference()) {
+            rtValue = objectify(rtValue.asReferenceType());
+        }
         String fqnValue = fqnifyClass(rtValue, "___");
         if (!"google.protobuf.Any".equals(fqnValue)) {
             classnameMap.put(rtValue.describe(), fqnValue);
             pendingTypes.add(rtValue.asReferenceType());
         }
         sb.append("  //").append(rtKey.describe()).append("->").append(rtValue.describe()).append(LS);
-        sb.append("  message pair {" + LS)
+        sb.append("  message Pair {" + LS)
                 .append("    ").append(fqnKey).append(" key = ").append(counter++).append(";" + LS)
                 .append("    ").append(fqnValue).append(" value = ").append(counter++).append(";" + LS)
                 .append("  }" + LS)
-                .append("  repeated pair data = ").append(counter++).append(";" + LS);
+                .append("  repeated Pair data = ").append(counter++).append(";" + LS);
     }
 
     private static String visitArray(ResolvedFieldDeclaration rfd) {
@@ -1544,6 +1592,18 @@ public class JavaToProtobufGenerator {
         }
         for (ResolvedReferenceType rrt : clazz.getAllInterfacesAncestors()) {
             if ("java.util.List".equals(rrt.getQualifiedName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isMultiMap(ResolvedReferenceType clazz) {
+        if ("jakarta.ws.rs.core.MultivaluedMap".equals(clazz.getQualifiedName())) {
+            return true;
+        }
+        for (ResolvedReferenceType rrt : clazz.getAllInterfacesAncestors()) {
+            if ("jakarta.ws.rs.core.MultivaluedMap".equals(rrt.getQualifiedName())) {
                 return true;
             }
         }
