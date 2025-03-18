@@ -276,7 +276,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>proto</id>
@@ -326,11 +325,34 @@
                         <configuration>
                             <sources>
                                 <source>${project.basedir}/target/generated-sources/protobuf/grpc-java/</source>
-                                <!--source>${project.basedir}/target/generatedSources/</source-->
                             </sources>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-jakarta-rest</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>jakarta.ws.rs</groupId>
+                            <artifactId>jakarta.ws.rs-api</artifactId>
+                            <version>${version.jakarta.ws.rs}</version>
+                            <type>jar</type>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -345,7 +367,6 @@
                         <configuration>
                             <mainClass>dev.resteasy.grpc.bridge.generator.protobuf.JavaToProtobufGenerator</mainClass>
                             <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                            <!--additionalClasspathElements>${project.build.directory}/classes</additionalClasspathElements-->
                             <commandlineArgs>${project.basedir} dev.resteasy.grpc.example dev.resteasy.grpc.example ${root.class} -D&quot;--add-opens java.base/java.util=ALL-UNNAMED&quot;</commandlineArgs>
                             <systemProperties>
                                 <systemProperty>
@@ -358,11 +379,9 @@
                                 </systemProperty>
                                 <systemProperty>
 									<key>jars</key>
-									<value>${project.build.directory}/wildfly/modules/system/layers/base/jakarta/ws/rs/api/main/jakarta.ws.rs-api-3.1.0.jar</value>
+									<value>${project.build.directory}/jakarta.ws.rs-api-3.1.0.jar</value>
 								</systemProperty>
                             </systemProperties>
-                            <!--additionalClasspathElements>${project.build.outputDirectory}</additionalClasspathElements-->
-                           <!--addOutputToClasspath>true</addOutputToClasspath-->
                         </configuration>
                     </execution>
                     <execution>
@@ -386,7 +405,6 @@
                                     <value>false</value>
                                 </systemProperty>
                             </systemProperties>
-                            <!--commandlineArgs>- -add-opens java.base/java.util=ALL-UNNAMED</commandlineArgs-->
                         </configuration>
                     </execution>
                     <execution>
@@ -414,7 +432,6 @@
                             </systemProperties>
                         </configuration>
                     </execution>
-                    <!--argLine>- -add-opens java.base/jdk.internal.misc=ALL-UNNAMED</argLine-->
                     <execution>
                         <id>genGRPC</id>
                         <phase>process-classes</phase>
