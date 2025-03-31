@@ -35,6 +35,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.Assertions;
@@ -72,6 +73,7 @@ import dev.resteasy.grpc.example.CC1_proto.gNewCookie;
 import dev.resteasy.grpc.example.CC1_proto.gString;
 import dev.resteasy.grpc.example.sub.CC8;
 import dev.resteasy.grpc.lists.sets.DD1;
+import dev.resteasy.grpc.maps.MapResource;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
@@ -103,6 +105,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addPackage(CC1.class.getPackage())
                 .addPackage(CC8.class.getPackage())
                 .addPackage(DD1.class.getPackage())
+                .addPackage(MapResource.class.getPackage())
                 .addAsLibrary(resolver.resolve("dev.resteasy.grpc:grpc-bridge-runtime")
                         .withoutTransitivity()
                         .asSingleFile())
