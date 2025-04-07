@@ -406,7 +406,7 @@ public class ReaderWriterGenerator {
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         }" + LS)
                 .append("         Type oType = Utility.objectify(genericType);" + LS)
-                .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\").replace(\" \", \"\");"
+                .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\").replace(\" \", \"\").replace(\"$\", \".\");"
                         + LS)
                 .append("         if (ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            GeneratedMessage message = (GeneratedMessage) ENTITY_MAP.get(gt).invoke(null, entityStream);"

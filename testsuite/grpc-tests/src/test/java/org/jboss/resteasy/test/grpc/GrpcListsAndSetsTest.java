@@ -55,6 +55,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;
 
+import dev.resteasy.grpc.arrays.ArrayResource;
 import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.example.CC1;
@@ -162,6 +163,7 @@ public class GrpcListsAndSetsTest {
                 .addPackage(CC1.class.getPackage())
                 .addPackage(CC8.class.getPackage())
                 .addPackage(DD1.class.getPackage())
+                .addPackage(ArrayResource.class.getPackage())
                 .addPackage(MapResource.class.getPackage())
                 .addAsLibrary(resolver.resolve("dev.resteasy.grpc:grpc-bridge-runtime")
                         .withoutTransitivity()
