@@ -89,7 +89,7 @@
         <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
 
         <!-- Plugin Versions -->
-        <version.org.wildfly.wildfly-maven-plugin>5.1.2.Final</version.org.wildfly.wildfly-maven-plugin>
+        <version.org.wildfly.wildfly-maven-plugin>5.1.3.Final</version.org.wildfly.wildfly-maven-plugin>
 
         <!-- Plugin Versions, please keep in alphabetical order -->
         <!-- print logs to file by default -->
