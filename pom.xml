@@ -75,7 +75,7 @@
 
         <version.com.github.javaparser>3.18.0</version.com.github.javaparser>
         <version.com.google.protobuf>4.27.3</version.com.google.protobuf>
-        <version.io.grpc>1.70.0</version.io.grpc>
+        <version.io.grpc>1.72.0</version.io.grpc>
 
         <version.io.undertow>2.3.18.Final</version.io.undertow>
 
