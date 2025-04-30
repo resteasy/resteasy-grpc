@@ -911,9 +911,9 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(d1, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcListsSetsD1Field((dev_resteasy_grpc_lists_sets___D1) m).build();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcListsSetsD10Field((dev_resteasy_grpc_lists_sets___D10) m).build();
         GeneralReturnMessage response = blockingStubPlaintext.d1Integer(gem);
-        dev_resteasy_grpc_lists_sets___D1 result = response.getDevResteasyGrpcListsSetsD1Field();
+        dev_resteasy_grpc_lists_sets___D10 result = response.getDevResteasyGrpcListsSetsD10Field();
         Assertions.assertEquals(d1, translator.translateFromJavabuf(result));
     }
 

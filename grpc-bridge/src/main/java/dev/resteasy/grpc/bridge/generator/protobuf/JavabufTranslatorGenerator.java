@@ -155,8 +155,10 @@ public class JavabufTranslatorGenerator {
     private static final Map<String, String> ARRAY_CLASSES_FROM_JAVABUF_STREAM = new HashMap<String, String>();
     private static final Map<String, String> BUILTIN_TO_JAVABUF = new HashMap<String, String>();
 
-    private static final Map<String, String> LISTS = new HashMap<String, String>();
     private static final Map<String, String> AGGREGATES_INV = new HashMap<String, String>();
+    private static final Map<String, String> GENERICS_INV = new HashMap<String, String>();
+    private static final Map<String, String> GENERICS = new HashMap<String, String>();
+    private static final Map<String, String> LISTS = new HashMap<String, String>();
     private static final Map<String, String> SETS = new HashMap<String, String>();
     private static final Map<String, String> MAPS = new HashMap<String, String>();
     private static final Map<String, String> MULTIMAPS = new HashMap<String, String>();
@@ -1159,12 +1161,13 @@ public class JavabufTranslatorGenerator {
     }
 
     public static void main(String[] args) {
-        if (args == null || args.length != 4) {
-            logger.info("need four args:");
+        if (args == null || args.length != 5) {
+            logger.info("need five args:");
             logger.info("  arg[0]: output directory");
             logger.info("  arg[1]: javabuf wrapper class name");
             logger.info("  arg[2]: prefix");
             logger.info("  arg[3): .proto file");
+            logger.info("  arg[4): build directory (target)");
             return;
         }
         try {
@@ -1216,6 +1219,11 @@ public class JavabufTranslatorGenerator {
                     AGGREGATES_INV.put(javaClassname, javabufClassname);
                     MAPS.put(javabufClassname, javaClassname);
                     processMapTypes(reader, javabufClassname);
+                } else if (line.startsWith("// Type: ") && line.contains("<")) {
+                    String javaClassname = getJavaClassname(line, 9);
+                    String javabufClassname = getJavabufClassname(reader);
+                    GENERICS_INV.put(javaClassname, javabufClassname);
+                    GENERICS.put(javabufClassname, javaClassname);
                 }
             }
         } catch (Exception e) {
@@ -1524,9 +1532,11 @@ public class JavabufTranslatorGenerator {
                         .append(simpleName)
                         .append("_FromJavabuf());" + LS);
             } else {
+                String originalClassName = GENERICS.containsKey(simpleName) ? GENERICS.get(simpleName)
+                        : originalClassName(simpleName);
                 if (!isAbstract) {
                     sb.append(LS + "      toJavabufMap.put(\"")
-                            .append(originalClassName(simpleName) + "\" , new ")
+                            .append(originalClassName + "\" , new ")
                             .append(simpleName)
                             .append("_ToJavabuf());" + LS);
                     sb.append("      fromJavabufMap.put(")
@@ -1535,7 +1545,7 @@ public class JavabufTranslatorGenerator {
                             .append(simpleName)
                             .append("_FromJavabuf());" + LS);
                     sb.append("      toJavabufClassMap.put(\"")
-                            .append(originalClassName(simpleName) + "\", ")
+                            .append(originalClassName + "\", ")
                             .append(simpleName + ".class);" + LS);
                     sb.append("      fromJavabufClassMap.put(")
                             .append(simpleName + ".class.getName(), ")
@@ -1544,7 +1554,7 @@ public class JavabufTranslatorGenerator {
                         continue; // TAKE THIS OUT !!!
                     }
                     sb.append("      fromJavabufStreamMap.put(\"")
-                            .append(originalClassName(simpleName) + "\"")
+                            .append(originalClassName + "\"")
                             .append(", new ")
                             .append(simpleName)
                             .append("_FromJavabuf());" + LS);
@@ -1605,6 +1615,31 @@ public class JavabufTranslatorGenerator {
                 .append("         }" + LS)
                 .append("      }" + LS);
         sb.append("   }" + LS + LS);
+        writeNormalizer(args, sb);
+    }
+
+    private static void writeNormalizer(String[] args, StringBuilder sb) {
+        sb.append("   static {" + LS);
+        Path file = Paths.get(args[4], "normalizer");
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            String line = reader.readLine();
+            while (line != null) {
+                int n = line.indexOf("|");
+                String l1 = line.substring(0, n);
+                String l2 = line.substring(n + 1);
+                sb.append("      NORMALIZER.put(\"")
+                        .append(l1)
+                        .append("\", new GenericType<")
+                        .append(l2)
+                        .append(">() {});")
+                        .append(LS);
+                line = reader.readLine();
+            }
+            sb.append("   }" + LS + LS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private static boolean isAbstractOrInterface(Class<?> clazz) throws ClassNotFoundException {
@@ -1624,13 +1659,13 @@ public class JavabufTranslatorGenerator {
     private static void publicMethods(StringBuilder sb, Class<?> clazz, String[] args) {
         sb.append("   public boolean handlesToJavabuf(Type genericType, Class<?> clazz) {" + LS)
                 .append("      return clazz.isPrimitive() || " + LS)
-                .append("         (genericType != null && toJavabufMap.containsKey(simplifyTypeName(genericType.getTypeName()))) || "
+                .append("         (genericType != null && toJavabufMap.containsKey(simplifyTypeName(normalize(genericType).getTypeName()))) || "
                         + LS)
                 .append("         toJavabufMap.containsKey(clazz.getName());" + LS)
                 .append("   }" + LS + LS)
                 .append("   public boolean handlesFromJavabuf(Type genericType, Class<?> clazz) {" + LS)
                 .append("      return clazz.isPrimitive() || " + LS)
-                .append("         (genericType != null && toJavabufMap.containsKey(simplifyTypeName(genericType.getTypeName()))) || "
+                .append("         (genericType != null && toJavabufMap.containsKey(simplifyTypeName(normalize(genericType).getTypeName()))) || "
                         + LS)
                 .append("         toJavabufMap.containsKey(clazz.getName());" + LS)
                 .append("   }" + LS + LS)
@@ -1640,9 +1675,8 @@ public class JavabufTranslatorGenerator {
                 .append("   public Message translateToJavabuf(Object o, GenericType genericType) {" + LS)
                 .append("      TranslateToJavabuf ttj = null;" + LS)
                 .append("      if (genericType != null) {" + LS)
-                .append("         Type t = Utility.objectify(genericType.getType());" + LS)
-                .append("         String gt = t.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\");" + LS)
-                .append("         ttj = toJavabufMap.get(gt);" + LS)
+                .append("         GenericType<?> gt = normalize(genericType);" + LS)
+                .append("         ttj = toJavabufMap.get(gt.getType().toString());" + LS)
                 .append("         if (ttj == null) {" + LS)
                 .append("            ttj = toJavabufMap.get(genericType.getRawType().getName());" + LS)
                 .append("         }" + LS)
@@ -1734,6 +1768,20 @@ public class JavabufTranslatorGenerator {
                 .append("      }" + LS)
                 .append("      return tfj.parseFromJavabuf(is);" + LS)
                 .append("   }" + LS + LS);
+        sb.append("   @Override" + LS)
+                .append("   public GenericType<?> normalize(GenericType<?> genericType) {" + LS)
+                .append("      if (NORMALIZER.containsKey(simplifyTypeName(genericType.getType().getTypeName()))) {" + LS)
+                .append("         return NORMALIZER.get(simplifyTypeName(genericType.getType().getTypeName()));" + LS)
+                .append("      }" + LS)
+                .append("      return Utility.objectify(genericType);" + LS)
+                .append("   }" + LS + LS);
+        sb.append("   @Override" + LS)
+                .append("   public Type normalize(Type type) {" + LS)
+                .append("       if (NORMALIZER.containsKey(simplifyTypeName(type.getTypeName()))) {" + LS)
+                .append("          return NORMALIZER.get(simplifyTypeName(type.getTypeName())).getType();" + LS)
+                .append("       }" + LS)
+                .append("       return Utility.objectify(type);" + LS)
+                .append("     }" + LS + LS);
     }
 
     private static void createTranslator(String[] args, Class<?> clazz, StringBuilder sb) throws Exception {
@@ -1760,7 +1808,9 @@ public class JavabufTranslatorGenerator {
         sb.append("   private static Map<String, String> LISTS = new HashMap<String, String>();" + LS);
         sb.append("   private static Map<String, String> SETS  = new HashMap<String, String>();" + LS);
         sb.append("   private static Map<String, String> LISTS_INV = new HashMap<String, String>();" + LS);
-        sb.append("   private static Map<String, String> SETS_INV  = new HashMap<String, String>();" + LS + LS);
+        sb.append("   private static Map<String, String> SETS_INV  = new HashMap<String, String>();" + LS);
+        sb.append(
+                "   private static Map<String, GenericType<?>> NORMALIZER = new HashMap<String, GenericType<?>>();" + LS + LS);
         sb.append("   @SuppressWarnings(\"rawtypes\")" + LS);
         sb.append("   private static Map<String, Class> toJavabufClassMap = new HashMap<String, Class>();" + LS);
         sb.append("   private static Map<String, Class<?>> fromJavabufClassMap = new HashMap<String, Class<?>>();"
@@ -1816,14 +1866,25 @@ public class JavabufTranslatorGenerator {
                 .append("                           messageBuilder.setField(fd, Any.pack(message));" + LS)
                 .append("                        }" + LS)
                 .append("                     }" + LS)
-
-                .append("                  } else if (!String.class.equals(field.getType())" + LS)
-                .append("                        && toJavabufMap.keySet().contains(getTypeName(field))) {" + LS)
-                .append("                        Message message = toJavabufMap.get(getTypeName(field)).assignToJavabuf(field.get(obj));"
+                .append("                 } else if (field.get(obj) != null" + LS)
+                .append("                        && !field.get(obj).getClass().isPrimitive()" + LS)
+                .append("                        && !WRAPPER_TYPES.contains(field.get(obj).getClass())) {" + LS)
+                .append("                     if (toJavabufMap.keySet().contains(getTypeName(field))) {" + LS)
+                .append("                          Message message = toJavabufMap.get(getTypeName(field)).assignToJavabuf(field.get(obj));"
+                        + LS)
+                .append("                          if (message != null) {" + LS)
+                .append("                              messageBuilder.setField(fd, message);" + LS)
+                .append("                          }" + LS)
+                .append("                     } else if (toJavabufMap.keySet().contains(field.get(obj).getClass().getName())) {"
+                        + LS)
+                .append("                          Message message = toJavabufMap.get(field.get(obj).getClass().getName()).assignToJavabuf(field.get(obj));"
                         + LS)
                 .append("                        if (message != null) {" + LS)
-                .append("                           messageBuilder.setField(fd, message);" + LS)
-                .append("                        }" + LS)
+                .append("                              messageBuilder.setField(fd, message);" + LS)
+                .append("                           }" + LS)
+                .append("                     } else {" + LS)
+                .append("                        throw new RuntimeException(field.get(obj) + \" type not recognized\");" + LS)
+                .append("                     }" + LS)
                 .append("                    } else if (field.get(obj) != null) {" + LS)
                 .append("                        if (Byte.class.equals(field.getType()) || byte.class.equals(field.getType())) {"
                         + LS)

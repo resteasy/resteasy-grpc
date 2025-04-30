@@ -75,9 +75,12 @@ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeParameterDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedTypeParameterDeclaration.Bound;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
+import com.github.javaparser.resolution.types.ResolvedTypeVariable;
+import com.github.javaparser.resolution.types.ResolvedWildcard;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
@@ -300,14 +303,15 @@ public class JavaToProtobufGenerator {
     private static Map<String, String> REPEAT_MAP = new HashMap<String, String>();
     private static Map<String, String> WRAPPER_TO_JAVABUF_MAP = new HashMap<String, String>();
     private static Map<String, String> PRIMITIVE_ARRAY_TYPE = new HashMap<String, String>();
+    private static Map<String, String> normalizer = new HashMap<String, String>();
     private static Set<String> entityTypes = new HashSet<String>();
     private static Set<String> entityTypesForFile = new HashSet<String>();
     private static AtomicInteger classnameCounter = new AtomicInteger();
     private static Map<String, String> classnames = new ConcurrentHashMap<String, String>();
     private static Set<String> rpcNames = new HashSet<String>();
-    private static Map<ResolvedReferenceType, ResolvedReferenceType> objectifiedTypes = new ConcurrentHashMap<ResolvedReferenceType, ResolvedReferenceType>();
     private static Map<String, String> classnameMap = new ConcurrentHashMap<String, String>();
     private static ReflectionTypeParameter[] TV = new ReflectionTypeParameter[10];
+    private static Map<ResolvedReferenceType, ResolvedReferenceType> objectifiedTypes = new ConcurrentHashMap<ResolvedReferenceType, ResolvedReferenceType>();
 
     class Dummy<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
     }
@@ -627,6 +631,7 @@ public class JavaToProtobufGenerator {
         writeProtoFile(args, sb);
         createProtobufDirectory(args);
         writeEntityTypesFile(args);
+        writeNormalizer(args);
     }
 
     private static void protobufHeader(String[] args, StringBuilder sb) {
@@ -948,6 +953,19 @@ public class JavaToProtobufGenerator {
         }
     }
 
+    private static void writeNormalizer(String[] args) throws IOException {
+        Path path = Path.of(args[0], "/target");
+        Files.createDirectories(path);
+        File file = new File(path.toString() + "/normalizer");
+        try (FileWriter writer = new FileWriter(file)) {
+            for (String type : normalizer.keySet()) {
+                writer.write(type + "|" + normalizer.get(type) + LS);
+            }
+        } catch (Exception e) {
+            logger.error("HMMMMMM");
+        }
+    }
+
     /****************************************************************************/
     /********************************** classes *********************************/
     /****************************************************************************/
@@ -1212,8 +1230,34 @@ public class JavaToProtobufGenerator {
         Iterator<Pair<ResolvedTypeParameterDeclaration, ResolvedType>> iterator = clazz.getTypeParametersMap().iterator();
         while (iterator.hasNext()) {
             Pair<ResolvedTypeParameterDeclaration, ResolvedType> pair = iterator.next();
-            if (pair.b.isTypeVariable() || pair.b.isWildcard()) {
-                list.add(objectType);
+            if (pair.b.isTypeVariable()) {
+                ResolvedTypeVariable rtv = pair.b.asTypeVariable();
+                List<Bound> bounds = rtv.asTypeParameter().getBounds();
+                if (bounds.size() > 0) {
+                    for (Bound bound : bounds) {
+                        if (bound.isExtends()) {
+                            list.add(bound.getType());
+                        } else {
+                            list.add(objectType);
+                        }
+                    }
+                } else {
+                    list.add(objectType);
+                }
+            } else if (pair.b.isWildcard()) {
+                ResolvedWildcard rwc = (ResolvedWildcard) pair.b.asWildcard();
+                if (rwc.isLowerBounded()) {
+                    list.add(rwc.getBoundedType());
+                } else if (pair.a.getBounds().size() > 0) {
+                    Bound bound = pair.a.getBounds().get(0);
+                    if (bound.isExtends()) {
+                        list.add(bound.getType());
+                    } else {
+                        list.add(objectType);
+                    }
+                } else {
+                    list.add(objectType);
+                }
             } else if (pair.b.isReferenceType()) {
                 ResolvedType rt = objectify(pair.b.asReferenceType());
                 list.add(rt);
@@ -1226,10 +1270,12 @@ public class JavaToProtobufGenerator {
             }
         }
         ReferenceTypeImpl rti = new ReferenceTypeImpl(clazz.getTypeDeclaration().get(), list, combinedTypeSolver);
-        objectifiedTypes.put(clazz, rti);
         // Create non generic version of clazz.
         if (!visited.contains(rti.describe())) {
             pendingTypes.add(rti);
+        }
+        if (!clazz.describe().equals(rti.describe())) {
+            normalizer.put(clazz.describe(), rti.describe());
         }
         return rti;
     }
@@ -1278,48 +1324,56 @@ public class JavaToProtobufGenerator {
     }
 
     private static String visitArray(ResolvedFieldDeclaration rfd) {
-        ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
-        ResolvedType ct = rat.getComponentType();
-        String type = null;
-        String fqn = null;
-        if ("java.lang.Object".equals(ct.describe())) {
-            return null;
-        } else if (PRIMITIVE_ARRAY_TYPE.containsKey(ct.describe())) {
-            type = PRIMITIVE_ARRAY_TYPE.get(ct.describe());
-        } else if (WRAPPER_TO_JAVABUF_MAP.keySet().contains(ct.describe())) {
-            type = WRAPPER_TO_JAVABUF_MAP.get(ct.describe());
-        } else if (ct instanceof ResolvedArrayType) {
-            type = "dev_resteasy_grpc_arrays___ArrayHolder___WArray";
-            ResolvedArrayType rat2 = (ResolvedArrayType) ct;
-            if (ct.isReferenceType()) {
-                ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
-                fqn = bat.asReferenceType().getQualifiedName(); // type variable?
-                if (!visited.contains(fqn)) {
-                    pendingTypes.add(objectify(bat.asReferenceType()));
-                }
-                bat = bat.asArrayType().getComponentType();
-                if (bat.isReference()) {
+        try {
+            ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
+            ResolvedType ct = rat.getComponentType();
+            String type = null;
+            String fqn = null;
+            if ("java.lang.Object".equals(ct.describe())) {
+                return null;
+            } else if (PRIMITIVE_ARRAY_TYPE.containsKey(ct.describe())) {
+                type = PRIMITIVE_ARRAY_TYPE.get(ct.describe());
+            } else if (WRAPPER_TO_JAVABUF_MAP.keySet().contains(ct.describe())) {
+                type = WRAPPER_TO_JAVABUF_MAP.get(ct.describe());
+            } else if (ct instanceof ResolvedArrayType) {
+                type = "dev_resteasy_grpc_arrays___ArrayHolder___WArray";
+                if (ct.isReferenceType()) {
+                    ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
                     fqn = bat.asReferenceType().getQualifiedName(); // type variable?
                     if (!visited.contains(fqn)) {
                         pendingTypes.add(objectify(bat.asReferenceType()));
                     }
+                    bat = bat.asArrayType().getComponentType();
+                    if (bat.isReference()) {
+                        fqn = bat.asReferenceType().getQualifiedName(); // type variable?
+                        if (!visited.contains(fqn)) {
+                            pendingTypes.add(objectify(bat.asReferenceType()));
+                        }
+                    }
+                }
+            } else {
+                if (!ct.isReferenceType()) {
+                    return null;
+                }
+                fqn = removeTypeVariables(ct.describe());
+                if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(fqn)) {
+                    type = wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
+                } else if (!visited.contains(fqn)) {
+                    pendingTypes.add(objectify(ct.asReferenceType()));
+                    type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                            .getTypeDeclaration()
+                            .get())));
+                } else {
+                    type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                            .getTypeDeclaration()
+                            .get())));
                 }
             }
-        } else {
-            if (!ct.isReferenceType()) {
-                return null;
-            }
-            fqn = removeTypeVariables(ct.describe());
-            if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(fqn)) {
-                type = wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
-            } else if (!visited.contains(fqn)) {
-                pendingTypes.add(objectify(ct.asReferenceType()));
-                type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
-                        .getTypeDeclaration()
-                        .get())));
-            }
+            return type;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return type;
     }
 
     private static String visitReferenceType(ResolvedType rt) {
@@ -1824,32 +1878,6 @@ public class JavaToProtobufGenerator {
             repeatedTypes.add(type);
         }
         return type;
-    }
-
-    private static String transformClassName(String s) {
-        if (!s.endsWith("[]")) {
-            return s;
-        }
-        String component = s.substring(0, s.indexOf("[]"));
-        if (PRIMITIVE_TYPES.containsKey(component)) {
-            return addLeft(PRIMITIVE_TYPES.get(component), depth(s));
-        }
-        return addLeft("L" + component + ";", depth(s));
-    }
-
-    private static int depth(String s) {
-        if (s.endsWith("[]")) {
-            return 1 + depth(s.substring(0, s.length() - 2));
-        }
-        return 0;
-    }
-
-    private static String addLeft(String s, int n) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            sb.append("[");
-        }
-        return sb.append(s).toString();
     }
 
     static final boolean hasInterfaceType(FieldDeclaration f) {

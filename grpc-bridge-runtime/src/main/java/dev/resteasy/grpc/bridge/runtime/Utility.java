@@ -31,6 +31,8 @@ import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.ws.rs.core.GenericType;
+
 import org.jboss.resteasy.spi.util.Types.ResteasyParameterizedType;
 
 import com.google.protobuf.Any;
@@ -255,6 +257,10 @@ public final class Utility {
         }
     }
 
+    public static GenericType<?> objectify(GenericType<?> genericType) {
+        return new GenericType<>(objectify(genericType.getType()));
+    }
+
     public static Type objectify(Type type) {
         if (!(type instanceof ParameterizedType)) {
             return type;
@@ -263,8 +269,10 @@ public final class Utility {
         Type[] types = ptype.getActualTypeArguments();
         Type[] newTypes = new Type[types.length];
         for (int i = 0; i < types.length; i++) {
-            if (types[i] instanceof TypeVariable || types[i] instanceof WildcardType) {
-                newTypes[i] = Object.class;
+            if (types[i] instanceof WildcardType) {
+                newTypes[i] = getBound((WildcardType) types[i]);
+            } else if (types[i] instanceof TypeVariable) {
+                newTypes[i] = getBound((TypeVariable<?>) types[i]);
             } else if (types[i] instanceof ParameterizedType) {
                 newTypes[i] = objectify((ParameterizedType) types[i]);
             } else {
@@ -272,6 +280,33 @@ public final class Utility {
             }
         }
         return new GrpcParameterizedType(newTypes, ptype.getRawType(), ptype.getOwnerType());
+    }
+
+    static Class<?> getBound(WildcardType w) {
+        if (w.getLowerBounds().length == 0 && w.getUpperBounds().length == 0) {
+            return Object.class;
+        }
+        try {
+            if (w.getUpperBounds().length > 0) {
+                String s = w.getUpperBounds()[0].getTypeName();
+                return Class.forName(s);
+            }
+            return Object.class;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static Class<?> getBound(TypeVariable<?> t) {
+        if (t.getBounds().length == 0) {
+            return Object.class;
+        }
+        try {
+            String s = t.getBounds()[0].getTypeName();
+            return Class.forName(s);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class GrpcParameterizedType extends ResteasyParameterizedType {

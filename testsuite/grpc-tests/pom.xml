@@ -398,6 +398,7 @@
                                 <argument>dev.resteasy.grpc.example.${root.class}</argument>
                                 <argument>${root.class}</argument>
                                 <argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}proto${file.separator}CC1.proto</argument>
+                                <argument>${project.build.directory}</argument>
                             </arguments>
                             <systemProperties>
                                 <systemProperty>

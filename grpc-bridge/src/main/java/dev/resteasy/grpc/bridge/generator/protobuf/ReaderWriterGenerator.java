@@ -405,8 +405,8 @@ public class ReaderWriterGenerator {
                 .append("            return ")
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         }" + LS)
-                .append("         Type oType = Utility.objectify(genericType);" + LS)
-                .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\").replace(\" \", \"\").replace(\"$\", \".\");"
+                .append("         Type nType = translator.normalize(genericType);" + LS)
+                .append("         String gt = nType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\").replace(\" \", \"\").replace(\"$\", \".\");"
                         + LS)
                 .append("         if (ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            GeneratedMessage message = (GeneratedMessage) ENTITY_MAP.get(gt).invoke(null, entityStream);"
