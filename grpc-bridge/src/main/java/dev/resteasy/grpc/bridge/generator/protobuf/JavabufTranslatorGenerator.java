@@ -821,7 +821,7 @@ public class JavabufTranslatorGenerator {
             + "            }%n"
             + "            return map;%n"
             + "         } catch (Exception e) {%n"
-            + "            java_util___HashMap2 m = (java_util___HashMap2) message;%n" //???
+            + "            %1$s m = (%1$s) message;%n"
             + "            String classname = m.getClassname();%n"
             + "            throw new RuntimeException(classname + \" \" + e);%n"
             + "         }%n"
