@@ -58,6 +58,8 @@ import dev.resteasy.grpc.example.CC1_proto;
 import dev.resteasy.grpc.example.CC1_proto.*;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
+import dev.resteasy.grpc.example.CC1_proto.java_util___ArrayList;
+import dev.resteasy.grpc.example.CC1_proto.java_util___HashSet;
 import dev.resteasy.grpc.example.sub.CC8;
 import dev.resteasy.grpc.lists.sets.D1;
 import dev.resteasy.grpc.lists.sets.D3;
@@ -856,9 +858,10 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(d1, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcListsSetsD10Field((dev_resteasy_grpc_lists_sets___D10) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.d1Integer(gem);
-        dev_resteasy_grpc_lists_sets___D10 result = response.getDevResteasyGrpcListsSetsD10Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(d1, translator.translateFromJavabuf(result));
     }
 
@@ -936,5 +939,9 @@ public class GrpcListsAndSetsTest {
             }
             return false;
         }
+    }
+
+    static String simplifyType(GenericType<?> type) {
+        return type.getType().toString().replace(" ", "");
     }
 }

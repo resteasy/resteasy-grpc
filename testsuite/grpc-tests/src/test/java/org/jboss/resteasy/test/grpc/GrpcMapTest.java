@@ -64,7 +64,6 @@ import dev.resteasy.grpc.example.CC1JavabufTranslator;
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
 import dev.resteasy.grpc.example.CC1_Server;
 import dev.resteasy.grpc.example.CC1_proto;
-import dev.resteasy.grpc.example.CC1_proto.*;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
 import dev.resteasy.grpc.example.sub.CC8;
@@ -434,11 +433,12 @@ public class GrpcMapTest {
     public void testHashMapRaw() throws Exception {
         HashMap map = new HashMap();
         map.put(new M1("three", Integer.valueOf(3)), new M1("five", Integer.valueOf(5)));
-        java_util___HashMap m = (java_util___HashMap) translator.translateToJavabuf(map);
+        Message m = translator.translateToJavabuf(map);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMapField(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(HashMap.class.getName()).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapNoType(gem);
-        java_util___HashMap result = response.getJavaUtilHashMapField();
+        Message result = (Message) JavabufClassTranslator.getGetter(HashMap.class.getName()).invoke(response);
         Map mmm = (Map) translator.translateFromJavabuf(result);
         Entry entry = (Entry) mmm.entrySet().iterator().next();
         Assert.assertTrue(new M1("three", Integer.valueOf(3)).toString().equals(entry.getKey().toString()) &&
@@ -453,11 +453,12 @@ public class GrpcMapTest {
         map.put(Integer.valueOf(11), Integer.valueOf(13));
         GenericType<java.util.HashMap<Object, Object>> type = new GenericType<java.util.HashMap<Object, Object>>() {
         };
-        java_util___HashMap2 m = (java_util___HashMap2) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap2Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapVarVar(gem);
-        Message result = response.getJavaUtilHashMap2Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -467,11 +468,12 @@ public class GrpcMapTest {
     public void testHashmapVariableVariableNull() throws Exception {
         HashMap map = new java.util.HashMap<Object, Object>();
         map.put(Integer.valueOf(11), Integer.valueOf(13));
-        java_util___HashMap m = (java_util___HashMap) translator.translateToJavabuf(map, null);
+        Message m = translator.translateToJavabuf(map, null);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMapField(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(HashMap.class.getName()).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapNoType(gem);
-        Message result = response.getJavaUtilHashMapField();
+        Message result = (Message) JavabufClassTranslator.getGetter(HashMap.class.getName()).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -483,11 +485,12 @@ public class GrpcMapTest {
         map.put(Integer.valueOf(17), Integer.valueOf(19));
         GenericType<HashMap<Object, Object>> type = new GenericType<HashMap<Object, Object>>() {
         };
-        java_util___HashMap2 m = (java_util___HashMap2) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap2Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapWildWild(gem);
-        Message result = response.getJavaUtilHashMap2Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -499,11 +502,12 @@ public class GrpcMapTest {
         map.put("from", "to");
         GenericType<HashMap<String, String>> type = new GenericType<HashMap<String, String>>() {
         };
-        java_util___HashMap3 m = (java_util___HashMap3) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap3Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapStringString(gem);
-        Message result = response.getJavaUtilHashMap3Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -515,11 +519,12 @@ public class GrpcMapTest {
         map.put("23", Integer.valueOf(29));
         GenericType<HashMap<String, Integer>> type = new GenericType<HashMap<String, Integer>>() {
         };
-        java_util___HashMap4 m = (java_util___HashMap4) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap4Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapStringInt(gem);
-        Message result = response.getJavaUtilHashMap4Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -531,11 +536,12 @@ public class GrpcMapTest {
         map.put(new M1("31", 37), new M1("39", 41));
         GenericType<HashMap<Object, Object>> type = new GenericType<HashMap<Object, Object>>() {
         };
-        java_util___HashMap2 m = (java_util___HashMap2) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap2Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapObjObj(gem);
-        Message result = response.getJavaUtilHashMap2Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -551,11 +557,12 @@ public class GrpcMapTest {
         map.put(list, set);
         GenericType<HashMap<List<Integer>, Set<Integer>>> type = new GenericType<HashMap<List<Integer>, Set<Integer>>>() {
         };
-        java_util___HashMap5 m = (java_util___HashMap5) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap5Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapListSet(gem);
-        Message result = response.getJavaUtilHashMap5Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -571,11 +578,12 @@ public class GrpcMapTest {
         map.put(smap, imap);
         GenericType<HashMap<HashMap<String, String>, HashMap<Integer, Integer>>> type = new GenericType<HashMap<HashMap<String, String>, HashMap<Integer, Integer>>>() {
         };
-        java_util___HashMap7 m = (java_util___HashMap7) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap7Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapHashmapStringHashmapInt(gem);
-        Message result = response.getJavaUtilHashMap7Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -591,11 +599,12 @@ public class GrpcMapTest {
         map.put(list, set);
         GenericType<HashMap<ArrayList, HashSet>> type = new GenericType<HashMap<ArrayList, HashSet>>() {
         };
-        java_util___HashMap6 m = (java_util___HashMap6) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap6Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapArraylistHashset(gem);
-        Message result = response.getJavaUtilHashMap6Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -609,11 +618,12 @@ public class GrpcMapTest {
         map.put(m1a, m1b);
         GenericType<HashMap<M1, M1>> type = new GenericType<HashMap<M1, M1>>() {
         };
-        java_util___HashMap8 m = (java_util___HashMap8) translator.translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJavaUtilHashMap8Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashmapM1M1(gem);
-        Message result = response.getJavaUtilHashMap8Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -633,5 +643,9 @@ public class GrpcMapTest {
             }
         }
         return true;
+    }
+
+    static String simplifyType(GenericType<?> type) {
+        return type.getType().toString().replace(" ", "");
     }
 }

@@ -65,7 +65,6 @@ import dev.resteasy.grpc.example.CC1JavabufTranslator;
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
 import dev.resteasy.grpc.example.CC1_Server;
 import dev.resteasy.grpc.example.CC1_proto;
-import dev.resteasy.grpc.example.CC1_proto.*;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
 import dev.resteasy.grpc.example.sub.CC8;
@@ -423,16 +422,19 @@ public class GrpcMultivaluedMapTest {
     //=======================================================================================
     // Client: MultivaluedHashMap
     // Server: MultivaluedHashMap
+    @SuppressWarnings("rawtypes")
     @Test
     public void testMultivaluedHashMapRaw() throws Exception {
         MultivaluedHashMap map = new MultivaluedHashMap();
         map.add(new M1("three", Integer.valueOf(3)), new M1("five", Integer.valueOf(5)));
-        jakarta_ws_rs_core___MultivaluedHashMap m = (jakarta_ws_rs_core___MultivaluedHashMap) translator
-                .translateToJavabuf(map);
+        Message m = translator.translateToJavabuf(map);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMapField(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("jakarta.ws.rs.core.MultivaluedHashMap")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/multihashmap/notype").build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapNoType(gem);
-        jakarta_ws_rs_core___MultivaluedHashMap result = response.getJakartaWsRsCoreMultivaluedHashMapField();
+        Message result = (Message) JavabufClassTranslator.getGetter("jakarta.ws.rs.core.MultivaluedHashMap")
+                .invoke(response);
         MultivaluedHashMap mmm = (MultivaluedHashMap) translator.translateFromJavabuf(result);
         Assertions.assertEquals(map, mmm);
     }
@@ -445,12 +447,15 @@ public class GrpcMultivaluedMapTest {
         map.add(Integer.valueOf(11), Integer.valueOf(13));
         GenericType<MultivaluedHashMap<Object, Object>> type = new GenericType<MultivaluedHashMap<Object, Object>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap9 m = (jakarta_ws_rs_core___MultivaluedHashMap9) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap9Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("jakarta.ws.rs.core.MultivaluedHashMap<java.lang.Object,java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/multihashmap/variable/variable").build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapVarVar(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap9Field();
+        Message result = (Message) JavabufClassTranslator
+                .getGetter("jakarta.ws.rs.core.MultivaluedHashMap<java.lang.Object,java.lang.Object>")
+                .invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -460,12 +465,16 @@ public class GrpcMultivaluedMapTest {
     public void testMultivaluedHashmapVariableVariableNull() throws Exception {
         MultivaluedHashMap map = new MultivaluedHashMap<Object, Object>();
         map.add(Integer.valueOf(11), Integer.valueOf(13));
-        jakarta_ws_rs_core___MultivaluedHashMap m = (jakarta_ws_rs_core___MultivaluedHashMap) translator.translateToJavabuf(map,
-                null);
+        Message m = translator.translateToJavabuf(map, null);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMapField(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("jakarta.ws.rs.core.MultivaluedHashMap")
+                .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapNoType(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMapField();
+        Message result = (Message) JavabufClassTranslator
+                .getGetter("jakarta.ws.rs.core.MultivaluedHashMap"
+                        + "")
+                .invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -477,12 +486,15 @@ public class GrpcMultivaluedMapTest {
         map.add(Integer.valueOf(17), Integer.valueOf(19));
         GenericType<MultivaluedHashMap<Object, Object>> type = new GenericType<MultivaluedHashMap<Object, Object>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap9 m = (jakarta_ws_rs_core___MultivaluedHashMap9) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap9Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("jakarta.ws.rs.core.MultivaluedHashMap<java.lang.Object,java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/multihashmap/wildcard/wildcard").build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapWildWild(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap9Field();
+        Message result = (Message) JavabufClassTranslator
+                .getGetter("jakarta.ws.rs.core.MultivaluedHashMap<java.lang.Object,java.lang.Object>")
+                .invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -494,12 +506,12 @@ public class GrpcMultivaluedMapTest {
         map.add("from", "to");
         GenericType<MultivaluedHashMap<String, String>> type = new GenericType<MultivaluedHashMap<String, String>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap10 m = (jakarta_ws_rs_core___MultivaluedHashMap10) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap10Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapStringString(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap10Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -511,12 +523,12 @@ public class GrpcMultivaluedMapTest {
         map.add("23", Integer.valueOf(29));
         GenericType<MultivaluedHashMap<String, Integer>> type = new GenericType<MultivaluedHashMap<String, Integer>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap11 m = (jakarta_ws_rs_core___MultivaluedHashMap11) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap11Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapStringInt(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap11Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -528,12 +540,12 @@ public class GrpcMultivaluedMapTest {
         map.add(new M1("31", 37), new M1("39", 41));
         GenericType<MultivaluedHashMap<Object, Object>> type = new GenericType<MultivaluedHashMap<Object, Object>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap9 m = (jakarta_ws_rs_core___MultivaluedHashMap9) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap9Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapObjObj(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap9Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -549,12 +561,12 @@ public class GrpcMultivaluedMapTest {
         map.add(list, set);
         GenericType<MultivaluedHashMap<List<Integer>, Set<Integer>>> type = new GenericType<MultivaluedHashMap<List<Integer>, Set<Integer>>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap12 m = (jakarta_ws_rs_core___MultivaluedHashMap12) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap12Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapListSet(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap12Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -570,12 +582,12 @@ public class GrpcMultivaluedMapTest {
         map.add(smap, imap);
         GenericType<MultivaluedHashMap<MultivaluedHashMap<String, String>, MultivaluedHashMap<Integer, Integer>>> type = new GenericType<MultivaluedHashMap<MultivaluedHashMap<String, String>, MultivaluedHashMap<Integer, Integer>>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap14 m = (jakarta_ws_rs_core___MultivaluedHashMap14) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap14Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapHashmapStringHashmapInt(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap14Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -591,12 +603,12 @@ public class GrpcMultivaluedMapTest {
         map.add(list, set);
         GenericType<MultivaluedHashMap<ArrayList, HashSet>> type = new GenericType<MultivaluedHashMap<ArrayList, HashSet>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap13 m = (jakarta_ws_rs_core___MultivaluedHashMap13) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap13Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapArraylistHashset(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap13Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -610,12 +622,12 @@ public class GrpcMultivaluedMapTest {
         map.add(m1a, m1b);
         GenericType<MultivaluedHashMap<M1, M1>> type = new GenericType<MultivaluedHashMap<M1, M1>>() {
         };
-        jakarta_ws_rs_core___MultivaluedHashMap15 m = (jakarta_ws_rs_core___MultivaluedHashMap15) translator
-                .translateToJavabuf(map, type);
+        Message m = translator.translateToJavabuf(map, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setJakartaWsRsCoreMultivaluedHashMap15Field(m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.multimapHashmapM1M1(gem);
-        Message result = response.getJakartaWsRsCoreMultivaluedHashMap15Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(map, translator.translateFromJavabuf(result));
     }
 
@@ -635,5 +647,9 @@ public class GrpcMultivaluedMapTest {
             }
         }
         return true;
+    }
+
+    static String simplifyType(GenericType<?> type) {
+        return type.getType().toString().replace(" ", "");
     }
 }
