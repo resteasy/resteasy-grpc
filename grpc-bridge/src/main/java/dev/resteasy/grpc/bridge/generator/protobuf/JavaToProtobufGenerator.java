@@ -79,8 +79,6 @@ import com.github.javaparser.resolution.declarations.ResolvedTypeParameterDeclar
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
-import com.github.javaparser.resolution.types.ResolvedTypeVariable;
-import com.github.javaparser.resolution.types.ResolvedWildcard;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
@@ -1230,25 +1228,8 @@ public class JavaToProtobufGenerator {
         Iterator<Pair<ResolvedTypeParameterDeclaration, ResolvedType>> iterator = clazz.getTypeParametersMap().iterator();
         while (iterator.hasNext()) {
             Pair<ResolvedTypeParameterDeclaration, ResolvedType> pair = iterator.next();
-            if (pair.b.isTypeVariable()) {
-                ResolvedTypeVariable rtv = pair.b.asTypeVariable();
-                List<Bound> bounds = rtv.asTypeParameter().getBounds();
-                if (bounds.size() > 0) {
-                    for (Bound bound : bounds) {
-                        if (bound.isExtends()) {
-                            list.add(bound.getType());
-                        } else {
-                            list.add(objectType);
-                        }
-                    }
-                } else {
-                    list.add(objectType);
-                }
-            } else if (pair.b.isWildcard()) {
-                ResolvedWildcard rwc = (ResolvedWildcard) pair.b.asWildcard();
-                if (rwc.isLowerBounded()) {
-                    list.add(rwc.getBoundedType());
-                } else if (pair.a.getBounds().size() > 0) {
+            if ((pair.b.isTypeVariable() || pair.b.isWildcard())) {
+                if (pair.a.getBounds().size() > 0) {
                     Bound bound = pair.a.getBounds().get(0);
                     if (bound.isExtends()) {
                         list.add(bound.getType());
@@ -1258,7 +1239,32 @@ public class JavaToProtobufGenerator {
                 } else {
                     list.add(objectType);
                 }
-            } else if (pair.b.isReferenceType()) {
+            }
+            // If we want to process bounded entity and return types:
+            //
+            //            else if (pair.b.isTypeVariable()) {
+            //                ResolvedTypeVariable rtv = pair.b.asTypeVariable();
+            //                List<Bound> bounds = rtv.asTypeParameter().getBounds();
+            //                if (bounds.size() > 0) {
+            //                    for (Bound bound : bounds) {
+            //                        if (bound.isExtends()) {
+            //                            list.add(bound.getType());
+            //                        } else {
+            //                            list.add(objectType);
+            //                        }
+            //                    }
+            //                } else {
+            //                    list.add(objectType);
+            //                }
+            //            } else if (pair.b.isWildcard()) {
+            //                ResolvedWildcard rwc = (ResolvedWildcard) pair.b.asWildcard();
+            //                if (rwc.isLowerBounded()) {
+            //                    list.add(rwc.getBoundedType());
+            //                } else {
+            //                    list.add(objectType);
+            //                }
+            //            }
+            else if (pair.b.isReferenceType()) {
                 ResolvedType rt = objectify(pair.b.asReferenceType());
                 list.add(rt);
                 if (!visited.contains(rt.describe())

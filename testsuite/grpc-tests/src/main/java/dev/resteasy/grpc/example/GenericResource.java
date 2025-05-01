@@ -48,6 +48,12 @@ public class GenericResource {
         return cc11;
     }
 
+    @POST
+    @Path("cc11/variable")
+    public <T extends TestClass> CC11<T> cc11Variable(CC11<T> cc11) {
+        return cc11;
+    }
+
     /*
      * Just to get TestClass into CC1.proto
      */

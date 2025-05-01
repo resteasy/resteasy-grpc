@@ -45,6 +45,7 @@ import org.junit.jupiter.api.Assertions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
+import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 
 import dev.resteasy.grpc.arrays.ArrayResource;
@@ -67,11 +68,6 @@ import dev.resteasy.grpc.example.CC1_proto.ServletInfo;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example_InnerClasses_INNER_InnerClassHolder;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example_InnerClasses_INNER_PublicPrivate;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example_InnerClasses_INNER_PublicPublic;
-import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC1030;
-import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC1031;
-import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC1032;
-import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC1033;
-import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC1134;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC2;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC3;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC4;
@@ -213,6 +209,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testGenericWildcardLowerWildcard(stub);
         this.testGenericVariableUpperTestClass(stub);
         this.testC11GenericWildcardTestClass(stub);
+        this.testC11GenericVariableTestClass(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1523,17 +1520,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<Integer> cc10 = new CC10<Integer>(17);
         GenericType<CC10<Object>> type = new GenericType<CC10<Object>>() {
         };
-        dev_resteasy_grpc_example___CC1030 cc1030 = (dev_resteasy_grpc_example___CC1030) translator.translateToJavabuf(cc10,
-                type);
+        Message m = translator.translateToJavabuf(cc10, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/wildcard")
-                .setDevResteasyGrpcExampleCC1030Field(cc1030).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/wildcard").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10Wildcrd(gem);
-            dev_resteasy_grpc_example___CC1030 result = response.getDevResteasyGrpcExampleCC1030Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                    .invoke(response);
             CC10<Integer> cc10a = (CC10<Integer>) translator.translateFromJavabuf(result);
-            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10.getT())));
+            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10a.getT())));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -1546,17 +1544,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<Integer> cc10 = new CC10<Integer>(17);
         GenericType<CC10<?>> type = new GenericType<CC10<?>>() {
         };
-        dev_resteasy_grpc_example___CC1030 cc1030 = (dev_resteasy_grpc_example___CC1030) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/wildcard")
-                .setDevResteasyGrpcExampleCC1030Field(cc1030).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/wildcard").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10Wildcrd(gem);
-            dev_resteasy_grpc_example___CC1030 result = response.getDevResteasyGrpcExampleCC1030Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                    .invoke(response);
             CC10<?> cc10a = (CC10<?>) translator.translateFromJavabuf(result);
-            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10.getT())));
+            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10a.getT())));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -1569,17 +1568,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<Integer> cc10 = new CC10<Integer>(17);
         GenericType<CC10<?>> type = new GenericType<CC10<?>>() {
         };
-        dev_resteasy_grpc_example___CC1030 cc1030 = (dev_resteasy_grpc_example___CC1030) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/variable")
-                .setDevResteasyGrpcExampleCC1030Field(cc1030).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/variable").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10Variable(gem);
-            dev_resteasy_grpc_example___CC1030 result = response.getDevResteasyGrpcExampleCC1030Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                    .invoke(response);
             CC10<?> cc10a = (CC10<?>) translator.translateFromJavabuf(result);
-            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10.getT())));
+            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10a.getT())));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -1592,17 +1592,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<Integer> cc10 = new CC10<Integer>(17);
         GenericType<CC10<Object>> type = new GenericType<CC10<Object>>() {
         };
-        dev_resteasy_grpc_example___CC1030 cc1030 = (dev_resteasy_grpc_example___CC1030) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/variable")
-                .setDevResteasyGrpcExampleCC1030Field(cc1030).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/variable").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10Variable(gem);
-            dev_resteasy_grpc_example___CC1030 result = response.getDevResteasyGrpcExampleCC1030Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                    .invoke(response);
             CC10<Integer> cc10a = (CC10<Integer>) translator.translateFromJavabuf(result);
-            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10.getT())));
+            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10a.getT())));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -1615,17 +1616,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<Integer> cc10 = new CC10<Integer>(17);
         GenericType<CC10<Integer>> type = new GenericType<CC10<Integer>>() {
         };
-        dev_resteasy_grpc_example___CC1031 cc1031 = (dev_resteasy_grpc_example___CC1031) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/Integer")
-                .setDevResteasyGrpcExampleCC1031Field(cc1031).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Integer>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/Integer").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10Integer(gem);
-            dev_resteasy_grpc_example___CC1031 result = response.getDevResteasyGrpcExampleCC1031Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Integer>")
+                    .invoke(response);
             CC10<Integer> cc10a = (CC10<Integer>) translator.translateFromJavabuf(result);
-            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10.getT())));
+            Assertions.assertTrue(Integer.valueOf(17).equals(((Integer) cc10a.getT())));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -1638,17 +1640,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<Float> cc10 = new CC10<Float>(19.0F);
         GenericType<CC10<Float>> type = new GenericType<CC10<Float>>() {
         };
-        dev_resteasy_grpc_example___CC1032 cc1032 = (dev_resteasy_grpc_example___CC1032) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/Float")
-                .setDevResteasyGrpcExampleCC1032Field(cc1032).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Float>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/Float").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10Float(gem);
-            dev_resteasy_grpc_example___CC1032 result = response.getDevResteasyGrpcExampleCC1032Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Float>")
+                    .invoke(response);
             CC10<Float> cc10a = (CC10<Float>) translator.translateFromJavabuf(result);
-            Assertions.assertTrue(Float.valueOf(19.0F).equals(((Float) cc10.getT())));
+            Assertions.assertTrue(Float.valueOf(19.0F).equals(((Float) cc10a.getT())));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));
@@ -1661,16 +1664,16 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<TestSubClass> cc10 = new CC10<TestSubClass>(new TestSubClass("forty-one", 43));
         GenericType<CC10<Object>> type = new GenericType<CC10<Object>>() {
         };
-        Object o = translator.translateToJavabuf(cc10, translator.normalize(type));
-        dev_resteasy_grpc_example___CC1030 cc1030 = (dev_resteasy_grpc_example___CC1030) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/wildcard/lower")
-                .setDevResteasyGrpcExampleCC1030Field(cc1030).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/wildcard/lower").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10WildcardLower(gem);
-            dev_resteasy_grpc_example___CC1030 result = response.getDevResteasyGrpcExampleCC1030Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                    .invoke(response);
             CC10<TestSubClass> cc10a = (CC10<TestSubClass>) translator.translateFromJavabuf(result);
             Assertions.assertTrue(cc10.getT().equals(cc10a.getT()));
         } catch (StatusRuntimeException e) {
@@ -1685,16 +1688,16 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC10<TestSubClass> cc10 = new CC10<TestSubClass>(new TestSubClass("forty-one", 43));
         GenericType<CC10<?>> type = new GenericType<CC10<?>>() {
         };
-        Object o = translator.translateToJavabuf(cc10, translator.normalize(type));
-        dev_resteasy_grpc_example___CC1030 cc1030 = (dev_resteasy_grpc_example___CC1030) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/wildcard/lower")
-                .setDevResteasyGrpcExampleCC1030Field(cc1030).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/wildcard/lower").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10WildcardLower(gem);
-            dev_resteasy_grpc_example___CC1030 result = response.getDevResteasyGrpcExampleCC1030Field();
+            Message result = (Message) JavabufClassTranslator.getGetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                    .invoke(response);
             CC10<?> cc10a = (CC10<?>) translator.translateFromJavabuf(result);
             Assertions.assertTrue(cc10.getT().equals(cc10a.getT()));
         } catch (StatusRuntimeException e) {
@@ -1707,17 +1710,18 @@ abstract class AbstractGrpcToJakartaRESTTest {
 
     void testGenericVariableUpperTestClass(CC1ServiceBlockingStub stub) throws Exception {
         CC10<TestClass> cc10 = new CC10<TestClass>(new TestClass("forty-one"));
-        GenericType<CC10<TestClass>> type = new GenericType<CC10<TestClass>>() {
+        GenericType<CC10<Object>> type = new GenericType<CC10<Object>>() {
         };
-        dev_resteasy_grpc_example___CC1033 cc1033 = (dev_resteasy_grpc_example___CC1033) translator.translateToJavabuf(cc10,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc10, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc10/variable/upper")
-                .setDevResteasyGrpcExampleCC1033Field(cc1033).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/variable/upper").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc10VariableUpper(gem);
-            dev_resteasy_grpc_example___CC1033 result = response.getDevResteasyGrpcExampleCC1033Field();
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.CC10<java.lang.Object>").invoke(response);
             CC10<TestClass> cc10a = (CC10<TestClass>) translator.translateFromJavabuf(result);
             Assertions.assertTrue(cc10.getT().getS().equals(cc10a.getT().getS()));
         } catch (StatusRuntimeException e) {
@@ -1732,15 +1736,40 @@ abstract class AbstractGrpcToJakartaRESTTest {
         CC11<TestClass> cc11 = new CC11<TestClass>(new TestClass("cde"));
         GenericType<CC11<TestClass>> type = new GenericType<CC11<TestClass>>() {
         };
-        dev_resteasy_grpc_example___CC1134 cc1134 = (dev_resteasy_grpc_example___CC1134) translator.translateToJavabuf(cc11,
-                translator.normalize(type));
+        Message m = translator.translateToJavabuf(cc11, translator.normalize(type));
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/generic/cc11/wildcard")
-                .setDevResteasyGrpcExampleCC1134Field(cc1134).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC11<dev.resteasy.grpc.example.TestClass>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc11/wildcard").build();
         GeneralReturnMessage response;
         try {
             response = stub.cc11Wildcard(gem);
-            dev_resteasy_grpc_example___CC1134 result = response.getDevResteasyGrpcExampleCC1134Field();
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.CC11<dev.resteasy.grpc.example.TestClass>").invoke(response);
+            CC11<TestClass> cc11a = (CC11<TestClass>) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(cc11.equals(cc11a));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testC11GenericVariableTestClass(CC1ServiceBlockingStub stub) throws Exception {
+        CC11<TestClass> cc11 = new CC11<TestClass>(new TestClass("cde"));
+        GenericType<CC11<TestClass>> type = new GenericType<CC11<TestClass>>() {
+        };
+        Message m = translator.translateToJavabuf(cc11, translator.normalize(type));
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC11<dev.resteasy.grpc.example.TestClass>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc11/wildcard").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.cc11Variable(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.CC11<dev.resteasy.grpc.example.TestClass>").invoke(response);
             CC11<TestClass> cc11a = (CC11<TestClass>) translator.translateFromJavabuf(result);
             Assertions.assertTrue(cc11.equals(cc11a));
         } catch (StatusRuntimeException e) {
