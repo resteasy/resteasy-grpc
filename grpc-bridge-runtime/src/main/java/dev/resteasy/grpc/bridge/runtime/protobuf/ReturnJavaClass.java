@@ -18,6 +18,7 @@
  */
 package dev.resteasy.grpc.bridge.runtime.protobuf;
 
-public class ReturnJavaClass {
+public interface ReturnJavaClass {
 
+    Class<?> getJavaClass();
 }

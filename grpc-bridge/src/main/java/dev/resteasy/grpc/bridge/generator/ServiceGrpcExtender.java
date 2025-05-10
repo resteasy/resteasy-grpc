@@ -315,7 +315,10 @@ public class ServiceGrpcExtender {
                     sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;");
                     imports.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder");
                 } else {
-                    if (actualReturnClass.contains(".")) {
+                    if (actualReturnClass.startsWith("dev.resteasy.grpc.arrays")) {
+                        String simpleName = actualReturnClass.substring(actualReturnClass.lastIndexOf(".") + 1);
+                        sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto." + simpleName + ";" + LS);
+                    } else if (actualReturnClass.contains(".")) {
                         sbHeader.append("import " + actualReturnClass + ";" + LS);
                     } else {
                         sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
