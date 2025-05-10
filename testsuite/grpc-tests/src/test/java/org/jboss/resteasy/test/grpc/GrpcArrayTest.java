@@ -314,7 +314,6 @@ public class GrpcArrayTest {
         dev_resteasy_grpc_arrays___Integer___Array result = response.getDevResteasyGrpcArraysIntegerArrayField();
         int[] array2 = (int[]) translator.translateFromJavabuf(result);
         Assert.assertTrue(Arrays.equals(array, array2));
-        ;
     }
 
     @Test

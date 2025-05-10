@@ -68,7 +68,7 @@ public final class Utility {
     @SuppressWarnings("rawtypes")
     public static Class extractClassFromAny(Any any, JavabufTranslator translator) {
         String s = extractStringTypeFromAny(any);
-        if (s == "" || s == null) {
+        if (s.equals("") || s == null) {
             return null;
         }
         int pos = s.lastIndexOf('.');
