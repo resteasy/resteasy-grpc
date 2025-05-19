@@ -210,6 +210,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testGenericVariableUpperTestClass(stub);
         this.testC11GenericWildcardTestClass(stub);
         this.testC11GenericVariableTestClass(stub);
+        this.testRecord(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1778,6 +1779,10 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 Assertions.fail(writer.toString());
             }
         }
+    }
+
+    void testRecord(CC1ServiceBlockingStub stub) throws Exception {
+
     }
 
     static class GeneralReturnMessageHolder<T> {

@@ -1489,7 +1489,7 @@ public class JavabufTranslatorGenerator {
                 try {
                     isAbstract = isAbstractOrInterface(clazz);
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    logger.warn("Class not found: " + simpleName);
                     continue;
                 }
             }

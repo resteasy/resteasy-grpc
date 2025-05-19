@@ -52,15 +52,18 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
 import com.github.javaparser.ParseResult;
+import com.github.javaparser.ParserConfiguration.LanguageLevel;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.AccessSpecifier;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -70,18 +73,16 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.TypeSolver;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeParameterDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeParameterDeclaration.Bound;
+import com.github.javaparser.resolution.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.reflectionmodel.ReflectionClassDeclaration;
 import com.github.javaparser.symbolsolver.reflectionmodel.ReflectionTypeParameter;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
@@ -310,6 +311,7 @@ public class JavaToProtobufGenerator {
     private static Map<String, String> classnameMap = new ConcurrentHashMap<String, String>();
     private static ReflectionTypeParameter[] TV = new ReflectionTypeParameter[10];
     private static Map<ResolvedReferenceType, ResolvedReferenceType> objectifiedTypes = new ConcurrentHashMap<ResolvedReferenceType, ResolvedReferenceType>();
+    private static Map<String, RecordDeclaration> recordMap = new HashMap<String, RecordDeclaration>();
 
     class Dummy<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
     }
@@ -661,9 +663,10 @@ public class JavaToProtobufGenerator {
             String s = it.next();
             combinedTypeSolver.add(new JarTypeSolver(s));
         }
-        objectType = new ReferenceTypeImpl(rcd, combinedTypeSolver);
+        objectType = new ReferenceTypeImpl(rcd);
         symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
         sourceRoot.getParserConfiguration().setSymbolResolver(symbolSolver);
+        sourceRoot.getParserConfiguration().setLanguageLevel(LanguageLevel.JAVA_17);
         for (int i = 0; i < 10; i++) {
             TV[i] = new ReflectionTypeParameter(Dummy.class.getTypeParameters()[i], false, combinedTypeSolver);
         }
@@ -975,6 +978,12 @@ public class JavaToProtobufGenerator {
      */
     static class JakartaRESTResourceVisitor extends VoidVisitorAdapter<StringBuilder> {
 
+        @Override
+        public void visit(final RecordDeclaration n, final StringBuilder sb) {
+            recordMap.put(n.getFullyQualifiedName().get(), n);
+        }
+
+        @Override
         public void visit(final ClassOrInterfaceDeclaration subClass, StringBuilder sb) {
             if (subClass.getFullyQualifiedName().orElse("").startsWith("grpc.server")) {
                 return;
@@ -1034,7 +1043,6 @@ public class JavaToProtobufGenerator {
 
                     // Add each parameter and return type to resolvedTypes for further processing.
                     for (Parameter p : md.getParameters()) {
-
                         if (!isEntity(p)) {
                             continue;
                         }
@@ -1075,7 +1083,10 @@ public class JavaToProtobufGenerator {
 
         private void doVisit(ResolvedType resolvedType, StringBuilder sb, boolean start) {
             ResolvedReferenceType clazz = resolvedType.asReferenceType();
-            Set<String> fieldNames = new HashSet<String>();
+            if (clazz.getTypeDeclaration().get().isRecord()) {
+                visitRecord(resolvedType, sb);
+                return;
+            }
             if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(clazz.describe())) {
                 return;
             }
@@ -1123,6 +1134,8 @@ public class JavaToProtobufGenerator {
                     needMultiHashMap = false;
                 }
             }
+            Set<String> fieldNames = new HashSet<String>();
+
             // Handle set or list
             if (isList || isSet) {
                 sb.append("  string classname = ")
@@ -1275,7 +1288,7 @@ public class JavaToProtobufGenerator {
                 }
             }
         }
-        ReferenceTypeImpl rti = new ReferenceTypeImpl(clazz.getTypeDeclaration().get(), list, combinedTypeSolver);
+        ReferenceTypeImpl rti = new ReferenceTypeImpl(clazz.getTypeDeclaration().get(), list);
         // Create non generic version of clazz.
         if (!visited.contains(rti.describe())) {
             pendingTypes.add(rti);
@@ -1298,6 +1311,39 @@ public class JavaToProtobufGenerator {
         }
         sb.append("  //").append(rt.describe()).append(LS)
                 .append("  repeated ").append(fqn).append(" data = ").append(counter++).append(";" + LS);
+    }
+
+    private static void visitRecord(ResolvedType resolvedType, StringBuilder sb) {
+        ResolvedType objectified = objectify(resolvedType.asReferenceType());
+        sb.append(LS).append("// Record: ").append(objectified.describe());
+        ResolvedReferenceType clazz = resolvedType.asReferenceType();
+        RecordDeclaration rd = recordMap.get(clazz.getTypeDeclaration().get().getQualifiedName());
+        String innerClass = isInnerClass(resolvedType.asReferenceType().getTypeDeclaration().get());
+        String javabufName = fqnifyClass(clazz.getTypeDeclaration().get().getQualifiedName(), innerClass);
+        sb.append(LS).append("message ").append(javabufName).append(" {" + LS);
+        NodeList<Parameter> nl = rd.getParameters();
+        Set<String> fieldNames = new HashSet<String>();
+        for (Parameter p : nl) {
+            ResolvedType type = p.resolve().getType();
+            String typeName = null;
+            if (TYPE_MAP.containsKey(type.describe())) {
+                typeName = TYPE_MAP.get(type.describe());
+            } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(type.describe())) {
+                typeName = PRIMITIVE_WRAPPER_TYPES_FIELD.get(type.describe());
+            } else {
+                typeName = fqnifyClass(type.describe(), "___");
+            }
+            pendingTypes.add(type);
+            String fieldName = getFieldName(fieldNames, p.getName().asString());
+            sb.append("  ")
+                    .append(typeName)
+                    .append(" ")
+                    .append(fieldName)
+                    .append(" = ")
+                    .append(counter++)
+                    .append(";" + LS)
+                    .append("}" + LS);
+        }
     }
 
     private static void visitMap(ResolvedType resolvedType, StringBuilder sb) {
@@ -1478,23 +1524,11 @@ public class JavaToProtobufGenerator {
     }
 
     private static boolean isInterface(ResolvedType rt) {
-        String name = rt.describe();
-        if (name.contains("<")) {
-            name = name.substring(0, name.indexOf("<"));
+        Optional<ResolvedReferenceTypeDeclaration> opt = rt.asReferenceType().getTypeDeclaration();
+        if (opt.isPresent()) {
+            return opt.get().isInterface();
         }
-        List<ResolvedMethodDeclaration> list = rt.asReferenceType().getAllMethods();
-        for (ResolvedMethodDeclaration rmd : list) {
-            if (rmd.declaringType().getQualifiedName().equals(name)) {
-                return rmd.declaringType().isInterface();
-            }
-        }
-        List<ResolvedFieldDeclaration> list2 = rt.asReferenceType().getAllFieldsVisibleToInheritors();
-        for (ResolvedFieldDeclaration rmd : list2) {
-            if (rmd.declaringType().getQualifiedName().equals(name)) {
-                return rmd.declaringType().isInterface();
-            }
-        }
-        return true;
+        return false;
     }
 
     private static boolean isEntity(Parameter p) {
@@ -1723,12 +1757,8 @@ public class JavaToProtobufGenerator {
 
     private static String isInnerClass(ResolvedReferenceTypeDeclaration clazz) {
         try {
-            Optional<?> opt = clazz.containerType();
-            if (opt.isEmpty()) {
-                return "___";
-            }
-            ResolvedTypeDeclaration rtd = clazz.containerType().get();
-            if (!rtd.isClass()) {
+            String s = clazz.getQualifiedName().substring(clazz.getPackageName().length() + 1);
+            if (!s.contains(".") && !s.contains("$")) {
                 return "___";
             }
             if (AccessSpecifier.PUBLIC.equals(clazz.asClass().accessSpecifier())) {

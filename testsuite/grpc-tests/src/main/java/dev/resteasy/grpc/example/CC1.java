@@ -696,4 +696,10 @@ public class CC1 {
     public InnerClassHolder innerClassHolder(InnerClassHolder ich) {
         return ich;
     }
+
+    @POST
+    @Path("record")
+    public Person rcd(Person p) {
+        return p;
+    }
 }

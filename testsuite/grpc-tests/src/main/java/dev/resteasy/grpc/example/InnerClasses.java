@@ -93,9 +93,9 @@ public class InnerClasses {
         }
 
         public boolean equals(Object object) {
-        	if (object == null) {
-        		return false;
-        	}
+            if (object == null) {
+                return false;
+            }
             if (!InnerClassHolder.class.equals(object.getClass())) {
                 return false;
             }
