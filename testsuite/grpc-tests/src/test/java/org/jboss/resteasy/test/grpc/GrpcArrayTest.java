@@ -1,11 +1,7 @@
 package org.jboss.resteasy.test.grpc;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -66,6 +62,8 @@ import dev.resteasy.grpc.lists.sets.DD1;
 import dev.resteasy.grpc.maps.MapResource;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * Tests for a variety of arrays. See also the "array tests" section in
