@@ -62,7 +62,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.wildfly.common.Assert;
 
-
 /**
  * Tests for a variety of arrays. See also the "array tests" section in
  *
