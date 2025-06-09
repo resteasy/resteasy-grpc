@@ -381,7 +381,7 @@ public class ReaderWriterGenerator {
                         + LS)
                 .append("      if (type.isInterface()) {" + LS)
                 .append("         return true;" + LS)
-                .append("      } else if (type.isArray() && type.isArray()) {" + LS)
+                .append("      } else if (type.isArray() && type.isArray()) {" + LS) // ??????????????????/
                 .append("         return true;" + LS)
                 .append("      } else {" + LS)
                 .append("         return ")
@@ -555,23 +555,6 @@ public class ReaderWriterGenerator {
         final var file = Path.of(path + "/target/entityTypes");
         if (Files.notExists(file)) {
             throw new RuntimeException(path + "/target/entityTypes not found");
-        }
-    }
-
-    private String javaToJavabufName(String javaName) {
-        try {
-            Class<?> clazz = Class.forName(javaName);
-            if (clazz.getEnclosingClass() != null) {
-                String pkg = clazz.getEnclosingClass().getPackageName().replaceAll(".", "_");
-                String esn = clazz.getEnclosingClass().getSimpleName();
-                String sn = clazz.getSimpleName();
-                return pkg + "_" + esn + "___" + sn;
-            }
-            String pkg = clazz.getEnclosingClass().getPackageName().replaceAll(".", "_");
-            String sn = clazz.getSimpleName();
-            return pkg + "___" + sn;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 

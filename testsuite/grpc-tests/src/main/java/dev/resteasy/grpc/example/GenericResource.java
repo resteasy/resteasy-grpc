@@ -1,5 +1,7 @@
 package dev.resteasy.grpc.example;
 
+import java.util.HashMap;
+
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
@@ -31,6 +33,12 @@ public class GenericResource {
     }
 
     @POST
+    @Path("cc10/map")
+    public CC10<HashMap<String, String>> cc10Map(CC10<HashMap<String, String>> m) {
+        return m;
+    }
+
+    @POST
     @Path("cc10/wildcard/lower")
     public CC10<? super TestSubClass> cc10WildcardLower(CC10<? super TestSubClass> cc10) {
         return cc10;
@@ -39,6 +47,18 @@ public class GenericResource {
     @POST
     @Path("cc10/variable/upper")
     public <T extends TestClass> CC10<T> cc10VariableUpper(CC10<T> cc10) {
+        return cc10;
+    }
+
+    @POST
+    @Path("cc10/variable/array/primitive")
+    public CC10<int[]> cc10VariableArrayPrimitive(CC10<int[]> cc10) {
+        return cc10;
+    }
+
+    @POST
+    @Path("cc10/variable/array/reference")
+    public CC10<CC5[]> cc10VariableArrayReference(CC10<CC5[]> cc10) {
         return cc10;
     }
 

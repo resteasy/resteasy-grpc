@@ -1173,55 +1173,9 @@ public class JavaToProtobufGenerator {
             if (superClass != null && !"java.lang.Object".equals(superClass.describe())) {
                 doVisit(superClass, sb, false);
             }
-
             // Scan all variables in class.
             for (ResolvedFieldDeclaration rfd : clazz.getDeclaredFields()) {
-                String type = null;
-                if ("$assertionsDisabled".equals(rfd.getName())) {
-                    continue;
-                }
-                if (rfd.getName() != null && rfd.getName().startsWith("this$")) {
-                    continue;
-                }
-                if (clazz.describe().contains("safe")) {
-                    continue;
-                }
-                if (TYPE_MAP.containsKey(rfd.getType().describe())) {
-                    type = TYPE_MAP.get(rfd.getType().describe());
-                } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rfd.getType().describe())) {
-                    type = PRIMITIVE_WRAPPER_TYPES_FIELD.get(rfd.getType().describe());
-                } else if (rfd.getType() instanceof ResolvedArrayType) {
-                    type = visitArray(rfd);
-                    if (type == null) {
-                        continue;
-                    }
-                } else { // Defined type
-                    ResolvedType rt = rfd.getType();
-                    if (rt.isReferenceType()) {
-                        ResolvedType objectifiedField = objectify(rt.asReferenceType());
-                        type = visitReferenceType(objectifiedField);
-                        if (isSetOrList(rt.asReferenceType())) {
-                            sb.append("  //").append(objectifiedField.describe()).append(LS);
-                        }
-                    } else if (rfd.getType().isTypeVariable()) {
-                        Optional<ResolvedType> opt = clazz.getGenericParameterByName(rfd.getType().asTypeVariable().describe());
-                        if (opt.isPresent() && opt.get().isReferenceType()) {
-                            type = fqnifyClass(opt.get(), "___");
-                        } else {
-                            type = "google.protobuf.Any";
-                        }
-                    }
-                }
-                String fieldName = getFieldName(fieldNames, rfd.getName());
-                if (type != null) {
-                    sb.append("  ")
-                            .append(type)
-                            .append(" ")
-                            .append(fieldName)
-                            .append(" = ")
-                            .append(counter++)
-                            .append(";" + LS);
-                }
+                visitField(clazz, rfd.getType(), rfd.asField().getName(), sb, fieldNames);
             }
             if (start) {
                 sb.append("}" + LS);
@@ -1277,7 +1231,23 @@ public class JavaToProtobufGenerator {
             //                    list.add(objectType);
             //                }
             //            }
-            else if (pair.b.isReferenceType()) {
+            else if (pair.b.isArray()) {
+                ResolvedType rt = pair.b.asArrayType().getComponentType();
+                if (rt.isTypeVariable()) {
+                    list.add(new ResolvedArrayType(objectType));
+                } else if (rt.isReference()) {
+                    ResolvedType ort = objectify(rt.asReferenceType());
+                    list.add(new ResolvedArrayType(ort));
+                    if (!visited.contains(rt.describe())
+                            && !PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rt.describe())
+                            && !"java.lang.Object".equals(rt.describe())
+                            && !isInterface(ort)) {
+                        pendingTypes.add(rt);
+                    }
+                } else {
+                    list.add(pair.b.asArrayType());
+                }
+            } else if (pair.b.isReferenceType()) {
                 ResolvedType rt = objectify(pair.b.asReferenceType());
                 list.add(rt);
                 if (!visited.contains(rt.describe())
@@ -1296,7 +1266,12 @@ public class JavaToProtobufGenerator {
         if (!clazz.describe().equals(rti.describe())) {
             normalizer.put(clazz.describe(), rti.describe());
         }
+        objectifiedTypes.put(clazz, rti);
         return rti;
+    }
+
+    private static ResolvedArrayType objectify(ResolvedArrayType array) {
+        return array;
     }
 
     public static ReflectionClassDeclaration rcd = new ReflectionClassDeclaration(Object.class, combinedTypeSolver);
@@ -1319,31 +1294,14 @@ public class JavaToProtobufGenerator {
         ResolvedReferenceType clazz = resolvedType.asReferenceType();
         RecordDeclaration rd = recordMap.get(clazz.getTypeDeclaration().get().getQualifiedName());
         String innerClass = isInnerClass(resolvedType.asReferenceType().getTypeDeclaration().get());
-        String javabufName = fqnifyClass(clazz.getTypeDeclaration().get().getQualifiedName(), innerClass);
+        String javabufName = fqnifyClass(resolvedType, innerClass);
         sb.append(LS).append("message ").append(javabufName).append(" {" + LS);
         NodeList<Parameter> nl = rd.getParameters();
         Set<String> fieldNames = new HashSet<String>();
         for (Parameter p : nl) {
-            ResolvedType type = p.resolve().getType();
-            String typeName = null;
-            if (TYPE_MAP.containsKey(type.describe())) {
-                typeName = TYPE_MAP.get(type.describe());
-            } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(type.describe())) {
-                typeName = PRIMITIVE_WRAPPER_TYPES_FIELD.get(type.describe());
-            } else {
-                typeName = fqnifyClass(type.describe(), "___");
-            }
-            pendingTypes.add(type);
-            String fieldName = getFieldName(fieldNames, p.getName().asString());
-            sb.append("  ")
-                    .append(typeName)
-                    .append(" ")
-                    .append(fieldName)
-                    .append(" = ")
-                    .append(counter++)
-                    .append(";" + LS)
-                    .append("}" + LS);
+            visitField(clazz, p.resolve().getType(), p.getNameAsString(), sb, fieldNames);
         }
+        sb.append("}" + LS);
     }
 
     private static void visitMap(ResolvedType resolvedType, StringBuilder sb) {
@@ -1375,14 +1333,16 @@ public class JavaToProtobufGenerator {
                 .append("  repeated Pair data = ").append(counter++).append(";" + LS);
     }
 
-    private static String visitArray(ResolvedFieldDeclaration rfd) {
+    //    private static String visitArray(ResolvedFieldDeclaration rfd) {
+    private static String visitArray(ResolvedType rt) {
         try {
-            ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
+            //            ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
+            ResolvedArrayType rat = (ResolvedArrayType) rt;
             ResolvedType ct = rat.getComponentType();
             String type = null;
             String fqn = null;
             if ("java.lang.Object".equals(ct.describe())) {
-                return null;
+                return "repeated google.protobuf.Any";
             } else if (PRIMITIVE_ARRAY_TYPE.containsKey(ct.describe())) {
                 type = PRIMITIVE_ARRAY_TYPE.get(ct.describe());
             } else if (WRAPPER_TO_JAVABUF_MAP.keySet().contains(ct.describe())) {
@@ -1390,6 +1350,7 @@ public class JavaToProtobufGenerator {
             } else if (ct instanceof ResolvedArrayType) {
                 type = "dev_resteasy_grpc_arrays___ArrayHolder___WArray";
                 if (ct.isReferenceType()) {
+                    pendingTypes.add(objectify(rat.asReferenceType()));
                     ResolvedType bat = getBasicArrayType((ResolvedArrayType) ct);
                     fqn = bat.asReferenceType().getQualifiedName(); // type variable?
                     if (!visited.contains(fqn)) {
@@ -1404,6 +1365,13 @@ public class JavaToProtobufGenerator {
                     }
                 }
             } else {
+                if (rt.isReferenceType()) {
+                    pendingTypes.add(objectify(rt.asReferenceType()));
+                } else if (rt.isArray()) {
+                    pendingTypes.add(objectify(rt.asArrayType()));
+                } else {
+                    pendingTypes.add(rt);
+                }
                 if (!ct.isReferenceType()) {
                     return null;
                 }
@@ -1412,14 +1380,16 @@ public class JavaToProtobufGenerator {
                     type = wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
                 } else if (!visited.contains(fqn)) {
                     pendingTypes.add(objectify(ct.asReferenceType()));
-                    type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
-                            .getTypeDeclaration()
-                            .get())));
-                } else {
-                    type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
-                            .getTypeDeclaration()
-                            .get())));
                 }
+                type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                        .getTypeDeclaration()
+                        .get())));
+                //                }
+                //                else {
+                //                    type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
+                //                            .getTypeDeclaration()
+                //                            .get())));
+                //                }
             }
             return type;
         } catch (Exception e) {
@@ -1443,6 +1413,63 @@ public class JavaToProtobufGenerator {
         String fqn = fqnifyClass(rt, innerClass);
         classnameMap.put(rt.describe(), fqn);
         return fqn;
+    }
+
+    //    private static void visitField(ResolvedFieldDeclaration rfd , StringBuilder sb, Set<String> fieldNames) {
+    private static void visitField(ResolvedReferenceType clazz, ResolvedType rt, String fieldName, StringBuilder sb,
+            Set<String> fieldNames) {
+        String type = null;
+        if ("$assertionsDisabled".equals(rt.describe())) {
+            return;
+        }
+        if (rt.describe() != null && rt.describe().startsWith("this$")) {
+            return;
+        }
+        if (rt.describe().contains("safe")) {
+            return;
+        }
+        if (TYPE_MAP.containsKey(rt.describe())) {
+            type = TYPE_MAP.get(rt.describe());
+        } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rt.describe())) {
+            type = PRIMITIVE_WRAPPER_TYPES_FIELD.get(rt.describe());
+        } else if (rt instanceof ResolvedArrayType) {
+            type = visitArray(rt);
+            if (type == null) {
+                return;
+            }
+        } else { // Defined type
+            if (rt.isReferenceType()) {
+                ResolvedType objectifiedField = objectify(rt.asReferenceType());
+                type = visitReferenceType(objectifiedField);
+                if (isSetOrList(rt.asReferenceType())) {
+                    sb.append("  //").append(objectifiedField.describe()).append(LS);
+                }
+            } else if (rt.isTypeVariable()) {
+                Optional<ResolvedType> opt = clazz.getGenericParameterByName(rt.asTypeVariable().describe());
+                if (opt.isPresent()) {
+                    if (opt.get().isReferenceType()) {
+                        type = fqnifyClass(opt.get(), "___");
+                    } else if (opt.get().isArray()) {
+                        type = visitArray(opt.get());
+                    } else {
+                        type = "google.protobuf.Any";
+                    }
+                } else {
+                    type = "google.protobuf.Any";
+                    return;
+                }
+            }
+        }
+        String name = rt.describe().toLowerCase();
+        if (type != null) {
+            sb.append("  ")
+                    .append(type)
+                    .append(" ")
+                    .append(getFieldName(fieldNames, fieldName))
+                    .append(" = ")
+                    .append(counter++)
+                    .append(";" + LS);
+        }
     }
 
     /*************************************************/

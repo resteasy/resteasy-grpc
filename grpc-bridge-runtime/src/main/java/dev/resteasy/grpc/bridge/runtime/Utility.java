@@ -36,7 +36,9 @@ import jakarta.ws.rs.core.GenericType;
 import org.jboss.resteasy.spi.util.Types.ResteasyParameterizedType;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.GeneratedMessage.Builder;
 import com.google.protobuf.Message;
 
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
@@ -157,6 +159,10 @@ public final class Utility {
     }
 
     public static void setField(Field field, Object object, Object value, JavabufTranslator translator) throws Exception {
+        if (object instanceof HolderMap) {
+            setObject(field, (HolderMap) object, value, translator);
+            return;
+        }
         if (Modifier.isFinal(field.getModifiers())) {
             if (Modifier.isStatic(field.getModifiers())) {
                 return;
@@ -173,7 +179,7 @@ public final class Utility {
         if (value == null) {
             field.set(object, value);
         } else if (value.getClass().isArray()) {
-            if (field.getType().getComponentType().isPrimitive()) {
+            if (value.getClass().getComponentType().isPrimitive()) {
                 field.set(object, value);
             } else {
                 field.set(object, wrapArray(value));
@@ -192,6 +198,24 @@ public final class Utility {
         } else {
             field.setAccessible(true);
             field.set(object, value);
+        }
+    }
+
+    public static void setObject(Field field, HolderMap map, Object value, JavabufTranslator translator) throws Exception {
+        if (value == null) {
+            return;
+        } else if (Any.class.equals(value.getClass())) {
+            Any any = (Any) value;
+            if (any.getSerializedSize() == 0) {
+                return;
+            } else {
+                Class clazz = extractClassFromAny(any, translator);
+                Message message = any.unpack(clazz);
+                map.put(field.getName(), translator.translateFromJavabuf(message));
+                return;
+            }
+        } else {
+            map.put(field.getName(), value);
         }
     }
 
@@ -224,7 +248,6 @@ public final class Utility {
         if (name.contains("___")) {
             String n = name.substring(name.indexOf("___") + 3);
             try {
-                Integer.parseInt(n);
                 name = name.substring(0, name.indexOf("___"));
             } catch (NumberFormatException nfe) {
                 // ignore
@@ -316,9 +339,78 @@ public final class Utility {
 
         @Override
         public String toString() {
-            String s = super.toString();
-            s = s.replace("class ", "");
-            return s.replace("interface ", "");
+            Type[] actuals = getActualTypeArguments();
+            StringBuilder sb = new StringBuilder();
+            if (getOwnerType() != null)
+                sb.append(getOwnerType()).append(".");
+            sb.append(getRawType());
+            if (actuals != null && actuals.length > 0) {
+                sb.append("<");
+                boolean first = true;
+                for (Type actual : actuals) {
+                    if (first)
+                        first = false;
+                    else
+                        sb.append(", ");
+                    sb.append(actual.getTypeName());
+                }
+                sb.append(">");
+            }
+            return sb.toString();
+        }
+
+        public static void toPrimitiveArray2(FieldDescriptor fd, Class componentType, Object array) {
+        }
+
+        public static void toPrimitiveArray(Builder builder, FieldDescriptor fd, Class<?> componentType,
+                Object array) {
+            if (byte.class.equals(componentType)) {
+                builder.setField(fd, ByteString.copyFrom((byte[]) array));
+            } else if (char.class.equals(componentType)) {
+                builder.setField(fd, charsToString(array));
+            } else if (boolean.class.equals(componentType)) {
+                for (int i = 0; i < Array.getLength(array); i++) {
+                    builder.addRepeatedField(fd, ((Boolean) Array.get(array, i)).booleanValue());
+                }
+            } else if (short.class.equals(componentType)) {
+                for (int i = 0; i < Array.getLength(array); i++) {
+                    builder.addRepeatedField(fd, ((Short) Array.get(array, i)).shortValue());
+                }
+            } else if (int.class.equals(componentType)) {
+                for (int i = 0; i < Array.getLength(array); i++) {
+                    builder.addRepeatedField(fd, ((Integer) Array.get(array, i)).intValue());
+                }
+            } else if (long.class.equals(componentType)) {
+                for (int i = 0; i < Array.getLength(array); i++) {
+                    builder.addRepeatedField(fd, ((Long) Array.get(array, i)).longValue());
+                }
+            } else if (float.class.equals(componentType)) {
+                for (int i = 0; i < Array.getLength(array); i++) {
+                    builder.addRepeatedField(fd, ((Float) Array.get(array, i)).floatValue());
+                }
+            } else if (double.class.equals(componentType)) {
+                for (int i = 0; i < Array.getLength(array); i++) {
+                    builder.addRepeatedField(fd, ((Double) Array.get(array, i)).doubleValue());
+                }
+            } else {
+                throw new RuntimeException("don't recognize type: " + componentType);
+            }
+        }
+
+        private static String charsToString(Object o) {
+            StringBuilder sb = new StringBuilder();
+            if (char.class.equals(o.getClass().getComponentType())) {
+                char[] array = (char[]) o;
+                for (int i = 0; i < array.length; i++) {
+                    sb.append(array[i]);
+                }
+            } else {
+                Character[] array = (Character[]) o;
+                for (int i = 0; i < array.length; i++) {
+                    sb.append(array[i]);
+                }
+            }
+            return sb.toString();
         }
     }
 }

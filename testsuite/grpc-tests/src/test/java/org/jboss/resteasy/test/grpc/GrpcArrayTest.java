@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +13,7 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.AfterAll;
@@ -49,7 +50,6 @@ import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___String___
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.example.CC1;
 import dev.resteasy.grpc.example.CC1ServiceGrpc;
-import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1_Server;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
@@ -115,7 +115,7 @@ public class GrpcArrayTest {
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
-        //        ar.as(ZipExporter.class).exportTo(new File("/tmp/array.war"), true);
+        ar.as(ZipExporter.class).exportTo(new File("/tmp/array.war"), true);
         return ar;
     }
 

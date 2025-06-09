@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +38,7 @@ import jakarta.ws.rs.core.GenericType;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.Assertions;
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.Assertions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
+import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 
@@ -75,12 +77,20 @@ import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC5;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC7;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC9;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___IntfImpl;
+import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___Person;
+import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___RecordCC2;
 import dev.resteasy.grpc.example.CC1_proto.gCookie;
 import dev.resteasy.grpc.example.CC1_proto.gHeader;
 import dev.resteasy.grpc.example.CC1_proto.gInteger;
 import dev.resteasy.grpc.example.CC1_proto.gNewCookie;
 import dev.resteasy.grpc.example.CC1_proto.gString;
+import dev.resteasy.grpc.example.CC2;
+import dev.resteasy.grpc.example.CC3;
+import dev.resteasy.grpc.example.CC5;
 import dev.resteasy.grpc.example.InnerClasses;
+import dev.resteasy.grpc.example.Person;
+import dev.resteasy.grpc.example.RecordCC2;
+import dev.resteasy.grpc.example.RecordVariable;
 import dev.resteasy.grpc.example.TestClass;
 import dev.resteasy.grpc.example.TestSubClass;
 import dev.resteasy.grpc.example.sub.CC8;
@@ -103,6 +113,15 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             clazz = Class.forName("dev.resteasy.grpc.example.CC1JavabufTranslator");
             translator = (JavabufTranslator) clazz.newInstance();
+
+            CC1_proto.dev_resteasy_grpc_example___RecordVariable37 rv = CC1_proto.dev_resteasy_grpc_example___RecordVariable37
+                    .newBuilder().build();
+            //            int l = rv.getAllFieldsMutable(false).keySet().size();
+            int l = rv.getDescriptorForType().getFields().size(); //            rv.
+            System.out.println("FIELDS: " + l);
+            for (FieldDescriptor fd : rv.getDescriptorForType().getFields()) {
+                System.out.println("MSG: " + fd.toString() + ", " + fd.toProto().getTypeName());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -126,8 +145,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
-        //        ar.as(ZipExporter.class).exportTo(
-        //                new File("/tmp/collections.war"), true);
+        ar.as(ZipExporter.class).exportTo(
+                new File("/tmp/collections.war"), true);
         return ar;
     }
 
@@ -205,12 +224,23 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testGenericVariableObject(stub);
         this.testGenericInteger(stub);
         this.testGenericFloat(stub);
+        this.testGenericMap(stub);
         this.testGenericWildcardLowerObject(stub);
         this.testGenericWildcardLowerWildcard(stub);
         this.testGenericVariableUpperTestClass(stub);
+        this.testGenericVariablePrimitiveArray(stub);
+        this.testGenericVariableReferenceArray(stub);
         this.testC11GenericWildcardTestClass(stub);
         this.testC11GenericVariableTestClass(stub);
-        this.testRecord(stub);
+        this.testRecordPerson(stub);
+        this.testRecordCC2(stub);
+        this.testRecordWildcard(stub);
+        this.testRecordVariable(stub);
+        this.testRecordString(stub);
+        this.testRecordInteger(stub);
+        this.testRecordArrayPrimitive(stub);
+        this.testRecordArrayCC3(stub);
+        this.testRecordMap(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -1661,6 +1691,42 @@ abstract class AbstractGrpcToJakartaRESTTest {
         }
     }
 
+    /*
+     * Map<String, String> map = new HashMap<String, String>();
+     * map.put("abc", "xyz")
+     * CC10<Map<String, String>> cc10 = new CC10<Map<String, String>>();
+     * GenericType<dev.resteasy.grpc.example.CC10<java.util.Map<java.lang.String, java.lang.String>>> type
+     * = new GenericType<dev.resteasy.grpc.example.CC10<java.util.Map<java.lang.String, java.lang.String>>> () {
+     * };
+     */
+    void testGenericMap(CC1ServiceBlockingStub stub) throws Exception {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("abc", "xyz");
+        CC10<Map<String, String>> cc10 = new CC10<Map<String, String>>(map);
+        GenericType<dev.resteasy.grpc.example.CC10<java.util.HashMap<java.lang.String, java.lang.String>>> type = new GenericType<dev.resteasy.grpc.example.CC10<java.util.HashMap<java.lang.String, java.lang.String>>>() {
+        };
+        Message m = translator.translateToJavabuf(cc10, translator.normalize(type));
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<java.util.HashMap<java.lang.String,java.lang.String>>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/map").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.cc10Map(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.CC10<java.util.HashMap<java.lang.String,java.lang.String>>")
+                    .invoke(response);
+            CC10<java.util.Map<java.lang.String, java.lang.String>> cc10a = (CC10<java.util.Map<java.lang.String, java.lang.String>>) translator
+                    .translateFromJavabuf(result);
+            Assertions.assertTrue(cc10.equals(cc10a));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
     void testGenericWildcardLowerObject(CC1ServiceBlockingStub stub) throws Exception {
         CC10<TestSubClass> cc10 = new CC10<TestSubClass>(new TestSubClass("forty-one", 43));
         GenericType<CC10<Object>> type = new GenericType<CC10<Object>>() {
@@ -1733,6 +1799,62 @@ abstract class AbstractGrpcToJakartaRESTTest {
         }
     }
 
+    void testGenericVariablePrimitiveArray(CC1ServiceBlockingStub stub) throws Exception {
+        CC10<int[]> cc10 = new CC10<int[]>(new int[] { 3, 5, 7 });
+        GenericType<CC10<int[]>> type = new GenericType<CC10<int[]>>() {
+        };
+        Message m = translator.translateToJavabuf(cc10, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<int[]>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/variable/array/primitive").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.cc10VariableArrayPrimitive(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.CC10<int[]>").invoke(response);
+            CC10<int[]> cc10a = (CC10<int[]>) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(Arrays.equals((int[]) cc10.getT(), (int[]) cc10a.getT()));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testGenericVariableReferenceArray(CC1ServiceBlockingStub stub) throws Exception {
+        CC10<CC5[]> cc10 = new CC10<CC5[]>(new CC5[] { new CC5(7), null, new CC5(11) });
+        GenericType<CC10<CC5[]>> type = new GenericType<CC10<CC5[]>>() {
+        };
+        Message m = translator.translateToJavabuf(cc10, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.CC10<dev.resteasy.grpc.example.CC5[]>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc10/variable/array/reference").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.cc10VariableArrayReference(gem);
+            System.out.println("RESP: " + response.toString());
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.CC10<dev.resteasy.grpc.example.CC5[]>").invoke(response);
+            CC10<CC5[]> cc10a = (CC10<CC5[]>) translator.translateFromJavabuf(result);
+            System.out.println("CC10: " + cc10.getT());
+            CC5[] cc5a = cc10.getT();
+            CC5[] cc5b = cc10a.getT();
+            System.out.println("CC10:5: " + cc5b.length);
+            for (int i = 0; i < cc5b.length; i++) {
+                System.out.println("CC10:5: " + cc5b[i]);
+            }
+            Assertions.assertTrue(Arrays.deepEquals((CC5[]) cc10.getT(), (CC5[]) cc10a.getT()));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
     void testC11GenericWildcardTestClass(CC1ServiceBlockingStub stub) throws Exception {
         CC11<TestClass> cc11 = new CC11<TestClass>(new TestClass("cde"));
         GenericType<CC11<TestClass>> type = new GenericType<CC11<TestClass>>() {
@@ -1781,8 +1903,264 @@ abstract class AbstractGrpcToJakartaRESTTest {
         }
     }
 
-    void testRecord(CC1ServiceBlockingStub stub) throws Exception {
+    void testRecordPerson(CC1ServiceBlockingStub stub) throws Exception {
+        Person person = new Person("Bill");
+        dev_resteasy_grpc_example___Person m = (dev_resteasy_grpc_example___Person) translator.translateToJavabuf(person);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcExamplePersonField(m)
+                .setURL("http://localhost:8080" + "/p/record/string").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordString(gem);
+            Message result = response.getDevResteasyGrpcExamplePersonField();
+            Person p2 = (Person) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(person.equals(p2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
 
+    void testRecordCC2(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("Bill", 19);
+        RecordCC2 r = new RecordCC2(cc2, 23);
+        dev_resteasy_grpc_example___RecordCC2 m = (dev_resteasy_grpc_example___RecordCC2) translator.translateToJavabuf(r);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setDevResteasyGrpcExampleRecordCC2Field(m)
+                .setURL("http://localhost:8080" + "/p/record/cc2").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordCC2(gem);
+            Message result = response.getDevResteasyGrpcExampleRecordCC2Field();
+            RecordCC2 r2 = (RecordCC2) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(r.equals(r2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    /*
+     * GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+     * .getSetter("dev.resteasy.grpc.example.CC11<dev.resteasy.grpc.example.TestClass>")
+     * .invoke(builder, m)).setURL("http://localhost:8080" + "/generic/cc11/wildcard").build();
+     *
+     */
+    void testRecordWildcard(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("bill", 19);
+        CC3 cc3 = new CC3("ted");
+        RecordVariable<CC3> r = new RecordVariable<CC3>(cc2, 29, cc3);
+        GenericType<RecordVariable<Object>> type = new GenericType<RecordVariable<Object>>() {
+        };
+        Message m = translator.translateToJavabuf(r, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.RecordVariable<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/p/record/variable/wildcard").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordVariableWildcard(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.RecordVariable<java.lang.Object>").invoke(response);
+            RecordVariable<Object> r2 = (RecordVariable<Object>) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(r.equals(r2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    /*
+     * @POST
+     *
+     * @Path("record/variable/type")
+     * public <T> RecordVariable<T> recordVariableVariable(RecordVariable<T> r) {
+     * return r;
+     * }
+     */
+    void testRecordVariable(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("bill", 19);
+        CC5 cc5 = new CC5(23);
+        RecordVariable<CC5> r = new RecordVariable<CC5>(cc2, 29, cc5);
+        GenericType<RecordVariable<Object>> type = new GenericType<RecordVariable<Object>>() {
+        };
+        Message m = translator.translateToJavabuf(r, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.RecordVariable<java.lang.Object>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/p/record/variable/variable").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordVariableVariable(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.RecordVariable<java.lang.Object>").invoke(response);
+            RecordVariable<Object> r2 = (RecordVariable<Object>) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(r.equals(r2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testRecordString(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("bill", 19);
+        RecordVariable<String> r = new RecordVariable<String>(cc2, 29, "string");
+        GenericType<RecordVariable<String>> type = new GenericType<RecordVariable<String>>() {
+        };
+        Message m = translator.translateToJavabuf(r, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.RecordVariable<java.lang.String>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/p/record/variable/string").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordVariableString(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.RecordVariable<java.lang.String>").invoke(response);
+            RecordVariable<String> r2 = (RecordVariable<String>) translator.translateFromJavabuf(result);
+            System.out.println(r.i() + ", " + r.t() + ", " + r.cc2().j + ", " + r.cc2().s);
+            System.out.println(r2.i() + ", " + r2.t() + ", " + r2.cc2().j + ", " + r2.cc2().s);
+            Assertions.assertTrue(r.equals(r2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testRecordInteger(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("bill", 19);
+        RecordVariable<Integer> r = new RecordVariable<Integer>(cc2, 29, 31);
+        GenericType<RecordVariable<Integer>> type = new GenericType<RecordVariable<Integer>>() {
+        };
+        Message m = translator.translateToJavabuf(r, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.RecordVariable<java.lang.Integer>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/p/record/variable/integer").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordVariableInteger(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.RecordVariable<java.lang.Integer>").invoke(response);
+            RecordVariable<Integer> r2 = (RecordVariable<Integer>) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(r.equals(r2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testRecordMap(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("bill", 19);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("abc", "xyz");
+        RecordVariable<Map> r = new RecordVariable<Map>(cc2, 29, map);
+        GenericType<RecordVariable<java.util.HashMap<java.lang.String, java.lang.String>>> type = new GenericType<RecordVariable<java.util.HashMap<java.lang.String, java.lang.String>>>() {
+        };
+        Message m = translator.translateToJavabuf(r, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.RecordVariable<java.util.HashMap<java.lang.String,java.lang.String>>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/p/record/variable/map").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordVariableMapStringString(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter(
+                            "dev.resteasy.grpc.example.RecordVariable<java.util.HashMap<java.lang.String,java.lang.String>>")
+                    .invoke(response);
+            System.out.println("RESULT: " + result);
+            RecordVariable<Map> r2 = (RecordVariable<Map>) translator.translateFromJavabuf(result);
+            Map map2 = r2.t();
+            System.out.println(map.size() + " : " + map2.size());
+            for (String s : map.keySet()) {
+                System.out.println(map.get(s) + " : " + map2.get(s));
+            }
+            System.out.println(map2);
+            Assertions.assertTrue(map.equals(map2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testRecordArrayPrimitive(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("bill", 19);
+        int[] is = new int[] { 51, 53 };
+        RecordVariable<int[]> r = new RecordVariable<int[]>(cc2, 29, is);
+        GenericType<RecordVariable<int[]>> type = new GenericType<RecordVariable<int[]>>() {
+        };
+        Message m = translator.translateToJavabuf(r, type);
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.RecordVariable<int[]>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/p/record/variable/array/primitive").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordVariableArrayPrimitive(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.RecordVariable<int[]>")
+                    .invoke(response);
+            System.out.println("RESULT: " + result);
+            RecordVariable<int[]> r2 = (RecordVariable<int[]>) translator.translateFromJavabuf(result);
+            //            Assert.assertTrue(cc2.equals(r2.cc2()));
+            //            Assert.assertTrue(29 == r2.i());
+            //            Integer[] is2 = new Integer[] { 51, 53 };
+            int[] is2 = r2.t();
+            Assertions.assertTrue(Arrays.equals(is, is2));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testRecordArrayCC3(CC1ServiceBlockingStub stub) throws Exception {
+        CC2 cc2 = new CC2("bill", 19);
+        int[] is = new int[] { 51, 53 };
+        CC3[] cc3s = new CC3[] { new CC3("abc"), null, new CC3("pq"), null, new CC3("xyz") };
+        RecordVariable<CC3[]> r = new RecordVariable<CC3[]>(cc2, 29, cc3s);
+        System.out.println("RECORD VAR: 1: ");
+        GenericType<dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>> type = new GenericType<dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>>() {
+        };
+        Message m = translator.translateToJavabuf(r, type);
+        System.out.println("RECORD VAR: 2: " + m.toString());
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>")
+                .invoke(builder, m)).setURL("http://localhost:8080" + "/p/record/variable/array/reference").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.recordVariableArrayReference(gem);
+            Message result = (Message) JavabufClassTranslator
+                    .getGetter("dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>")
+                    .invoke(response);
+            System.out.println("RESULT: " + result);
+            RecordVariable<CC3[]> r2 = (RecordVariable<CC3[]>) translator.translateFromJavabuf(result);
+            Assertions.assertTrue(r.cc2().equals(r2.cc2()));
+            Assertions.assertTrue(r.i() == r2.i());
+            Assertions.assertTrue(Arrays.deepEquals((CC3[]) r.t(), (CC3[]) r2.t()));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
     }
 
     static class GeneralReturnMessageHolder<T> {

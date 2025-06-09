@@ -14,4 +14,12 @@ public class CC10<T> {
     public T getT() {
         return t;
     }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof CC10)) {
+            return false;
+        }
+        CC10 other = (CC10) o;
+        return other.t.equals(t);
+    }
 }

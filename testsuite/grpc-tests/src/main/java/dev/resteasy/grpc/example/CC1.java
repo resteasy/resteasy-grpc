@@ -21,6 +21,7 @@ package dev.resteasy.grpc.example;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -698,8 +699,74 @@ public class CC1 {
     }
 
     @POST
-    @Path("record")
-    public Person rcd(Person p) {
+    @Path("record/string")
+    public Person recordString(Person p) {
         return p;
+    }
+
+    @POST
+    @Path("record/cc2")
+    public RecordCC2 recordCC2(RecordCC2 r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/wildcard")
+    public RecordVariable<?> recordVariableWildcard(RecordVariable<?> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/variable")
+    public <T> RecordVariable<T> recordVariableVariable(RecordVariable<T> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/string")
+    public RecordVariable<String> recordVariableString(RecordVariable<String> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/integer")
+    public RecordVariable<Integer> recordVariableInteger(RecordVariable<Integer> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/map")
+    public RecordVariable<HashMap<String, String>> recordVariableMapStringString(RecordVariable<HashMap<String, String>> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/primitive")
+    public RecordVariable<int[]> recordVariableArrayPrimitive(RecordVariable<int[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/integer")
+    public RecordVariable<Integer[]> recordVariableArrayInteger(RecordVariable<Integer[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/reference")
+    public RecordVariable<CC3[]> recordVariableArrayReference(RecordVariable<CC3[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/variable")
+    public <T> RecordVariable<T[]> recordVariableArrayVariable(RecordVariable<T[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("test/array")
+    public TestArray ta(TestArray ta) {
+        return ta;
     }
 }

@@ -22,8 +22,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,6 +45,7 @@ import org.jboss.logging.Logger;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;
 
+import dev.resteasy.grpc.bridge.runtime.HolderMap;
 import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.bridge.runtime.protobuf.AssignFromJavabuf;
 import dev.resteasy.grpc.bridge.runtime.protobuf.AssignToJavabuf;
@@ -162,6 +165,7 @@ public class JavabufTranslatorGenerator {
     private static final Map<String, String> SETS = new HashMap<String, String>();
     private static final Map<String, String> MAPS = new HashMap<String, String>();
     private static final Map<String, String> MULTIMAPS = new HashMap<String, String>();
+    private static final Map<String, String> RECORDS = new HashMap<String, String>();
     private static final Map<String, String> COLLECTION_TYPE = new HashMap<String, String>();
     private static final Map<String, String> KEY_TYPE_JAVA = new HashMap<String, String>();
     private static final Map<String, String> VALUE_TYPE_JAVA = new HashMap<String, String>();
@@ -330,7 +334,7 @@ public class JavabufTranslatorGenerator {
             + "      %n"
             + "      public Object assignFromJavabuf(Message message) {%n"
             + "         dev_resteasy_grpc_arrays___Any___WArray array = (dev_resteasy_grpc_arrays___Any___WArray) message;%n"
-            + "         Object os = null;%n"
+            + "         Object[] os = new Object[array.getWrapperFieldCount()];%n"
             + "         for (int i = 0; i < array.getWrapperFieldCount(); i++) {%n"
             + "            dev_resteasy_grpc_arrays___Any___wrapper wrapper = array.getWrapperField(i);%n"
             + "            if (!array.getWrapperField(i).hasNoneField()) {%n"
@@ -341,17 +345,7 @@ public class JavabufTranslatorGenerator {
             + "                   throw new RuntimeException(e);%n"
             + "               }%n"
             + "               Object element = INSTANCE.translateFromJavabuf(m);%n"
-            + "               if (os == null) {%n"
-            + "                  os = Array.newInstance(element.getClass(), array.getWrapperFieldCount());%n"
-            + "               }%n"
-            + "               Array.set(os, i, element);%n"
-            + "            }%n"
-            + "         }%n"
-            + "         if (os == null) {%n"
-            + "            try {%n"
-            + "               os = new Object[0];%n"
-            + "            } catch (Exception e) {%n"
-            + "               throw new RuntimeException(e);%n"
+            + "               os[i] = element;%n"
             + "            }%n"
             + "         }%n"
             + "         return os;%n"
@@ -921,6 +915,47 @@ public class JavabufTranslatorGenerator {
             + "         return assignFromJavabuf(m);%n"
             + "      }%n";
 
+    private static final String RECORD_FROM_JAVABUF = "%n"
+            + "   public static class %1$s_FromJavabuf implements TranslateFromJavabuf {%n"
+            + "      private static Descriptor descriptor = %1$s.getDescriptor();%n"
+            + "      private static List<AssignFromJavabuf> assignList = new ArrayList<AssignFromJavabuf>();%n"
+            + "%n"
+            + "      static {%n"
+            + "         for (FieldDescriptor f : descriptor.getFields()) {%n"
+            + "            String name = f.getName();%n"
+            + "            if (descriptor.findFieldByName(name) == null) {%n"
+            + "               continue;%n"
+            + "            }%n"
+            + "            assignList.add(fromJavabuf(%2$s.class, descriptor.findFieldByName(name)));%n"
+            + "         }%n"
+            + "      }%n"
+            + "%n"
+            + "      @Override%n"
+            + "      public %2$s assignFromJavabuf(Message message) {%n"
+            + "         HolderMap map = new HolderMap();%n"
+            + "         int i = 0;%n"
+            + "         for (AssignFromJavabuf assignFrom : assignList) {%n"
+            + "            try {%n"
+            + "               assignFrom.assign(message, map);%n"
+            + "            } catch (Exception e) {%n"
+            + "               throw new RuntimeException(e);%n"
+            + "            }%n"
+            + "         }%n"
+            + "         return new %2$s(%4$s);%n"
+            + "      }%n"
+            + "%n"
+            + "      @Override%n"
+            + "      public void assignExistingFromJavabuf(Message message, Object obj) {%n"
+            + "         throw new RuntimeException(\"Not implemented\");%n"
+            + "      }%n"
+            + "%n"
+            + "      @Override%n"
+            + "      public Object parseFromJavabuf(InputStream is) throws IOException {%n"
+            + "         Message m = %1$s.parseFrom(is);%n"
+            + "         return assignFromJavabuf(m);%n"
+            + "      }%n";
+    //            + "   }%n%n";
+
     private static final String RAW_AGGREGATE_TO_JAVABUF = "   private static TranslateToJavabuf rawAggregateTranslationToJavabuf(Object o) {%n"
             + "      if (List.class.isAssignableFrom(o.getClass())) {%n"
             + "         return new java_util___List_ToJavabuf();%n"
@@ -946,6 +981,116 @@ public class JavabufTranslatorGenerator {
             + "      } catch (Exception e) {%n"
             + "         throw new RuntimeException(e);%n"
             + "      }%n"
+            + "   }%n%n";
+
+    private static final String TO_PRIMITIVE_JAVABUF_ARRAY = "   private static void toPrimitiveJavabufArray(Builder builder, FieldDescriptor fd, Class<?> componentType,%n"
+            + "           Object array) {%n"
+            + "       if (byte.class.equals(componentType) || Byte.class.equals(componentType)) {%n"
+            + "           builder.setField(fd, ByteString.copyFrom((byte[]) array));%n"
+            + "       } else if (char.class.equals(componentType)) {%n"
+            + "           builder.setField(fd, charsToString(array));%n"
+            + "       } else if (boolean.class.equals(componentType)) {%n"
+            + "           for (int i = 0; i < Array.getLength(array); i++) {%n"
+            + "               builder.addRepeatedField(fd, ((Boolean) Array.get(array, i)).booleanValue());%n"
+            + "           }%n"
+            + "       } else if (short.class.equals(componentType)) {%n"
+            + "           for (int i = 0; i < Array.getLength(array); i++) {%n"
+            + "               builder.addRepeatedField(fd, ((Short) Array.get(array, i)).shortValue());%n"
+            + "           }%n"
+            + "       } else if (int.class.equals(componentType) || Integer.class.equals(componentType)) {%n"
+            + "           for (int i = 0; i < Array.getLength(array); i++) {%n"
+            + "               builder.addRepeatedField(fd, ((Integer) Array.get(array, i)).intValue());%n"
+            + "           }%n"
+            + "       } else if (long.class.equals(componentType)) {%n"
+            + "           for (int i = 0; i < Array.getLength(array); i++) {%n"
+            + "               builder.addRepeatedField(fd, ((Long) Array.get(array, i)).longValue());%n"
+            + "           }%n"
+            + "       } else if (float.class.equals(componentType)) {%n"
+            + "           for (int i = 0; i < Array.getLength(array); i++) {%n"
+            + "               builder.addRepeatedField(fd, ((Float) Array.get(array, i)).floatValue());%n"
+            + "           }%n"
+            + "       } else if (double.class.equals(componentType)) {%n"
+            + "           for (int i = 0; i < Array.getLength(array); i++) {%n"
+            + "               builder.addRepeatedField(fd, ((Double) Array.get(array, i)).doubleValue());%n"
+            + "           }%n"
+            + "       } else {%n"
+            + "           throw new RuntimeException(\"don't recognize type: \" + componentType);%n"
+            + "       }%n"
+            + "   }%n%n";
+
+    private static final String TO_PRIMITIVE_JAVA_ARRAY = "   private static Object toPrimitiveJavaArray(Object original, Class<?> clazz) {%n"
+            + "      List<?> list = null;%n"
+            + "      Object array = null;%n"
+            + "      if (unwrap.containsKey(clazz)) {%n"
+            + "         clazz = unwrap.get(clazz);%n"
+            + "      }%n"
+            + "      if (original instanceof ByteString) {%n"
+            + "         if (((ByteString) original).size() == 0) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         array = Array.newInstance(clazz, ((ByteString) original).size());%n"
+            + "      } else if (original instanceof String) {%n"
+            + "         if (((String) original).length() == 0) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         array = Array.newInstance(clazz, ((String) original).length());%n"
+            + "      } else {%n"
+            + "         list = (List<?>) original;%n"
+            + "         if (list == null || list.size() == 0) {%n"
+            + "            return null;%n"
+            + "         }%n"
+            + "         array = Array.newInstance(clazz, list.size());%n"
+            + "      }%n"
+            + "      if (boolean.class.equals(clazz)) {%n"
+            + "         for (int i = 0; i < list.size(); i++) {%n"
+            + "            Array.set(array, i, list.get(i));%n"
+            + "         }%n"
+            + "      } else if (byte.class.equals(clazz)) {%n"
+            + "         ((ByteString) original).copyTo(((byte[]) array), 0);%n"
+            + "      } else if (short.class.equals(clazz)) {%n"
+            + "         for (int i = 0; i < list.size(); i++) {%n"
+            + "            Array.set(array, i, ((Integer)list.get(i)).shortValue());%n"
+            + "         }%n"
+            + "      } else if (int.class.equals(clazz)) {%n"
+            + "         for (int i = 0; i < list.size(); i++) {%n"
+            + "            Array.set(array, i, list.get(i));%n"
+            + "         }%n"
+            + "      } else if (long.class.equals(clazz)) {%n"
+            + "         for (int i = 0; i < list.size(); i++) {%n"
+            + "             Array.set(array, i, list.get(i));%n"
+            + "         }%n"
+            + "      } else if (float.class.equals(clazz)) {%n"
+            + "         for (int i = 0; i < list.size(); i++) {%n"
+            + "             Array.set(array, i, list.get(i));%n"
+            + "         }%n"
+            + "      } else if (double.class.equals(clazz)) {%n"
+            + "         for (int i = 0; i < list.size(); i++) {%n"
+            + "            Array.set(array, i, list.get(i));%n"
+            + "         }%n"
+            + "      } else if (char.class.equals(clazz)) {%n"
+            + "         for (int i = 0; i < ((String) original).length(); i++) {%n"
+            + "            Array.set(array, i, ((String) original).charAt(i));%n"
+            + "         }%n"
+            + "      } else {%n"
+            + "          throw new RuntimeException(\"Don't recognize class: \" + clazz.getName());%n"
+            + "      }%n"
+            + "      return array;%n"
+            + "   }%n%n";
+
+    private static final String IS_PRIMITIVE = "   private static boolean isPrimitive(FieldDescriptor fd) {%n"
+            + "      return !fd.toProto().getType().equals(FieldDescriptorProto.Type.TYPE_MESSAGE);%n"
+            + "   }%n%n";
+
+    private static final String UNWRAP_TABLE = "private static Map<Class<?>, Class<?>> unwrap = new HashMap<Class<?>, Class<?>>();%n%n"
+            + "   static {%n"
+            + "      unwrap.put(Boolean.class, boolean.class);%n"
+            + "      unwrap.put(Byte.class, byte.class);%n"
+            + "      unwrap.put(Short.class, short.class);%n"
+            + "      unwrap.put(Integer.class, int.class);%n"
+            + "      unwrap.put(Long.class, long.class);%n"
+            + "      unwrap.put(Float.class, float.class);%n"
+            + "      unwrap.put(Double.class, double.class);%n"
+            + "      unwrap.put(Character.class, char.class);%n"
             + "   }%n%n";
 
     static {
@@ -1027,41 +1172,41 @@ public class JavabufTranslatorGenerator {
         JAVA_WRAPPER_MAP.put("Double", "double");
         JAVA_WRAPPER_MAP.put("Character", "char");
 
-        ARRAY_CLASSES_TO_JAVABUF.put(new Boolean[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Boolean[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Boolean___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new boolean[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new boolean[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Boolean___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new byte[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new byte[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Byte___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Byte[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Byte[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Byte___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new short[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new short[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Short___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Short[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Short[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Short___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new int[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new int[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Integer___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Integer[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Integer[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Integer___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new long[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new long[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Long___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Long[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Long[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Long___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new float[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new float[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Float___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Float[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Float[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Float___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new double[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new double[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Double___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Double[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Double[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Double___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new char[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new char[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Character___Array_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Character[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Character[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Character___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new String[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new String[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___String___WArray_ToJavabuf()");
-        ARRAY_CLASSES_TO_JAVABUF.put(new Object[0].getClass().getName(),
+        ARRAY_CLASSES_TO_JAVABUF.put(new Object[0].getClass().getTypeName(),
                 "new dev_resteasy_grpc_arrays___Any___WArray_ToJavabuf()");
         ARRAY_CLASSES_TO_JAVABUF.put("dev_resteasy_grpc_arrays___ArrayHolder",
                 "new  dev_resteasy_grpc_arrays___ArrayHolder_ToJavabuf()");
@@ -1219,6 +1364,15 @@ public class JavabufTranslatorGenerator {
                     AGGREGATES_INV.put(javaClassname, javabufClassname);
                     MAPS.put(javabufClassname, javaClassname);
                     processMapTypes(reader, javabufClassname);
+                } else if (line.startsWith("// Record: ")) {
+                    boolean generic = line.contains("<");
+                    String javaClassname = getJavaClassname(line, 11);
+                    String javabufClassname = getJavabufClassname(reader);
+                    //                    RECORDS_INV.put(javaClassname, javabufClassname);
+                    RECORDS.put(javabufClassname, javaClassname);
+                    if (generic) {
+                        GENERICS.put(javabufClassname, javaClassname);
+                    }
                 } else if (line.startsWith("// Type: ") && line.contains("<")) {
                     String javaClassname = getJavaClassname(line, 9);
                     String javabufClassname = getJavabufClassname(reader);
@@ -1358,12 +1512,14 @@ public class JavabufTranslatorGenerator {
                 .append("import java.util.concurrent.atomic.AtomicInteger;" + LS)
                 .append("import com.google.protobuf.Any;" + LS)
                 .append("import com.google.protobuf.ByteString;" + LS)
+                .append("import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;" + LS)
                 .append("import com.google.protobuf.Descriptors;" + LS)
                 .append("import com.google.protobuf.Descriptors.Descriptor;" + LS)
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
                 .append("import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;" + LS)
-                .append("import com.google.protobuf.Internal.IntList;" + LS)
                 .append("import com.google.protobuf.Message;" + LS)
+                .append("import com.google.protobuf.Message.Builder;" + LS)
+                .append("import ").append(HolderMap.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(Utility.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(AssignFromJavabuf.class.getCanonicalName()).append(";" + LS)
                 .append("import ").append(AssignToJavabuf.class.getCanonicalName()).append(";" + LS)
@@ -1518,7 +1674,8 @@ public class JavabufTranslatorGenerator {
             } else if (simpleName.endsWith("___WArray")) {
                 String javaName = originalClassName(simpleName);
                 sb.append(LS + "      toJavabufMap.put(\"")
-                        .append("[L" + javaName + ";\" , new ")
+                        //                        .append("[L" + javaName + ";\" , new ")
+                        .append(javaName + "[]\" , new ")
                         .append(simpleName)
                         .append("_ToJavabuf());" + LS);
                 sb.append("      fromJavabufMap.put(")
@@ -1676,13 +1833,13 @@ public class JavabufTranslatorGenerator {
                 .append("      TranslateToJavabuf ttj = null;" + LS)
                 .append("      if (genericType != null) {" + LS)
                 .append("         GenericType<?> gt = normalize(genericType);" + LS)
-                .append("         ttj = toJavabufMap.get(gt.getType().toString());" + LS)
+                .append("         ttj = toJavabufMap.get(simplifyTypeName(gt.getType().toString()));" + LS)
                 .append("         if (ttj == null) {" + LS)
                 .append("            ttj = toJavabufMap.get(genericType.getRawType().getName());" + LS)
                 .append("         }" + LS)
                 .append("      }" + LS)
                 .append("      if (ttj == null) {" + LS)
-                .append("         ttj = toJavabufMap.get(o.getClass().getName());" + LS)
+                .append("         ttj = toJavabufMap.get(o.getClass().getTypeName());" + LS)
                 .append("      }" + LS)
                 .append("      if (ttj == null && o.getClass().isArray() && o.getClass().componentType().isArray()) {" + LS)
                 .append("         return new dev_resteasy_grpc_arrays___ArrayHolder_ToJavabuf().assignToJavabuf(o);" + LS)
@@ -1835,27 +1992,19 @@ public class JavabufTranslatorGenerator {
                 .append("               }" + LS)
                 .append("                  final Field field = Utility.getField(clazz, fd.getName());" + LS)
                 .append("                  field.setAccessible(true);" + LS)
-                .append("                  if (field.getType().isArray()) {" + LS)
+                .append("                     if (field.getType().isArray() || (field.get(obj) != null && field.get(obj).getClass().isArray())) {"
+                        + LS)
                 .append("                     Object array = field.get(obj);" + LS)
                 .append("                     if (array == null) {" + LS)
                 .append("                        return;" + LS)
                 .append("                     }" + LS)
                 .append("                     Class<?> componentType = array.getClass().getComponentType();" + LS)
-                .append("                     if (componentType.isPrimitive()) {" + LS)
-                .append("                        if (byte.class.equals(componentType)) {" + LS)
-                .append("                           messageBuilder.setField(fd, ByteString.copyFrom((byte[]) array));" + LS)
-                .append("                        } else if (char.class.equals(componentType)) {" + LS)
-                .append("                           messageBuilder.setField(fd, charsToString(array));" + LS)
-                .append("                        } else {" + LS)
-                .append("                           for (int i = 0; i < Array.getLength(array); i++) {" + LS)
-                .append("                              messageBuilder.addRepeatedField(fd, Array.get(array, i));" + LS)
-                .append("                           }" + LS)
-                .append("                        }" + LS)
+                .append("                     if (isPrimitive(fd)) {" + LS)
+                .append("                        toPrimitiveJavabufArray(messageBuilder, fd, componentType, array);" + LS)
                 .append("                     } else {" + LS)
                 .append("                        messageBuilder.setField(fd, INSTANCE.translateToJavabuf(array));" + LS)
                 .append("                     }" + LS)
-                .append("                     }" + LS)
-                .append("                  else if (\".google.protobuf.Any\".equals(fd.toProto().getTypeName())) {" + LS)
+                .append("                  } else if (\".google.protobuf.Any\".equals(fd.toProto().getTypeName())) {" + LS)
                 .append("                     if (field.get(obj) != null) {" + LS)
                 .append("                        Class<?> c = field.get(obj).getClass();" + LS)
                 .append("                        if (Any.class.equals(c)) {" + LS)
@@ -1869,15 +2018,15 @@ public class JavabufTranslatorGenerator {
                 .append("                 } else if (field.get(obj) != null" + LS)
                 .append("                        && !field.get(obj).getClass().isPrimitive()" + LS)
                 .append("                        && !WRAPPER_TYPES.contains(field.get(obj).getClass())) {" + LS)
-                .append("                     if (toJavabufMap.keySet().contains(getTypeName(field))) {" + LS)
-                .append("                          Message message = toJavabufMap.get(getTypeName(field)).assignToJavabuf(field.get(obj));"
+                .append("                     if (toJavabufMap.keySet().contains(getTypeName(fd))) {" + LS)
+                .append("                          Message message = toJavabufMap.get(getTypeName(fd)).assignToJavabuf(field.get(obj));"
                         + LS)
                 .append("                          if (message != null) {" + LS)
                 .append("                              messageBuilder.setField(fd, message);" + LS)
                 .append("                          }" + LS)
-                .append("                     } else if (toJavabufMap.keySet().contains(field.get(obj).getClass().getName())) {"
+                .append("                     } else if (toJavabufMap.keySet().contains(field.get(obj).getClass().getTypeName())) {"
                         + LS)
-                .append("                          Message message = toJavabufMap.get(field.get(obj).getClass().getName()).assignToJavabuf(field.get(obj));"
+                .append("                          Message message = toJavabufMap.get(field.get(obj).getClass().getTypeName()).assignToJavabuf(field.get(obj));"
                         + LS)
                 .append("                        if (message != null) {" + LS)
                 .append("                              messageBuilder.setField(fd, message);" + LS)
@@ -1922,20 +2071,17 @@ public class JavabufTranslatorGenerator {
                 .append("                  final Field field = Utility.getField(javaClass, javabufClassToJavaClass(fd.getName()));"
                         + LS)
                 .append("                  field.setAccessible(true);" + LS)
-                .append("                  if (field.getType().isArray()) {" + LS)
+                .append("                  if (field.getType().isArray() && !field.getType().getName().startsWith(\"[[\") && field.getType().getComponentType().isPrimitive()) {"
+                        + LS)
                 .append("                     Object m = message.getField(fd);" + LS)
-                .append("                     if (\"byte\".equals(field.getType().getComponentType().getName())) {" + LS)
-                .append("                        Utility.setField(field, object, ((ByteString) m).toByteArray(), INSTANCE);"
-                        + LS)
-                .append("                     } else if (String.class.equals(m.getClass()) " + LS)
-                .append("                             && \"char\".equals(field.getType().getComponentType().getName())) {" + LS)
-                .append("                        Utility.setField(field, object, ((String) m).toCharArray(), INSTANCE);" + LS)
-                .append("                     } else if (m instanceof AbstractList) {" + LS)
-                .append("                        Object array = toArray((List<?>) m, field.getType().getComponentType());" + LS)
+                .append("                     Object array = toPrimitiveJavaArray(m, field.getType().getComponentType());" + LS)
+                .append("                     Utility.setField(field, object, array, INSTANCE);" + LS)
+                .append("                  } else if (message.getField(fd) instanceof AbstractList) {" + LS)
+                .append("                     List<?> list = (List<?>) message.getField(fd);" + LS)
+                .append("                     if (list.size() > 0) {" + LS)
+                .append("                        Class<?> clazz = list.get(0).getClass();" + LS)
+                .append("                        Object array = toPrimitiveJavaArray(list, clazz);" + LS)
                 .append("                        Utility.setField(field, object, array, INSTANCE);" + LS)
-                .append("                     } else {" + LS)
-                .append("                        Utility.setField(field, object, INSTANCE.translateFromJavabuf((Message) m), INSTANCE);"
-                        + LS)
                 .append("                     }" + LS)
                 .append("                  } else if (Descriptors.FieldDescriptor.Type.MESSAGE.equals(fd.getType())" + LS)
                 .append("                     && fromJavabufMap.keySet().contains(fd.getMessageType().getName())) {" + LS)
@@ -1991,17 +2137,25 @@ public class JavabufTranslatorGenerator {
                 .append("      }" + LS)
                 .append("      return fieldName;" + LS)
                 .append("   }" + LS + LS);
-        sb.append("   private static String getTypeName(Field field) {" + LS)
-                .append("      if (field.getGenericType().equals(field.getType())) {" + LS)
-                .append("         return field.getGenericType().getTypeName();" + LS)
+        sb.append("   private static String getTypeName(FieldDescriptor fd) {" + LS)
+                .append("      String s = fd.toProto().getTypeName();" + LS)
+                .append("      if (s.length() > 0 && s.charAt(0) == '.') {" + LS)
+                .append("         s = s.substring(1);" + LS)
                 .append("      }" + LS)
-                .append("      String name = typeNames.get(field.getGenericType());" + LS)
-                .append("      if (name != null) {" + LS)
-                .append("         return name;" + LS)
+                .append("      if (s.contains(\".\")) {" + LS)
+                .append("         s = s.substring(s.lastIndexOf('.') + 1);" + LS)
                 .append("      }" + LS)
-                .append("      name = Utility.objectify(field.getGenericType()).toString();" + LS)
-                .append("      typeNames.put(field.getGenericType(), name);" + LS)
-                .append("      return name;" + LS)
+                .append("      return javabufToJava(s);" + LS)
+                .append("   }" + LS + LS);
+        sb.append("   private static String javabufToJava(String name) {" + LS)
+                .append("      if (name.contains(\"___\")) {" + LS)
+                .append("         name = name.replace(\"___\", \".\");" + LS)
+                .append("      } else if (name.contains(\"_INNER_\")) {" + LS)
+                .append("         name = name.replace(\"_INNER_\", \".\");" + LS)
+                .append("      } else if (name.contains(\"_HIDDEN_\")) {" + LS)
+                .append("         name = name.replace(\"_HIDDEN_\", \".\");" + LS)
+                .append("      }" + LS)
+                .append("      return name.replaceAll(\"_\", \".\");" + LS)
                 .append("   }" + LS + LS);
         sb.append("   private static FieldDescriptor getSuperField(Message message) {" + LS)
                 .append("      Map<FieldDescriptor, Object> map = message.getAllFields();" + LS)
@@ -2167,6 +2321,10 @@ public class JavabufTranslatorGenerator {
         }
         sb.append(String.format(RAW_AGGREGATE_TO_JAVABUF));
         sb.append(String.format(RAW_AGGREGATE_FROM_JAVABUF));
+        sb.append(String.format(TO_PRIMITIVE_JAVABUF_ARRAY));
+        sb.append(String.format(TO_PRIMITIVE_JAVA_ARRAY));
+        sb.append(String.format(UNWRAP_TABLE));
+        sb.append(String.format(IS_PRIMITIVE));
     }
 
     static String squashToCamel(String name) {
@@ -2565,6 +2723,39 @@ public class JavabufTranslatorGenerator {
                     VALUE_TYPE_JAVA.get(clazz.getSimpleName()),
                     getMapAssignmentFromJavabuf(clazz.getSimpleName(), KEY_TYPE_JAVA, "Key"),
                     getMapAssignmentFromJavabuf(clazz.getSimpleName(), VALUE_TYPE_JAVA, "Value")));
+        } else if (RECORDS.containsKey(clazz.getSimpleName())) {
+            /*
+             * %1: javabuf class name
+             * %2: java class name
+             * %3: number of arguments
+             * %4: call to constructor
+             */
+            String javaClassString = RECORDS.get(clazz.getSimpleName());
+            String javaClassStringSimple = javaClassString.contains("<")
+                    ? javaClassString.substring(0, javaClassString.indexOf("<"))
+                    : javaClassString;
+            Class<?> javaClass = Class.forName(javaClassStringSimple);
+            StringBuilder sb0 = new StringBuilder(); // generate parameter values
+            Constructor<?> cons = javaClass.getConstructors()[0];
+            Parameter[] params = cons.getParameters();
+            int i = 0;
+            boolean first = true;
+            for (Field field : javaClass.getDeclaredFields()) {
+                if (!first) {
+                    sb0.append(", ");
+                }
+                first = false;
+                sb0.append("(")
+                        .append(field.getType().getSimpleName())
+                        .append(") map.get(")
+                        .append("\"" + params[i].getName() + "\")");
+                i++;
+            }
+            sb.append(String.format(RECORD_FROM_JAVABUF,
+                    clazz.getSimpleName(),
+                    javaClass.getSimpleName(),
+                    javaClass.getDeclaredFields().length,
+                    sb0.toString()));
         } else {
             Constructor<?> cons = null;
             try {
