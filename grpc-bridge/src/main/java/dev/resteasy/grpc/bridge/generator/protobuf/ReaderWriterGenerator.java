@@ -381,7 +381,7 @@ public class ReaderWriterGenerator {
                         + LS)
                 .append("      if (type.isInterface()) {" + LS)
                 .append("         return true;" + LS)
-                .append("      } else if (type.isArray() && type.isArray()) {" + LS)
+                .append("      } else if (type.isArray() && type.isArray()) {" + LS) // ??????????????????/
                 .append("         return true;" + LS)
                 .append("      } else {" + LS)
                 .append("         return ")
@@ -405,8 +405,8 @@ public class ReaderWriterGenerator {
                 .append("            return ")
                 .append("translator.translateFromJavabuf(m);" + LS)
                 .append("         }" + LS)
-                .append("         Type oType = Utility.objectify(genericType);" + LS)
-                .append("         String gt = oType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\");"
+                .append("         Type nType = translator.normalize(genericType);" + LS)
+                .append("         String gt = nType.getTypeName().replace(\"class \", \"\").replace(\"interface \", \"\").replace(\" \", \"\").replace(\"$\", \".\");"
                         + LS)
                 .append("         if (ENTITY_MAP.containsKey(gt)) {" + LS)
                 .append("            GeneratedMessage message = (GeneratedMessage) ENTITY_MAP.get(gt).invoke(null, entityStream);"
@@ -515,30 +515,6 @@ public class ReaderWriterGenerator {
         Files.writeString(path, sbBody.toString(), StandardCharsets.UTF_8, CREATE, APPEND, WRITE);
     }
 
-    private static String javabufToJavaClass(String classname) {
-        int i = classname.indexOf("___");
-        if (i >= 0) {
-            String simpleName = classname.substring(i + 3);
-            if (primitives.containsKey(simpleName) && !"gEmpty".equals(simpleName)) {
-                return "java.lang." + simpleName.substring(1);
-            }
-            return simpleName;
-        } else {
-            i = classname.indexOf("_INNER_");
-            if (i >= 0) {
-                return classname.substring(i + "_INNER_".length());
-            } else {
-                i = classname.indexOf("_HIDDEN_");
-                if (i >= 0) {
-                    return classname.substring(i + "_HIDDEN_".length());
-                } else if (primitives.containsKey(classname) && !"gEmpty".equals(classname)) {
-                    return "java.lang." + classname.substring(1);
-                }
-                return classname;
-            }
-        }
-    }
-
     private static String originalClassName(String s) {
         int i = s.indexOf("$");
         int j = s.lastIndexOf("___");
@@ -579,23 +555,6 @@ public class ReaderWriterGenerator {
         final var file = Path.of(path + "/target/entityTypes");
         if (Files.notExists(file)) {
             throw new RuntimeException(path + "/target/entityTypes not found");
-        }
-    }
-
-    private String javaToJavabufName(String javaName) {
-        try {
-            Class<?> clazz = Class.forName(javaName);
-            if (clazz.getEnclosingClass() != null) {
-                String pkg = clazz.getEnclosingClass().getPackageName().replaceAll(".", "_");
-                String esn = clazz.getEnclosingClass().getSimpleName();
-                String sn = clazz.getSimpleName();
-                return pkg + "_" + esn + "___" + sn;
-            }
-            String pkg = clazz.getEnclosingClass().getPackageName().replaceAll(".", "_");
-            String sn = clazz.getSimpleName();
-            return pkg + "___" + sn;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 

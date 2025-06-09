@@ -28,4 +28,12 @@ public class CC5 {
     }
 
     public int k;
+
+    public boolean equals(Object o) {
+        if (o == null || !CC5.class.equals(o.getClass())) {
+            return false;
+        }
+        CC5 cc5 = (CC5) o;
+        return k == cc5.k;
+    }
 }
