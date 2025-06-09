@@ -32,26 +32,26 @@ public class JavabufClassTranslator {
             String dir = System.getProperty("user.dir") + File.separator + "target" + File.separator + "entityTypes";
             final Path file = Path.of(dir);
             try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-            	String line = reader.readLine();
-            	while (line != null) {
-            		int n = line.indexOf(" ");
-            		String l1 = line.substring(0, n);
-            		String l2 = line.substring(n + 1);
-            		Class<?> javabufClass = Class.forName(l2);
-            		if (l2.contains("$")) {
-            			l2 = l2.substring(l2.lastIndexOf('$') + 1);
-            		}
-            		String methodSuffix = squashToCamel(l2) + "Field";
-            		try {
-            			GET_MAP.put(l1, response.getDeclaredMethod("get" + methodSuffix));
-            		} catch (NoSuchMethodException e) {
-            		}
-            		try {
-            			SET_MAP.put(l1, builder.getDeclaredMethod("set" + methodSuffix, javabufClass));
-            		} catch (NoSuchMethodException e) {
-            		}
-            		line = reader.readLine();
-            	}
+                String line = reader.readLine();
+                while (line != null) {
+                    int n = line.indexOf(" ");
+                    String l1 = line.substring(0, n);
+                    String l2 = line.substring(n + 1);
+                    Class<?> javabufClass = Class.forName(l2);
+                    if (l2.contains("$")) {
+                        l2 = l2.substring(l2.lastIndexOf('$') + 1);
+                    }
+                    String methodSuffix = squashToCamel(l2) + "Field";
+                    try {
+                        GET_MAP.put(l1, response.getDeclaredMethod("get" + methodSuffix));
+                    } catch (NoSuchMethodException e) {
+                    }
+                    try {
+                        SET_MAP.put(l1, builder.getDeclaredMethod("set" + methodSuffix, javabufClass));
+                    } catch (NoSuchMethodException e) {
+                    }
+                    line = reader.readLine();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -375,8 +375,8 @@
                                 <systemProperty>
                                     <key>classes</key>
                                     <value>${project.build.sourceDirectory}:dev.resteasy.grpc.example.CC3,
-                                           ${project.build.sourceDirectory}:dev.resteasy.grpc.example.CC5,
-                                           ${project.build.testSourceDirectory}:org.jboss.resteasy.test.grpc.RVCC3</value>
+                                           ${project.build.sourceDirectory}:dev.resteasy.grpc.example.CC5
+                                    </value>
                                 </systemProperty>
                                 <systemProperty>
 									<key>jars</key>

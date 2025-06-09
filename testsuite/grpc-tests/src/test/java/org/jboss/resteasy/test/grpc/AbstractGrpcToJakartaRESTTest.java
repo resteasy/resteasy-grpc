@@ -38,7 +38,7 @@ import jakarta.ws.rs.core.GenericType;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +46,6 @@ import org.junit.jupiter.api.Assertions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
-import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 
@@ -113,15 +112,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
         try {
             clazz = Class.forName("dev.resteasy.grpc.example.CC1JavabufTranslator");
             translator = (JavabufTranslator) clazz.newInstance();
-
-            CC1_proto.dev_resteasy_grpc_example___RecordVariable37 rv = CC1_proto.dev_resteasy_grpc_example___RecordVariable37
-                    .newBuilder().build();
-            //            int l = rv.getAllFieldsMutable(false).keySet().size();
-            int l = rv.getDescriptorForType().getFields().size(); //            rv.
-            System.out.println("FIELDS: " + l);
-            for (FieldDescriptor fd : rv.getDescriptorForType().getFields()) {
-                System.out.println("MSG: " + fd.toString() + ", " + fd.toProto().getTypeName());
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -145,8 +135,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsManifestResource("MANIFEST.MF", "MANIFEST.MF")
                 .addAsWebInfResource("web.xml");
-        ar.as(ZipExporter.class).exportTo(
-                new File("/tmp/collections.war"), true);
+        //        ar.as(ZipExporter.class).exportTo(new File("/tmp/collections.war"), true);
         return ar;
     }
 
