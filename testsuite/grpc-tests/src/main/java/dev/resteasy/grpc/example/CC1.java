@@ -240,6 +240,13 @@ public class CC1 {
         return "produces";
     }
 
+    @Path("produces/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public String producesJson() {
+        return "producesJson";
+    }
+
     @Path("consumes")
     @Consumes("xyz/abc")
     @GET

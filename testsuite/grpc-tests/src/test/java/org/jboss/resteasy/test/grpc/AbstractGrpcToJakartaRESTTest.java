@@ -184,6 +184,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testParamsSortedSet(stub);
         this.testPathParams(stub);
         this.testProduces(stub);
+        this.testProducesJson(stub);
         this.testQueryParams(stub);
         this.testReferenceField(stub);
         this.testResponse(stub);
@@ -688,6 +689,25 @@ abstract class AbstractGrpcToJakartaRESTTest {
             response = stub.produces(gem);
             dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
                     .setValue("produces").build();
+            Assertions.assertEquals(expected, response.getGStringField());
+        } catch (StatusRuntimeException e) {
+
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testProducesJson(CC1ServiceBlockingStub stub) throws Exception {
+        dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage.Builder builder = dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage
+                .newBuilder();
+        GeneralEntityMessage gem = builder.setURL("http://localhost:8080/p/produces/json").build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.produces(gem);
+            dev.resteasy.grpc.example.CC1_proto.gString expected = dev.resteasy.grpc.example.CC1_proto.gString.newBuilder()
+                    .setValue("producesJson").build();
             Assertions.assertEquals(expected, response.getGStringField());
         } catch (StatusRuntimeException e) {
 

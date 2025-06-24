@@ -1,6 +1,32 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.shrinkwrap.api.Archive;
+//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.common.Assert;
+
 import com.google.protobuf.Message;
+
+import dev.resteasy.grpc.arrays.ArrayResource;
+import dev.resteasy.grpc.arrays.ArrayStuff;
 import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___Any___WArray;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___Boolean___Array;
@@ -20,47 +46,25 @@ import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___Long___WA
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___Short___Array;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___Short___WArray;
 import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___String___WArray;
-import dev.resteasy.grpc.arrays.ArrayResource;
-import dev.resteasy.grpc.arrays.ArrayStuff;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.example.CC1;
+import dev.resteasy.grpc.example.CC1ServiceGrpc;
+import dev.resteasy.grpc.example.CC1_Server;
+import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
+import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
+import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays_ArrayStuff_INNER_Stuff;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays___ArrayHolder;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays___ArrayHolder___WArray;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays___ArrayHolder___wrapper;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays___ArrayStuff;
-import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays_ArrayStuff_INNER_Stuff;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_arrays___ArrayStuff___WArray;
 import dev.resteasy.grpc.example.CC1_proto.dev_resteasy_grpc_example___CC2___WArray;
-import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
-import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
-import dev.resteasy.grpc.example.CC1_Server;
-import dev.resteasy.grpc.example.CC1ServiceGrpc;
 import dev.resteasy.grpc.example.CC2;
 import dev.resteasy.grpc.example.sub.CC8;
 import dev.resteasy.grpc.lists.sets.DD1;
 import dev.resteasy.grpc.maps.MapResource;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.Test;
-import org.wildfly.common.Assert;
 
 /**
  * Tests for a variety of arrays. See also the "array tests" section in

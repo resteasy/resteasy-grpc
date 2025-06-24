@@ -64,6 +64,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.RecordDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -285,6 +286,7 @@ public class JavaToProtobufGenerator {
     private static Set<String> returnMessageTypes = new HashSet<String>();
     private static Set<String> jars;
     private static Set<String> additionalClasses;// = new CopyOnWriteArraySet<String>();
+    private static Set<String> nonGenericClasses = new HashSet<String>();
     private static Set<String> visited = new HashSet<String>();
     private static JavaSymbolSolver symbolSolver;
     private static CombinedTypeSolver combinedTypeSolver;
@@ -686,12 +688,14 @@ public class JavaToProtobufGenerator {
 
     private static void processAdditionalClasses(JavaSymbolSolver symbolSolver, StringBuilder sb) throws FileNotFoundException {
         StaticJavaParser.getConfiguration().setSymbolResolver(symbolSolver);
+        StaticJavaParser.getConfiguration().setLanguageLevel(LanguageLevel.JAVA_17);
         for (String filename : additionalClasses) {
             int n = filename.lastIndexOf(":");
             if (n < 0) {
                 throw new RuntimeException("bad syntax: " + filename);
             }
             String dir = filename.substring(0, n).trim();
+            nonGenericClasses.add(filename.substring(n + 1));
             filename = dir + File.separator + filename.substring(n + 1).replace(".", File.separator) + ".java";
             CompilationUnit cu = StaticJavaParser.parse(new File(filename));
             classVisitor.visit(cu, sb);
@@ -1026,6 +1030,9 @@ public class JavaToProtobufGenerator {
                     if (!("".equals(classPath))) {
                         sb.append(classPath).append("/");
                     }
+                    if ("".equals(classPath + methodPath)) {
+                        methodPath = "\"\"";
+                    }
                     sb.append(methodPath).append(" ")
                             .append(entityType).append(" ")
                             .append(returnType).append(" ")
@@ -1079,6 +1086,42 @@ public class JavaToProtobufGenerator {
             counter = 1;
             doVisit(clazz, sb, true);
             visited.add(clazz.describe());
+        }
+
+        @Override
+        public void visit(final RecordDeclaration n, StringBuilder sb) {
+            if (n.getFullyQualifiedName().isEmpty()) {
+                return;
+            }
+            if (visited.contains(n.getFullyQualifiedName().get())) {
+                return;
+            }
+            ReferenceTypeImpl rti = new ReferenceTypeImpl(n.resolve());
+            if (nonGenericClasses.contains(rti.erasure().describe())) {
+                visitRecord(rti.erasure(), sb);
+                visited.add(rti.erasure().describe());
+            }
+            ResolvedType rt = objectify(rti);
+            visitRecord(rt, sb);
+            visited.add(rt.describe());
+        }
+
+        @Override
+        public void visit(ClassOrInterfaceDeclaration clazz, StringBuilder sb) {
+            if (clazz.getFullyQualifiedName().isPresent() && visited.contains(clazz.getFullyQualifiedName().get())) {
+                return;
+            }
+            ResolvedReferenceTypeDeclaration rrtd = clazz.resolve();
+            ReferenceTypeImpl rti = new ReferenceTypeImpl(rrtd);
+            if (nonGenericClasses.contains(rti.erasure().describe())) {
+                doVisit(rti.erasure(), sb, true);
+                visited.add(rti.erasure().describe());
+            }
+            ResolvedType rt = objectify(rti.asReferenceType());
+            if (!rt.describe().equals(rti.erasure().describe())) {
+                doVisit(rt, sb, true);
+                visited.add(rt.describe());
+            }
         }
 
         private void doVisit(ResolvedType resolvedType, StringBuilder sb, boolean start) {
@@ -1181,6 +1224,18 @@ public class JavaToProtobufGenerator {
                 sb.append("}" + LS);
             }
         }
+    }
+
+    private static ResolvedType adjustTypes(ResolvedReferenceType clazz) {
+        ResolvedType rt = clazz;
+        if (!clazz.getTypeParametersMap().isEmpty()) {
+            if (nonGenericClasses.contains(clazz.erasure().describe())) {
+                rt = clazz.erasure();
+            } else {
+                rt = objectify(rt.asReferenceType());
+            }
+        }
+        return rt;
     }
 
     /**
@@ -1289,8 +1344,7 @@ public class JavaToProtobufGenerator {
     }
 
     private static void visitRecord(ResolvedType resolvedType, StringBuilder sb) {
-        ResolvedType objectified = objectify(resolvedType.asReferenceType());
-        sb.append(LS).append("// Record: ").append(objectified.describe());
+        sb.append(LS).append("// Record: ").append(resolvedType.describe());
         ResolvedReferenceType clazz = resolvedType.asReferenceType();
         RecordDeclaration rd = recordMap.get(clazz.getTypeDeclaration().get().getQualifiedName());
         String innerClass = isInnerClass(resolvedType.asReferenceType().getTypeDeclaration().get());
@@ -1333,10 +1387,8 @@ public class JavaToProtobufGenerator {
                 .append("  repeated Pair data = ").append(counter++).append(";" + LS);
     }
 
-    //    private static String visitArray(ResolvedFieldDeclaration rfd) {
     private static String visitArray(ResolvedType rt) {
         try {
-            //            ResolvedArrayType rat = (ResolvedArrayType) rfd.getType();
             ResolvedArrayType rat = (ResolvedArrayType) rt;
             ResolvedType ct = rat.getComponentType();
             String type = null;
@@ -1384,12 +1436,6 @@ public class JavaToProtobufGenerator {
                 type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
                         .getTypeDeclaration()
                         .get())));
-                //                }
-                //                else {
-                //                    type = wrapRepeated(fqnifyClass(fqn, isInnerClass(ct.asReferenceType()
-                //                            .getTypeDeclaration()
-                //                            .get())));
-                //                }
             }
             return type;
         } catch (Exception e) {
