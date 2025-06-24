@@ -18,18 +18,10 @@
  */
 package org.jboss.resteasy.test.grpc;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +35,7 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+//import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.AfterAll;
@@ -54,6 +47,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;
 
+import dev.resteasy.grpc.arrays.ArrayResource;
 import dev.resteasy.grpc.arrays.Array_proto;
 import dev.resteasy.grpc.bridge.runtime.Utility;
 import dev.resteasy.grpc.example.CC1;
@@ -64,6 +58,8 @@ import dev.resteasy.grpc.example.CC1_proto;
 import dev.resteasy.grpc.example.CC1_proto.*;
 import dev.resteasy.grpc.example.CC1_proto.GeneralEntityMessage;
 import dev.resteasy.grpc.example.CC1_proto.GeneralReturnMessage;
+import dev.resteasy.grpc.example.CC1_proto.java_util___ArrayList;
+import dev.resteasy.grpc.example.CC1_proto.java_util___HashSet;
 import dev.resteasy.grpc.example.sub.CC8;
 import dev.resteasy.grpc.lists.sets.D1;
 import dev.resteasy.grpc.lists.sets.D3;
@@ -71,6 +67,7 @@ import dev.resteasy.grpc.lists.sets.DD1;
 import dev.resteasy.grpc.lists.sets.L3;
 import dev.resteasy.grpc.lists.sets.S1;
 import dev.resteasy.grpc.lists.sets.S3;
+import dev.resteasy.grpc.maps.MapResource;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -82,9 +79,6 @@ public class GrpcListsAndSetsTest {
     private static CC1JavabufTranslator translator = new CC1JavabufTranslator();
     private static ManagedChannel channelPlaintext;
     private static CC1ServiceGrpc.CC1ServiceBlockingStub blockingStubPlaintext;
-    private static Set<String> entityClasses = new HashSet<String>();
-    private static Map<String, Method> GET_MAP = new HashMap<String, Method>();
-    private static Map<String, Method> SET_MAP = new HashMap<String, Method>();
 
     static {
         Class<?> clazz;
@@ -94,59 +88,6 @@ public class GrpcListsAndSetsTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    static {
-        entityClasses.add("java.util.ArrayList<java.lang.Object>");
-        entityClasses.add("java.util.HashSet<java.lang.Object>");
-        entityClasses.add("java.util.HashSet<java.lang.String>");
-        entityClasses.add("java.util.ArrayList<java.util.List<java.lang.String>>");
-        entityClasses.add("java.util.ArrayList<java.util.ArrayList<java.lang.String>>");
-        entityClasses.add("java.util.ArrayList<java.util.HashSet<java.lang.Object>>");
-    }
-
-    static {
-        try {
-            Class<?> builder = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralEntityMessage$Builder");
-            Class<?> response = Class.forName("dev.resteasy.grpc.example.CC1_proto$GeneralReturnMessage");
-            final Path file = Path.of(System.getProperty("builddir").replace("\\", "\\\\") + File.separator + "entityTypes");
-            try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-                String line = reader.readLine();
-                while (line != null) {
-                    int n = line.indexOf(" ");
-                    String l1 = line.substring(0, n);
-                    String l2 = line.substring(n + 1);
-                    if (entityClasses.contains(l1)) {
-                        Class<?> javabufClass = Class.forName(l2);
-                        if (l2.contains("$")) {
-                            l2 = l2.substring(l2.lastIndexOf('$') + 1);
-                        }
-                        String methodSuffix = squashToCamel(l2) + "Field";
-                        GET_MAP.put(l1, response.getDeclaredMethod("get" + methodSuffix));
-                        SET_MAP.put(l1, builder.getDeclaredMethod("set" + methodSuffix, javabufClass));
-                    }
-                    line = reader.readLine();
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static String squashToCamel(String name) {
-        StringBuilder sb = new StringBuilder();
-        boolean start = true;
-        for (int i = 0; i < name.length(); i++) {
-            if (name.charAt(i) == '_') {
-                start = true;
-                continue;
-            }
-            sb.append(start ? name.substring(i, i + 1).toUpperCase() : name.substring(i, i + 1));
-            start = false;
-        }
-        return sb.toString();
     }
 
     @Deployment
@@ -160,6 +101,8 @@ public class GrpcListsAndSetsTest {
                 .addPackage(CC1.class.getPackage())
                 .addPackage(CC8.class.getPackage())
                 .addPackage(DD1.class.getPackage())
+                .addPackage(ArrayResource.class.getPackage())
+                .addPackage(MapResource.class.getPackage())
                 .addAsLibrary(resolver.resolve("dev.resteasy.grpc:grpc-bridge-runtime")
                         .withoutTransitivity()
                         .asSingleFile())
@@ -332,10 +275,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.ArrayList<java.lang.Object>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.ArrayList<java.lang.Object>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest4(gem);
-        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.lang.Object>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.ArrayList<java.lang.Object>").invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
@@ -349,10 +293,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.Object>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.HashSet<java.lang.Object>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest1(gem);
-        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.HashSet<java.lang.Object>").invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
@@ -366,10 +311,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.Object>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.HashSet<java.lang.Object>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest2(gem);
-        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.HashSet<java.lang.Object>").invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
@@ -383,10 +329,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.String>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.HashSet<java.lang.String>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest3(gem);
-        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.String>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.HashSet<java.lang.String>").invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
@@ -400,10 +347,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(set, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.HashSet<java.lang.Object>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.HashSet<java.lang.Object>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.hashSetTest4(gem);
-        Message result = (Message) GET_MAP.get("java.util.HashSet<java.lang.Object>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.HashSet<java.lang.Object>").invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(set, translator.translateFromJavabuf(result)));
     }
 
@@ -556,10 +504,11 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP.get("java.util.ArrayList<java.lang.Object>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.ArrayList<java.lang.Object>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arrayListTest4(gem);
-        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.lang.Object>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.ArrayList<java.lang.Object>").invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
@@ -658,11 +607,12 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(l2, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP
-                .get("java.util.ArrayList<java.util.List<java.lang.String>>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.ArrayList<java.util.List<java.lang.String>>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistListTest3(gem);
-        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.List<java.lang.String>>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.ArrayList<java.util.List<java.lang.String>>")
+                .invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(l2, translator.translateFromJavabuf(result)));
     }
 
@@ -681,11 +631,12 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP
-                .get("java.util.ArrayList<java.util.ArrayList<java.lang.String>>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.ArrayList<java.util.ArrayList<java.lang.String>>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistArraylistTest3(gem);
-        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.ArrayList<java.lang.String>>").invoke(response);
+        Message result = (Message) JavabufClassTranslator
+                .getGetter("java.util.ArrayList<java.util.ArrayList<java.lang.String>>").invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
@@ -737,11 +688,12 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(collection, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) SET_MAP
-                .get("java.util.ArrayList<java.util.HashSet<java.lang.Object>>")
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter("java.util.ArrayList<java.util.HashSet<java.lang.Object>>")
                 .invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.arraylistHashsetTest4(gem);
-        Message result = (Message) GET_MAP.get("java.util.ArrayList<java.util.HashSet<java.lang.Object>>").invoke(response);
+        Message result = (Message) JavabufClassTranslator.getGetter("java.util.ArrayList<java.util.HashSet<java.lang.Object>>")
+                .invoke(response);
         Assertions.assertTrue(CollectionEquals.equals(collection, translator.translateFromJavabuf(result)));
     }
 
@@ -845,7 +797,7 @@ public class GrpcListsAndSetsTest {
     }
 
     // Client: java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>> type = new GenericType<java.util.List<dev.resteasy.grpc.lists.sets.L3<dev.resteasy.grpc.lists.sets.S3<java.util.Set<Object>>>>>
-    // Server: List<L3<S3<Set<?>>>>
+    // Server: List<L3<S3<Set<Object>>>>
     @Test
     public void testListL3S3SetObject() throws Exception {
         Set<Object> set = new HashSet<Object>();
@@ -906,9 +858,10 @@ public class GrpcListsAndSetsTest {
         };
         Message m = translator.translateToJavabuf(d1, type);
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
-        GeneralEntityMessage gem = builder.setDevResteasyGrpcListsSetsD1Field((dev_resteasy_grpc_lists_sets___D1) m).build();
+        GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
+                .getSetter(simplifyType(type)).invoke(builder, m)).build();
         GeneralReturnMessage response = blockingStubPlaintext.d1Integer(gem);
-        dev_resteasy_grpc_lists_sets___D1 result = response.getDevResteasyGrpcListsSetsD1Field();
+        Message result = (Message) JavabufClassTranslator.getGetter(simplifyType(type)).invoke(response);
         Assertions.assertEquals(d1, translator.translateFromJavabuf(result));
     }
 
@@ -986,5 +939,9 @@ public class GrpcListsAndSetsTest {
             }
             return false;
         }
+    }
+
+    static String simplifyType(GenericType<?> type) {
+        return type.getType().toString().replace(" ", "");
     }
 }

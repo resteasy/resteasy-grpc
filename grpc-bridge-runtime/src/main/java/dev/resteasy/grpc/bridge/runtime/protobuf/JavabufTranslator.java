@@ -47,4 +47,8 @@ public interface JavabufTranslator {
     Class translatefromJavabufClass(String classname);
 
     String getOuterClassname();
+
+    GenericType<?> normalize(GenericType<?> genericType);
+
+    Type normalize(Type type);
 }
