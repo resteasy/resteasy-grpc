@@ -1844,17 +1844,11 @@ abstract class AbstractGrpcToJakartaRESTTest {
         GeneralReturnMessage response;
         try {
             response = stub.cc10VariableArrayReference(gem);
-            System.out.println("RESP: " + response.toString());
             Message result = (Message) JavabufClassTranslator
                     .getGetter("dev.resteasy.grpc.example.CC10<dev.resteasy.grpc.example.CC5[]>").invoke(response);
             CC10<CC5[]> cc10a = (CC10<CC5[]>) translator.translateFromJavabuf(result);
-            System.out.println("CC10: " + cc10.getT());
             CC5[] cc5a = cc10.getT();
             CC5[] cc5b = cc10a.getT();
-            System.out.println("CC10:5: " + cc5b.length);
-            for (int i = 0; i < cc5b.length; i++) {
-                System.out.println("CC10:5: " + cc5b[i]);
-            }
             Assertions.assertTrue(Arrays.deepEquals((CC5[]) cc10.getT(), (CC5[]) cc10a.getT()));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
@@ -2035,8 +2029,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Message result = (Message) JavabufClassTranslator
                     .getGetter("dev.resteasy.grpc.example.RecordVariable<java.lang.String>").invoke(response);
             RecordVariable<String> r2 = (RecordVariable<String>) translator.translateFromJavabuf(result);
-            System.out.println(r.i() + ", " + r.t() + ", " + r.cc2().j + ", " + r.cc2().s);
-            System.out.println(r2.i() + ", " + r2.t() + ", " + r2.cc2().j + ", " + r2.cc2().s);
             Assertions.assertTrue(r.equals(r2));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
@@ -2090,14 +2082,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
                     .getGetter(
                             "dev.resteasy.grpc.example.RecordVariable<java.util.HashMap<java.lang.String,java.lang.String>>")
                     .invoke(response);
-            System.out.println("RESULT: " + result);
             RecordVariable<Map> r2 = (RecordVariable<Map>) translator.translateFromJavabuf(result);
             Map map2 = r2.t();
-            System.out.println(map.size() + " : " + map2.size());
-            for (String s : map.keySet()) {
-                System.out.println(map.get(s) + " : " + map2.get(s));
-            }
-            System.out.println(map2);
             Assertions.assertTrue(map.equals(map2));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
@@ -2124,11 +2110,7 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Message result = (Message) JavabufClassTranslator
                     .getGetter("dev.resteasy.grpc.example.RecordVariable<int[]>")
                     .invoke(response);
-            System.out.println("RESULT: " + result);
             RecordVariable<int[]> r2 = (RecordVariable<int[]>) translator.translateFromJavabuf(result);
-            //            Assert.assertTrue(cc2.equals(r2.cc2()));
-            //            Assert.assertTrue(29 == r2.i());
-            //            Integer[] is2 = new Integer[] { 51, 53 };
             int[] is2 = r2.t();
             Assertions.assertTrue(Arrays.equals(is, is2));
         } catch (StatusRuntimeException e) {
@@ -2144,11 +2126,9 @@ abstract class AbstractGrpcToJakartaRESTTest {
         int[] is = new int[] { 51, 53 };
         CC3[] cc3s = new CC3[] { new CC3("abc"), null, new CC3("pq"), null, new CC3("xyz") };
         RecordVariable<CC3[]> r = new RecordVariable<CC3[]>(cc2, 29, cc3s);
-        System.out.println("RECORD VAR: 1: ");
         GenericType<dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>> type = new GenericType<dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>>() {
         };
         Message m = translator.translateToJavabuf(r, type);
-        System.out.println("RECORD VAR: 2: " + m.toString());
         CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
         GeneralEntityMessage gem = ((GeneralEntityMessage.Builder) JavabufClassTranslator
                 .getSetter("dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>")
@@ -2159,7 +2139,6 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Message result = (Message) JavabufClassTranslator
                     .getGetter("dev.resteasy.grpc.example.RecordVariable<dev.resteasy.grpc.example.CC3[]>")
                     .invoke(response);
-            System.out.println("RESULT: " + result);
             RecordVariable<CC3[]> r2 = (RecordVariable<CC3[]>) translator.translateFromJavabuf(result);
             Assertions.assertTrue(r.cc2().equals(r2.cc2()));
             Assertions.assertTrue(r.i() == r2.i());
