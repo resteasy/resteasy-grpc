@@ -45,10 +45,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jakarta.ws.rs.container.AsyncResponse;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.jboss.logging.Logger;
 
 import com.github.javaparser.ParseResult;
@@ -64,7 +60,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.RecordDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -95,6 +90,9 @@ import com.github.javaparser.utils.Pair;
 import com.github.javaparser.utils.SourceRoot;
 
 import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Traverses a set of Jakarta REST resources and creates a protobuf representation.
