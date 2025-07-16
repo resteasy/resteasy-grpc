@@ -315,7 +315,10 @@ public class ServiceGrpcExtender {
                     sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder;");
                     imports.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___ArrayHolder");
                 } else {
-                    if (actualReturnClass.contains(".")) {
+                    if (actualReturnClass.startsWith("dev.resteasy.grpc.arrays")) {
+                        String simpleName = actualReturnClass.substring(actualReturnClass.lastIndexOf(".") + 1);
+                        sbHeader.append("import dev.resteasy.grpc.arrays.Array_proto." + simpleName + ";" + LS);
+                    } else if (actualReturnClass.contains(".")) {
                         sbHeader.append("import " + actualReturnClass + ";" + LS);
                     } else {
                         sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
@@ -341,6 +344,9 @@ public class ServiceGrpcExtender {
         if (actualReturnClass.contains(".")) {
             actualReturnClass = actualReturnClass.substring(actualReturnClass.lastIndexOf(".") + 1);
         }
+        if ("/\"\"".equals(path)) {
+            path = "/";
+        }
         sb.append("      HttpServletRequest request = null;" + LS)
                 .append("      try {" + LS)
                 .append("         HttpServletResponseImpl response = new HttpServletResponseImpl(\"")
@@ -359,7 +365,7 @@ public class ServiceGrpcExtender {
                 .append("\"")
                 .append(method)
                 .append("\", \"")
-                .append(actualReturnClass)
+                .append(actualEntityClass)
                 .append("\");" + LS)
                 .append("         HttpServletDispatcher servlet = getServlet();" + LS)
                 .append("         activateRequestContext();" + LS)
@@ -524,7 +530,7 @@ public class ServiceGrpcExtender {
                 .append("      request.setContextPath(servletContext.getContextPath());" + LS)
                 .append("      request.setMethod(httpMethod != null && !\"\".equals(httpMethod) ? httpMethod : verb);" + LS)
                 .append("      request.setInputStream(msis);" + LS)
-                .append("      request.setReturnType(type);" + LS)
+                .append("      request.setEntityType(type);" + LS)
                 .append("      request.setHeaders(headers);" + LS)
                 .append("      request.setCookies(cookies);" + LS)
                 .append("      request.setFormParameters(extractFormData(param));" + LS)
