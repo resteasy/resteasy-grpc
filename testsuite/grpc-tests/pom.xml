@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-testsuite</artifactId>
-        <version>1.0.0.Alpha6</version>
+        <version>1.0.0.Alpha7-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -195,7 +195,7 @@
             <extension>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <version>1.7.1</version>
             </extension>
         </extensions>
 
@@ -276,7 +276,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>proto</id>
