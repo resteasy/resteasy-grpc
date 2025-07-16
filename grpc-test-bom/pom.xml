@@ -25,18 +25,16 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-parent</artifactId>
-        <version>1.0.0.Alpha6</version>
+        <version>1.0.0.Alpha7-SNAPSHOT</version>
     </parent>
 
     <artifactId>resteasy-grpc-test-bom</artifactId>
     <packaging>pom</packaging>
 
     <properties>
-        <version.org.jboss.arquillian>1.9.3.Final</version.org.jboss.arquillian>
+        <version.org.jboss.arquillian>1.9.4.Final</version.org.jboss.arquillian>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
-        <version.org.jboss.shrinkwrap.resolver>3.3.3</version.org.jboss.shrinkwrap.resolver>
         <version.org.junit>5.13.3</version.org.junit>
-        <version.org.wildfly.arquillian>5.1.0.Beta9</version.org.wildfly.arquillian>
     </properties>
 
     <dependencyManagement>
