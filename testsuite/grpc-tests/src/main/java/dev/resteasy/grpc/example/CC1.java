@@ -19,9 +19,9 @@
 package dev.resteasy.grpc.example;
 
 import java.util.ArrayList;
-//import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,33 +62,14 @@ import jakarta.ws.rs.sse.SseEventSink;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 
+import dev.resteasy.grpc.example.InnerClasses.InnerClassHolder;
+import dev.resteasy.grpc.example.InnerClasses.PublicPrivate;
+import dev.resteasy.grpc.example.InnerClasses.PublicPublic;
+
 @Path("p")
 public class CC1 {
 
-    //    public static class Test {
-    //        int Abc;
-    //        int xYZ;
-    //        int pqr;
-    //        int RST_;
-    //        int cde;
-    //        int cde_;
-    //        int cde__;
-    //        int cde___;
-    //        int cde____;
-    //    }
-    //
-    //    @Path("t")
-    //    @GET
-    //    Test test() {
-    //        return new Test();
-    //    }
-
-    //    @Path("list")
-    //    @GET
-    //    public List list(ArrayList list) {
-    //        return list;
-    //    }
-
+    @SuppressWarnings("rawtypes")
     @Path("set")
     @GET
     public Set set(HashSet set) {
@@ -257,6 +238,13 @@ public class CC1 {
     @GET
     public String produces() {
         return "produces";
+    }
+
+    @Path("produces/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public String producesJson() {
+        return "producesJson";
     }
 
     @Path("consumes")
@@ -598,41 +586,6 @@ public class CC1 {
         }
     }
 
-    //dev.resteasy.grpc.example.CC1.C.F
-    //    public static class C {
-    //        //        public static class E {
-    //        //            int i = 3;
-    //        //        }
-    //
-    //        //        public static class F {
-    //        //            public int j = 7;
-    //        //
-    //        //            public int getJ() {
-    //        //                return j;
-    //        //            }
-    //        //        }
-    //
-    //        //        E e = new E();
-    //        //        F f = new F();
-    //    }
-
-    //        //    @Test
-    //        public void test() throws Exception {
-    //            CC1 cc1 = new CC1();
-    //            CC1.C cc1c = cc1.new C();
-    //            Constructor<?>[] cons = CC1.C.class.getDeclaredConstructors();
-    //            Constructor<?> con = cons[0];
-    //            Object cc1c2 = con.newInstance(cc1);
-    //            System.out.println(cc1c);
-    //            System.out.println(cc1c2);
-    //        }
-
-    //    @Path("inner/C")
-    //    @GET
-    //    public C innerC(C c) {
-    //        return c;
-    //    }
-
     @Path("inner")
     @GET
     public InnerClass inner() {
@@ -673,7 +626,6 @@ public class CC1 {
         @POST
         @Path("post/{p}")
         public String post(@PathParam("p") String p, String entity) {
-            System.out.println("entity: '" + entity + "'");
             return p + "|" + entity;
         }
     }
@@ -735,135 +687,93 @@ public class CC1 {
         return intf;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////                  array tests                  ////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //    @GET
-    //    @Path("arrays/int/1")
-    //    public int[] arraysInt1(int[] ints) {
-    //        for (int i = 0; i < ints.length; i++) {
-    //            ints[i]++;
-    //        }
-    //        return ints;
-    //    }
-    //
-    //    @GET
-    //    @Path("arrays/float/1")
-    //    public float[] arraysFloat1(float[] floats) {
-    //        for (int i = 0; i < floats.length; i++) {
-    //            floats[i]++;
-    //        }
-    //        return floats;
-    //    }
-    //
-    //    @GET
-    //    @Path("arrays/int/2")
-    //    public int[][] arraysInt2(int[][] ints) {
-    //        for (int i = 0; i < ints.length; i++) {
-    //            for (int j = 0; j < ints[i].length; j++)
-    //                ints[i][j]++;
-    //        }
-    //        return ints;
-    //    }
-    //
-    //    @GET
-    //    @Path("arrays/int/5")
-    //    public int[][][][][] arraysInt5(int[][][][][] intsssss) {
-    //        for (int i = 0; i < intsssss.length; i++) {
-    //            for (int j = 0; j < intsssss[i].length; j++)
-    //                for (int k = 0; k < intsssss[i][j].length; k++)
-    //                    for (int l = 0; l < intsssss[i][j][k].length; l++)
-    //                        for (int m = 0; m < intsssss[i][j][k][l].length; m++)
-    //                            intsssss[i][j][k][l][m]++;
-    //        }
-    //        return intsssss;
-    //    }
-
-    //    @GET
-    //    @Path("arrays/stuff")
-    //    public ArrayStuff arrayStuff(ArrayStuff as) {
-    //        if (as.equals(new ArrayStuff(false))) {
-    //            return new ArrayStuff(true);
-    //        }
-    //        throw new RuntimeException("arrayStuff() fails");
-    //    }
-    //
-    //    @GET
-    //    @Path("arrays/stuff/array")
-    //    public ArrayStuff[] arrayStuffArray(ArrayStuff[] ass) {
-    //        return ass;
-    //    }
-    //
-    //    @GET
-    //    @Path("arrays/cc2")
-    //    public CC2[] cc2Array(CC2[] cc2s) {
-    //        return cc2s;
-    //    }
-    //
-    //    @GET
-    //    @Path("arraystuff/stuff")
-    //    public ArrayStuff.Stuff arrayStuffTest(ArrayStuff.Stuff ass) {
-    //        return new ArrayStuff.Stuff(ass.i * 2);
-    //    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////               collection tests                ////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////
-    @GET
-    @Path("list/arraylist")
-    public ArrayList<?> listArray0(ArrayList<Integer> list) {
-        ArrayList<Integer> newList = new ArrayList<Integer>();
-        for (int i = 0; i < list.size(); i++) {
-            newList.add(list.get(i) + 1);
-        }
-        return newList;
+    @POST
+    @Path("inner/public/public")
+    public PublicPublic publicPublic(PublicPublic pp) {
+        return pp;
     }
 
-    @GET
-    @Path("list/arraylist")
-    public ArrayList listArray(ArrayList list) {
-        ArrayList newList = new ArrayList();
-        for (int i = 0; i < list.size(); i++) {
-            newList.add(((int) list.get(i)) + 1);
-        }
-        return newList;
+    @POST
+    @Path("inner/public/private")
+    public PublicPrivate publicPrivate(PublicPrivate pp) {
+        return pp;
     }
 
-    @GET
-    @Path("set/hashset")
-    public HashSet hashset(HashSet set) {
-        return set;
+    @POST
+    @Path("inner/holder")
+    public InnerClassHolder innerClassHolder(InnerClassHolder ich) {
+        return ich;
     }
 
-    //    @GET
-    //    @Path("map/hashmap")
-    //    public HashMap hashmap(HashMap map) {
-    //        return map;
-    //    }
+    @POST
+    @Path("record/string")
+    public Person recordString(Person p) {
+        return p;
+    }
 
-    //    @GET
-    //    @Path("grimble/raw")
-    //    public void gr_raw(Grimble g1) {
-    //    }
-    //
-    //    @GET
-    //    @Path("grimble/wildcard")
-    //    public void gr_wildcard(Grimble<?> g1) {
-    //    }
-    //
-    //    @GET
-    //    @Path("grimble/variable")
-    //    public <T> void gr_variable(Grimble<T> g1) {
-    //    }
-    //
-    //    @GET
-    //    @Path("grimble/string")
-    //    public void gr_string(Grimble<String> g1) {
-    //    }
-    //
-    //    @GET
-    //    @Path("grimble/integer")
-    //    public void gr_integer(Grimble<Integer> g1) {
-    //    }
+    @POST
+    @Path("record/cc2")
+    public RecordCC2 recordCC2(RecordCC2 r) {
+        return r;
+    }
 
+    @POST
+    @Path("record/variable/wildcard")
+    public RecordVariable<?> recordVariableWildcard(RecordVariable<?> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/variable")
+    public <T> RecordVariable<T> recordVariableVariable(RecordVariable<T> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/string")
+    public RecordVariable<String> recordVariableString(RecordVariable<String> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/integer")
+    public RecordVariable<Integer> recordVariableInteger(RecordVariable<Integer> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/map")
+    public RecordVariable<HashMap<String, String>> recordVariableMapStringString(RecordVariable<HashMap<String, String>> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/primitive")
+    public RecordVariable<int[]> recordVariableArrayPrimitive(RecordVariable<int[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/integer")
+    public RecordVariable<Integer[]> recordVariableArrayInteger(RecordVariable<Integer[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/reference")
+    public RecordVariable<CC3[]> recordVariableArrayReference(RecordVariable<CC3[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("record/variable/array/variable")
+    public <T> RecordVariable<T[]> recordVariableArrayVariable(RecordVariable<T[]> r) {
+        return r;
+    }
+
+    @POST
+    @Path("test/array")
+    public TestArray ta(TestArray ta) {
+        return ta;
+    }
 }

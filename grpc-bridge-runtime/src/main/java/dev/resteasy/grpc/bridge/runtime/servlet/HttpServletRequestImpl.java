@@ -86,7 +86,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     private String servletPath;
     private String method;
     private ServletInputStream inputStream;
-    private String returnType;
+    private String entityType;
     private Map<String, List<String>> headers;
     private Cookie[] cookies;
     private ServletContext servletContext;
@@ -107,7 +107,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     private Map<String, String[]> parameters;
 
     public HttpServletRequestImpl(final ServletResponse servletResponse, final ServletContext servletContext,
-            final String uri, final String path, final String method, final ServletInputStream sis, final String retn,
+            final String uri, final String path, final String method, final ServletInputStream sis, final String entity,
             final Map<String, List<String>> headers,
             final Cookie[] cookies, final Map<String, String[]> formParameters) throws URISyntaxException {
         this.servletResponse = servletResponse;
@@ -117,7 +117,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         this.path = path;
         this.method = method;
         this.inputStream = sis;
-        this.returnType = retn;
+        this.entityType = entity;
         this.headers = headers == null ? new HashMap<String, List<String>>() : headers;
         this.cookies = cookies;
         this.formParameters = formParameters;
@@ -128,7 +128,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         List<String> contentTypeList = new ArrayList<String>();
         contentTypeList.add("*/*;grpc-jaxrs=true");
         headers.put("Content-Type", contentTypeList);
-        if ("com.google.protobuf.Any".equals(retn)) {
+        if ("com.google.protobuf.Any".equals(entity)) {
             acceptList = new ArrayList<String>();
             acceptList.add("true");
             headers.put(ANY, acceptList);
@@ -764,13 +764,15 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         this.asyncContext = asyncContext;
     }
 
-    public String getReturnType() {
-        return returnType;
+    public String getEntityType() {
+        return entityType;
     }
 
-    public void setReturnType(String returnType) {
-        this.returnType = returnType;
-        if ("com.google.protobuf.Any".equals(returnType) || "Any".equals(returnType)) {
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
+        if ("com.google.protobuf.Any".equals(entityType)
+                || "google.protobuf.Any".equals(entityType)
+                || "Any".equals(entityType)) {
             List<String> list = new ArrayList<String>();
             list.add("true");
             headers.put(ANY, list);
