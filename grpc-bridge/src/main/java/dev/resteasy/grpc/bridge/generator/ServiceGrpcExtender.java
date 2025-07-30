@@ -277,7 +277,7 @@ public class ServiceGrpcExtender {
             actualReturnClass = "dev.resteasy.grpc.arrays.Array_proto.dev_resteasy_grpc_arrays___ArrayHolder";
         }
         sbBody.append(LS + "   @java.lang.Override" + LS);
-        String method = scanner.next();
+        String method = compressMethodName(scanner.next());
         scanner.findWithinHorizon("\\(", 0);
         scanner.useDelimiter("\\)");
         String param = getParamType(packageName, outerClassName, scanner.next());
@@ -337,6 +337,18 @@ public class ServiceGrpcExtender {
         rpcBody(scanner, root, path, actualEntityClass, actualReturnClass, httpMethod, syncType, sbBody, retn);
         sbBody.append("   }" + LS);
         scanner.reset();
+    }
+
+    private String compressMethodName(String name) {
+        int index = name.lastIndexOf("___");
+        if (index < 0) {
+            return name;
+        }
+        String s = name.substring(index + 3);
+        if (s.matches("\\d+")) {
+            return name.substring(0, index) + name.substring(index + 3);
+        }
+        return name;
     }
 
     private void rpcBody(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass,

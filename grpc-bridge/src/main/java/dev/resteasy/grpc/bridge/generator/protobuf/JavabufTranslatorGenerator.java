@@ -152,14 +152,12 @@ public class JavabufTranslatorGenerator {
     private static final Set<String> NULLABLE_WRAPPERS = new HashSet<String>();
     private static final Set<String> JAVA_WRAPPER_TYPES = new HashSet<String>();
     private static final Map<String, String> JAVA_WRAPPER_MAP = new HashMap<String, String>();
-    private static final Set<Class<?>> arrayClasses = new HashSet<Class<?>>();
     private static final Map<String, String> ARRAY_CLASSES_TO_JAVABUF = new HashMap<String, String>();
     private static final Map<String, String> ARRAY_CLASSES_FROM_JAVABUF = new HashMap<String, String>();
     private static final Map<String, String> ARRAY_CLASSES_FROM_JAVABUF_STREAM = new HashMap<String, String>();
     private static final Map<String, String> BUILTIN_TO_JAVABUF = new HashMap<String, String>();
 
     private static final Map<String, String> AGGREGATES_INV = new HashMap<String, String>();
-    private static final Map<String, String> GENERICS_INV = new HashMap<String, String>();
     private static final Map<String, String> GENERICS = new HashMap<String, String>();
     private static final Map<String, String> LISTS = new HashMap<String, String>();
     private static final Map<String, String> SETS = new HashMap<String, String>();
@@ -1368,7 +1366,6 @@ public class JavabufTranslatorGenerator {
                     boolean generic = line.contains("<");
                     String javaClassname = getJavaClassname(line, 11);
                     String javabufClassname = getJavabufClassname(reader);
-                    //                    RECORDS_INV.put(javaClassname, javabufClassname);
                     RECORDS.put(javabufClassname, javaClassname);
                     if (generic) {
                         GENERICS.put(javabufClassname, javaClassname);
@@ -1376,7 +1373,6 @@ public class JavabufTranslatorGenerator {
                 } else if (line.startsWith("// Type: ") && line.contains("<")) {
                     String javaClassname = getJavaClassname(line, 9);
                     String javabufClassname = getJavabufClassname(reader);
-                    GENERICS_INV.put(javaClassname, javabufClassname);
                     GENERICS.put(javabufClassname, javaClassname);
                 }
             }
@@ -1449,39 +1445,15 @@ public class JavabufTranslatorGenerator {
         Class<?> wrapperClass = Class.forName(args[1] + "_proto", true, Thread.currentThread()
                 .getContextClassLoader());
         list.add(wrapperClass);
-        getArrayClasses(wrapperClass);
         try {
             Class<?> arrayWrapperClass = Class.forName("dev.resteasy.grpc.arrays.Array_proto", true,
                     Thread.currentThread().getContextClassLoader());
             list.add(arrayWrapperClass);
-            getArrayClasses(arrayWrapperClass);
             return list;
         } catch (Exception ignore) {
             // Array_proto class is not available: ignore
             ignore.printStackTrace();
             return list;
-        }
-    }
-
-    private static void getArrayClasses(Class<?> clazz) {
-        List<String> classnames = new ArrayList<String>();
-        for (Class<?> c : clazz.getDeclaredClasses()) {
-            if ("dev_resteasy_grpc_arrays___ArrayHolder".equals(c.getSimpleName())) {
-                for (Class<?> c2 : c.getDeclaredClasses()) {
-                    if ("MessageTypeCase".equals(c2.getSimpleName())) {
-                        for (Object o : c2.getEnumConstants()) {
-                            if (o.toString().contains("_FIELD")) {
-                                classnames.add(o.toString().substring(0, o.toString().indexOf("_FIELD")).toLowerCase());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        for (Class<?> c : clazz.getDeclaredClasses()) {
-            if (classnames.contains(c.getSimpleName().toLowerCase())) {
-                arrayClasses.add(c);
-            }
         }
     }
 

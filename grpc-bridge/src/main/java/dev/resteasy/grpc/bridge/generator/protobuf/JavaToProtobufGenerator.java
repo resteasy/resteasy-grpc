@@ -260,15 +260,21 @@ public class JavaToProtobufGenerator {
 
     private static final Logger logger = Logger.getLogger(JavaToProtobufGenerator.class);
     private static final String LS = System.lineSeparator();
+    private static final String SSE_EVENT_CLASSNAME = "dev_resteasy_grpc_bridge_runtime_sse___SseEvent";
 
-    private static String[] args;
-    private static Map<String, String> TYPE_MAP = new HashMap<String, String>();
-    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES_FIELD = new HashMap<String, String>();
-    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES_IO = new HashMap<String, String>();
+    private static Map<String, String> JAVA_PRIMITIVE_TO_PROTOBUF_MAP = new HashMap<String, String>();
+    private static Map<String, String> PROTUBUF_PRIMITIVE_TO_ARRAY_MAP = new HashMap<String, String>();
+    private static Map<String, String> JAVA_WRAPPER_TO_WARRAY_MAP = new HashMap<String, String>();
+    private static Map<String, String> JAVA_BUILTIN_TO_PROTOBOF_IO = new HashMap<String, String>();
+    private static Map<String, String> JAVA_BUILTIN_TO_PROTOBUF_FIELD = new HashMap<String, String>();
     private static Map<String, String> PRIMITIVE_WRAPPER_DEFINITIONS = new HashMap<String, String>();
-    private static Map<String, String> PRIMITIVE_TYPES = new HashMap<String, String>();
+    private static Map<String, String> JAVA_BUILTIN_TO_PROTOBUF_ARRAYS = new HashMap<String, String>();
+    private static Map<String, String> JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE = new HashMap<String, String>();
+    private static Map<String, String> PRIMITIVE_ARRAY_TYPE = new HashMap<String, String>();
     private static Set<String> ANNOTATIONS = new HashSet<String>();
     private static Set<String> HTTP_VERBS = new HashSet<String>();
+
+    private static String[] args;
     private static String prefix;
     private static boolean needEmpty = false;
     private static boolean needList = true;
@@ -280,9 +286,15 @@ public class JavaToProtobufGenerator {
     private static boolean needMultiMap = true;
     private static boolean needMultiHashMap = true;
 
+    // Each newly discovered type is added to pendingTypes for future processing
     private static Set<ResolvedType> pendingTypes = ConcurrentHashMap.newKeySet();
+
+    // Holds entity message types, used to build GeneralEntityMessage
     private static Set<String> entityMessageTypes = new HashSet<String>();
+
+    // Holds return message types, used to build GeneralReturnMessage
     private static Set<String> returnMessageTypes = new HashSet<String>();
+
     private static Set<String> jars;
     private static Set<String> additionalClasses;// = new CopyOnWriteArraySet<String>();
     private static Set<String> nonGenericClasses = new HashSet<String>();
@@ -295,24 +307,44 @@ public class JavaToProtobufGenerator {
     private static boolean started = false;
     private static int counter = 1;
     private static boolean isSSE;
-    private static String SSE_EVENT_CLASSNAME = "dev_resteasy_grpc_bridge_runtime_sse___SseEvent";
-    private static Map<String, String> basicRepeatedTypes = new HashMap<String, String>();
-    private static Map<String, String> basicRepeatedEntityTypes = new HashMap<String, String>();
 
+    // Used to build dev_resteasy_grpc_arrays___ArrayHolder
     private static SortedSet<String> repeatedTypes = new TreeSet<String>();
-    private static Map<String, String> REPEAT_MAP = new HashMap<String, String>();
-    private static Map<String, String> WRAPPER_TO_JAVABUF_MAP = new HashMap<String, String>();
-    private static Map<String, String> PRIMITIVE_ARRAY_TYPE = new HashMap<String, String>();
+
+    // Used by JavabufTranslatorGenerator to map generic types with wildcards or open variables
+    // to types where wildcards and open variables are replaced by Object.
     private static Map<String, String> normalizer = new HashMap<String, String>();
-    private static Set<String> entityTypes = new HashSet<String>();
+
+    // Used to create entityTypes file, which is used by ReaderWriterGenerator to
+    // create a map in <prefix>MessageBodyReaderWriter from Java types to parsers of
+    // the corresponding javabuf class.
     private static Set<String> entityTypesForFile = new HashSet<String>();
+
+    // Used to disambiguate generic Java types with the same erasure. For example,
+    // java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S1>> -> java_util___HashSet172 and
+    // java.util.HashSet<java.util.Set<dev.resteasy.grpc.lists.sets.S2>> -> java_util___HashSet172
     private static AtomicInteger classnameCounter = new AtomicInteger();
+
+    // Stores previously disambiguated generic Java types
     private static Map<String, String> classnames = new ConcurrentHashMap<String, String>();
+
+    // Used to disambiguate resource methods with the same name. E.g.,
+    // public int same(int i); -> rpc same (GeneralEntityMessage) returns (GeneralReturnMessage);
+    // public double same(double d); -> rpc same___1 (GeneralEntityMessage) returns (GeneralReturnMessage);
     private static Set<String> rpcNames = new HashSet<String>();
+
+    // Stores protobuf names of previously processed classes
     private static Map<String, String> classnameMap = new ConcurrentHashMap<String, String>();
-    private static ReflectionTypeParameter[] TV = new ReflectionTypeParameter[10];
+
+    // Stores "objectified" names of previously processed classes, where a generic type is "objectified" when
+    // wildcards and open type variables are replaced by Object.
     private static Map<ResolvedReferenceType, ResolvedReferenceType> objectifiedTypes = new ConcurrentHashMap<ResolvedReferenceType, ResolvedReferenceType>();
+
+    // JakartaRESTResourceVisitor stores record types for future processing by ClassVisitor.
     private static Map<String, RecordDeclaration> recordMap = new HashMap<String, RecordDeclaration>();
+
+    // Stores type parameters
+    private static ReflectionTypeParameter[] TV = new ReflectionTypeParameter[10];
 
     class Dummy<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
     }
@@ -413,84 +445,87 @@ public class JavaToProtobufGenerator {
             + "}%n%n";
 
     static {
-        TYPE_MAP.put("boolean", "bool");
-        TYPE_MAP.put("byte", "int32");
-        TYPE_MAP.put("short", "int32");
-        TYPE_MAP.put("int", "int32");
-        TYPE_MAP.put("long", "int64");
-        TYPE_MAP.put("float", "float");
-        TYPE_MAP.put("double", "double");
-        TYPE_MAP.put("boolean", "bool");
-        TYPE_MAP.put("char", "string");
-        TYPE_MAP.put("String", "string");
-        TYPE_MAP.put("java.lang.String", "string");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("boolean", "bool");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("byte", "int32");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("short", "int32");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("int", "int32");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("long", "int64");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("float", "float");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("double", "double");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("char", "string");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("String", "string");
+        JAVA_PRIMITIVE_TO_PROTOBUF_MAP.put("java.lang.String", "string");
 
-        REPEAT_MAP.put("bool", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array");
-        REPEAT_MAP.put("bytes", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array");
-        REPEAT_MAP.put("int32", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array");
-        REPEAT_MAP.put("int64", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array");
-        REPEAT_MAP.put("float", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array");
-        REPEAT_MAP.put("double", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array");
-        REPEAT_MAP.put("char", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array");
-        REPEAT_MAP.put("string", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("bool", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("bytes", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("int32", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("int64", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("float", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("double", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("char", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array");
+        PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.put("string", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
 
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Boolean", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Byte", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Short", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Integer", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Long", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Float", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Double", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.Character",
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Boolean",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Byte", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Short", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Integer",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Long", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Float", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Double",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.Character",
                 "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray");
-        WRAPPER_TO_JAVABUF_MAP.put("java.lang.String", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
+        JAVA_WRAPPER_TO_WARRAY_MAP.put("java.lang.String",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
 
-        PRIMITIVE_WRAPPER_TYPES_IO.put("boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Boolean", "gBoolean");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Byte", "gByte");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Short", "gShort");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("int", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Integer", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Integer", "gInteger");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Long", "gLong");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Float", "gFloat");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Double", "gDouble");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("char", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("Character", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.Character", "gCharacter");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("string", "gString");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("String", "gString");
-        PRIMITIVE_WRAPPER_TYPES_IO.put("java.lang.String", "gString");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("boolean", "gBoolean");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Boolean", "gBoolean");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Boolean", "gBoolean");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("byte", "gByte");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Byte", "gByte");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Byte", "gByte");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("short", "gShort");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Short", "gShort");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Short", "gShort");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("int", "gInteger");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Integer", "gInteger");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Integer", "gInteger");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("long", "gLong");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Long", "gLong");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Long", "gLong");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("float", "gFloat");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Float", "gFloat");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Float", "gFloat");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("double", "gDouble");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Double", "gDouble");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Double", "gDouble");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("char", "gCharacter");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("Character", "gCharacter");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.Character", "gCharacter");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("string", "gString");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("String", "gString");
+        JAVA_BUILTIN_TO_PROTOBOF_IO.put("java.lang.String", "gString");
 
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Boolean", "bool");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Byte", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Short", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Integer", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Long", "int64");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Float", "float");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Double", "double");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("Character", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("String", "string");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Boolean", "bool");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Byte", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Short", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Integer", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Long", "int64");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Float", "float");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Double", "double");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.Character", "int32");
-        PRIMITIVE_WRAPPER_TYPES_FIELD.put("java.lang.String", "string");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Boolean", "bool");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Byte", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Short", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Integer", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Long", "int64");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Float", "float");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Double", "double");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("Character", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("String", "string");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Boolean", "bool");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Byte", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Short", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Integer", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Long", "int64");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Float", "float");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Double", "double");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.Character", "int32");
+        JAVA_BUILTIN_TO_PROTOBUF_FIELD.put("java.lang.String", "string");
 
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Boolean", "message gBoolean   {bool   value = $V$;}");
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Byte", "message gByte      {int32  value = $V$;}");
@@ -501,6 +536,87 @@ public class JavaToProtobufGenerator {
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Double", "message gDouble    {double value = $V$;}");
         PRIMITIVE_WRAPPER_DEFINITIONS.put("Character", "message gCharacter {string value = $V$;}");
         PRIMITIVE_WRAPPER_DEFINITIONS.put("String", "message gString    {string value = $V$;}");
+
+        // Used for building dev_resteasy_grpc_arrays___ArrayHolder in <prefix/>.proto
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("none", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("boolean", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Boolean",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("byte", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Byte",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("short", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Short",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("int", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Integer",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("long", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Long",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("float", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Float",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("double", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Double",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("char", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.Character",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("java.lang.String",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("arrayHolder", "dev_resteasy_grpc_arrays___ArrayHolder___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("Any", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray");
+        JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.put("google.protobuf.Any",
+                "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray");
+
+        // Used to write entityTypes file
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("none",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___NONE");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("boolean",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Boolean___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Boolean",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Boolean___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("byte",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Byte___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Byte",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Byte___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("short",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Short___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Short",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Short___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("int",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Integer___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Integer",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Integer___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("long",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Long___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Long",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Long___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("float",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Float___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Float",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Float___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("double",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Double___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Double",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Double___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("char",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Character___Array");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.Character",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Character___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("java.lang.String",
+                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___String___WArray");
+        JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE.put("arrayHolder", "dev_resteasy_grpc_arrays___ArrayHolder___WArray");
+
+        PRIMITIVE_ARRAY_TYPE.put("boolean", "repeated bool");
+        PRIMITIVE_ARRAY_TYPE.put("byte", "bytes");
+        PRIMITIVE_ARRAY_TYPE.put("short", "repeated int32");
+        PRIMITIVE_ARRAY_TYPE.put("int", "repeated int32");
+        PRIMITIVE_ARRAY_TYPE.put("long", "repeated int64");
+        PRIMITIVE_ARRAY_TYPE.put("float", "repeated float");
+        PRIMITIVE_ARRAY_TYPE.put("double", "repeated double");
+        PRIMITIVE_ARRAY_TYPE.put("char", "string");
 
         ANNOTATIONS.add("Context");
         ANNOTATIONS.add("CookieParam");
@@ -517,78 +633,6 @@ public class JavaToProtobufGenerator {
         HTTP_VERBS.add("PATCH");
         HTTP_VERBS.add("POST");
         HTTP_VERBS.add("PUT");
-
-        basicRepeatedTypes.put("none", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE");
-        basicRepeatedTypes.put("boolean", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___Array");
-        basicRepeatedTypes.put("java.lang.Boolean", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Boolean___WArray");
-        basicRepeatedTypes.put("byte", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___Array");
-        basicRepeatedTypes.put("java.lang.Byte", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Byte___WArray");
-        basicRepeatedTypes.put("short", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___Array");
-        basicRepeatedTypes.put("java.lang.Short", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Short___WArray");
-        basicRepeatedTypes.put("int", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array");
-        basicRepeatedTypes.put("java.lang.Integer", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray");
-        basicRepeatedTypes.put("long", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___Array");
-        basicRepeatedTypes.put("java.lang.Long", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Long___WArray");
-        basicRepeatedTypes.put("float", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___Array");
-        basicRepeatedTypes.put("java.lang.Float", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Float___WArray");
-        basicRepeatedTypes.put("double", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___Array");
-        basicRepeatedTypes.put("java.lang.Double", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Double___WArray");
-        basicRepeatedTypes.put("char", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___Array");
-        basicRepeatedTypes.put("java.lang.Character", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Character___WArray");
-        basicRepeatedTypes.put("java.lang.String", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___String___WArray");
-        basicRepeatedTypes.put("arrayHolder", "dev_resteasy_grpc_arrays___ArrayHolder___WArray");
-        basicRepeatedTypes.put("Any", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray");
-        basicRepeatedTypes.put("google.protobuf.Any", "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray");
-
-        basicRepeatedEntityTypes.put("none", "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___NONE");
-        basicRepeatedEntityTypes.put("boolean",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Boolean___Array");
-        basicRepeatedEntityTypes.put("java.lang.Boolean",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Boolean___WArray");
-        basicRepeatedEntityTypes.put("byte", "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Byte___Array");
-        basicRepeatedEntityTypes.put("java.lang.Byte",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Byte___WArray");
-        basicRepeatedEntityTypes.put("short", "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Short___Array");
-        basicRepeatedEntityTypes.put("java.lang.Short",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Short___WArray");
-        basicRepeatedEntityTypes.put("int", "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Integer___Array");
-        basicRepeatedEntityTypes.put("java.lang.Integer",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Integer___WArray");
-        basicRepeatedEntityTypes.put("long", "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Long___Array");
-        basicRepeatedEntityTypes.put("java.lang.Long",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Long___WArray");
-        basicRepeatedEntityTypes.put("float", "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Float___Array");
-        basicRepeatedEntityTypes.put("java.lang.Float",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Float___WArray");
-        basicRepeatedEntityTypes.put("double",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Double___Array");
-        basicRepeatedEntityTypes.put("java.lang.Double",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Double___WArray");
-        basicRepeatedEntityTypes.put("char",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Character___Array");
-        basicRepeatedEntityTypes.put("java.lang.Character",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Character___WArray");
-        basicRepeatedEntityTypes.put("java.lang.String",
-                "dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___String___WArray");
-        basicRepeatedEntityTypes.put("arrayHolder", "dev_resteasy_grpc_arrays___ArrayHolder___WArray");
-
-        PRIMITIVE_ARRAY_TYPE.put("boolean", "repeated bool");
-        PRIMITIVE_ARRAY_TYPE.put("byte", "bytes");
-        PRIMITIVE_ARRAY_TYPE.put("short", "repeated int32");
-        PRIMITIVE_ARRAY_TYPE.put("int", "repeated int32");
-        PRIMITIVE_ARRAY_TYPE.put("long", "repeated int64");
-        PRIMITIVE_ARRAY_TYPE.put("float", "repeated float");
-        PRIMITIVE_ARRAY_TYPE.put("double", "repeated double");
-        PRIMITIVE_ARRAY_TYPE.put("char", "string");
-
-        PRIMITIVE_TYPES.put("boolean", "Z");
-        PRIMITIVE_TYPES.put("byte", "B");
-        PRIMITIVE_TYPES.put("short", "S");
-        PRIMITIVE_TYPES.put("int", "I");
-        PRIMITIVE_TYPES.put("long", "L");
-        PRIMITIVE_TYPES.put("float", "F");
-        PRIMITIVE_TYPES.put("double", "D");
-        PRIMITIVE_TYPES.put("char", "C");
     }
 
     public static void main(String[] args) throws IOException {
@@ -616,7 +660,6 @@ public class JavaToProtobufGenerator {
         additionalClasses = "default".equals(s) || "".equals(s)
                 ? new CopyOnWriteArraySet<String>()
                 : new CopyOnWriteArraySet<String>(Arrays.asList(s.split(",")));
-        logger.debug("additionalClasses: " + additionalClasses);
         StringBuilder sb = new StringBuilder();
         protobufHeader(args, sb);
         new JavaToProtobufGenerator().processClasses(args, sb);
@@ -860,10 +903,6 @@ public class JavaToProtobufGenerator {
         Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
         counter = 0;
         createArrayDefs(args, sb);
-        sb.append("//////////  types: //////////" + LS);
-        for (String s : entityTypes) {
-            sb.append("// ").append(s).append(LS);
-        }
         sb.append(LS + "//////////  synthetic names: //////////" + LS);
         for (String s : classnames.keySet()) {
             sb.append("// ").append(classnames.get(s)).append("->");
@@ -903,7 +942,7 @@ public class JavaToProtobufGenerator {
                 }
             }
             wrapperBuilder.append(String.format(arrayHolderDef));
-            SortedSet<String> holderTypes = new TreeSet<String>(basicRepeatedTypes.values());
+            SortedSet<String> holderTypes = new TreeSet<String>(JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.values());
             for (String rt : repeatedTypes) {
                 if (!rt.endsWith("java_lang___Object___WArray")) {
                     holderTypes.add(rt);
@@ -913,7 +952,7 @@ public class JavaToProtobufGenerator {
             wrapperBuilder.append("message dev_resteasy_grpc_arrays___ArrayHolder {" + LS)
                     .append("   oneof messageType {" + LS);
             for (String type : holderTypes) {
-                if (TYPE_MAP.containsKey(type)) {
+                if (JAVA_PRIMITIVE_TO_PROTOBUF_MAP.containsKey(type)) {
                     continue;
                 }
                 String typeName = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
@@ -1024,7 +1063,6 @@ public class JavaToProtobufGenerator {
                     returnMessageTypes.add(returnType);
                     String syncType = isSuspended(md) ? "suspended"
                             : (isCompletionStage(md) ? "completionStage" : (isSSE(md) ? "sse" : "sync"));
-                    isSuspended(md);
                     sb.append("// ");
                     if (!("".equals(classPath))) {
                         sb.append(classPath).append("/");
@@ -1070,7 +1108,8 @@ public class JavaToProtobufGenerator {
     }
 
     /**
-     * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting all Jakarta REST resources
+     * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting
+     * all Jakarta REST resources. For each class, create a message definition in the .proto file.
      */
     static class ClassVisitor extends VoidVisitorAdapter<StringBuilder> {
 
@@ -1129,7 +1168,7 @@ public class JavaToProtobufGenerator {
                 visitRecord(resolvedType, sb);
                 return;
             }
-            if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(clazz.describe())) {
+            if (JAVA_BUILTIN_TO_PROTOBUF_FIELD.containsKey(clazz.describe())) {
                 return;
             }
             if (Response.class.getName().equals(clazz.describe())) {
@@ -1225,18 +1264,6 @@ public class JavaToProtobufGenerator {
         }
     }
 
-    private static ResolvedType adjustTypes(ResolvedReferenceType clazz) {
-        ResolvedType rt = clazz;
-        if (!clazz.getTypeParametersMap().isEmpty()) {
-            if (nonGenericClasses.contains(clazz.erasure().describe())) {
-                rt = clazz.erasure();
-            } else {
-                rt = objectify(rt.asReferenceType());
-            }
-        }
-        return rt;
-    }
-
     /**
      * 1. Create new type in which all wildcards and type variables are replaced with Object.class.
      * 2. Create non generic version of type.
@@ -1293,7 +1320,7 @@ public class JavaToProtobufGenerator {
                     ResolvedType ort = objectify(rt.asReferenceType());
                     list.add(new ResolvedArrayType(ort));
                     if (!visited.contains(rt.describe())
-                            && !PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rt.describe())
+                            && !JAVA_BUILTIN_TO_PROTOBUF_FIELD.containsKey(rt.describe())
                             && !"java.lang.Object".equals(rt.describe())
                             && !isInterface(ort)) {
                         pendingTypes.add(rt);
@@ -1305,7 +1332,7 @@ public class JavaToProtobufGenerator {
                 ResolvedType rt = objectify(pair.b.asReferenceType());
                 list.add(rt);
                 if (!visited.contains(rt.describe())
-                        && !PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rt.describe())
+                        && !JAVA_BUILTIN_TO_PROTOBUF_FIELD.containsKey(rt.describe())
                         && !"java.lang.Object".equals(rt.describe())
                         && !isInterface(rt)) {
                     pendingTypes.add(rt);
@@ -1396,8 +1423,8 @@ public class JavaToProtobufGenerator {
                 return "repeated google.protobuf.Any";
             } else if (PRIMITIVE_ARRAY_TYPE.containsKey(ct.describe())) {
                 type = PRIMITIVE_ARRAY_TYPE.get(ct.describe());
-            } else if (WRAPPER_TO_JAVABUF_MAP.keySet().contains(ct.describe())) {
-                type = WRAPPER_TO_JAVABUF_MAP.get(ct.describe());
+            } else if (JAVA_WRAPPER_TO_WARRAY_MAP.keySet().contains(ct.describe())) {
+                type = JAVA_WRAPPER_TO_WARRAY_MAP.get(ct.describe());
             } else if (ct instanceof ResolvedArrayType) {
                 type = "dev_resteasy_grpc_arrays___ArrayHolder___WArray";
                 if (ct.isReferenceType()) {
@@ -1427,8 +1454,8 @@ public class JavaToProtobufGenerator {
                     return null;
                 }
                 fqn = removeTypeVariables(ct.describe());
-                if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(fqn)) {
-                    type = wrapRepeated(PRIMITIVE_WRAPPER_TYPES_FIELD.get(fqn));
+                if (JAVA_BUILTIN_TO_PROTOBUF_FIELD.containsKey(fqn)) {
+                    type = wrapRepeated(JAVA_BUILTIN_TO_PROTOBUF_FIELD.get(fqn));
                 } else if (!visited.contains(fqn)) {
                     pendingTypes.add(objectify(ct.asReferenceType()));
                 }
@@ -1473,10 +1500,10 @@ public class JavaToProtobufGenerator {
         if (rt.describe().contains("safe")) {
             return;
         }
-        if (TYPE_MAP.containsKey(rt.describe())) {
-            type = TYPE_MAP.get(rt.describe());
-        } else if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rt.describe())) {
-            type = PRIMITIVE_WRAPPER_TYPES_FIELD.get(rt.describe());
+        if (JAVA_PRIMITIVE_TO_PROTOBUF_MAP.containsKey(rt.describe())) {
+            type = JAVA_PRIMITIVE_TO_PROTOBUF_MAP.get(rt.describe());
+        } else if (JAVA_BUILTIN_TO_PROTOBUF_FIELD.containsKey(rt.describe())) {
+            type = JAVA_BUILTIN_TO_PROTOBUF_FIELD.get(rt.describe());
         } else if (rt instanceof ResolvedArrayType) {
             type = visitArray(rt);
             if (type == null) {
@@ -1533,48 +1560,42 @@ public class JavaToProtobufGenerator {
                 }
                 String javaType = rt.describe();
                 String rawType = p.getTypeAsString();
-                if (PRIMITIVE_WRAPPER_TYPES_IO.containsKey(rawType)) {
-                    entityTypes.add(PRIMITIVE_WRAPPER_TYPES_IO.get(rawType));
+                if (JAVA_BUILTIN_TO_PROTOBOF_IO.containsKey(rawType)) {
                     entityTypesForFile
-                            .add(despace(javaType) + " " + despace(protoClass) + PRIMITIVE_WRAPPER_TYPES_IO.get(rawType));
-                    return PRIMITIVE_WRAPPER_TYPES_IO.get(rawType);
+                            .add(despace(javaType) + " " + despace(protoClass) + JAVA_BUILTIN_TO_PROTOBOF_IO.get(rawType));
+                    return JAVA_BUILTIN_TO_PROTOBOF_IO.get(rawType);
                 }
-                if (TYPE_MAP.containsKey(rawType)) {
-                    entityTypes.add(TYPE_MAP.get(rawType));
-                    entityTypesForFile.add(despace(javaType) + " " + despace(TYPE_MAP.get(rawType)));
-                    return TYPE_MAP.get(rawType);
+                if (JAVA_PRIMITIVE_TO_PROTOBUF_MAP.containsKey(rawType)) {
+                    entityTypesForFile.add(despace(javaType) + " " + despace(JAVA_PRIMITIVE_TO_PROTOBUF_MAP.get(rawType)));
+                    return JAVA_PRIMITIVE_TO_PROTOBUF_MAP.get(rawType);
                 }
                 if (rt.isArray()) {
                     if ("Object".equals(rt.asArrayType().getComponentType().describe()) ||
                             "java.lang.Object".equals(rt.asArrayType().getComponentType().describe())) {
-                        entityTypes.add("google.protobuf.Any");
                         repeatedTypes.add("dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray");
                         entityTypesForFile.add(
                                 "java.lang.Object[] dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Any___WArray");
                         return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray";
-                    } else if (basicRepeatedTypes.containsKey(rt.asArrayType().getComponentType().describe())) {
-                        entityTypes
-                                .add(basicRepeatedTypes.get(rt.asArrayType().getComponentType().describe()));
+                    } else if (JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.containsKey(rt.asArrayType().getComponentType().describe())) {
                         entityTypesForFile
                                 .add(despace(javaType) + " "
                                         + despace(
-                                                basicRepeatedEntityTypes.get(rt.asArrayType().getComponentType().describe())));
-                        return basicRepeatedTypes.get(rt.asArrayType().getComponentType().describe());
+                                                JAVA_COMPONENT_TYPE_TO_ARRAY_PROTO_TYPE
+                                                        .get(rt.asArrayType().getComponentType().describe())));
+                        return JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.get(rt.asArrayType().getComponentType().describe());
                     } else if (rt.asArrayType().getComponentType().arrayLevel() == 0) {
                         String name = rt.describe().substring(0, rt.describe().indexOf("["));
-                        if (WRAPPER_TO_JAVABUF_MAP.containsKey(name)) {
-                            name = WRAPPER_TO_JAVABUF_MAP.get(name);
+                        if (JAVA_WRAPPER_TO_WARRAY_MAP.containsKey(name)) {
+                            name = JAVA_WRAPPER_TO_WARRAY_MAP.get(name);
                         } else {
                             name = fqnifyClass(name, isInnerClass(
                                     rt.asArrayType().getComponentType().asReferenceType().getTypeDeclaration().get()));
                             name += "___WArray";
                         }
                         repeatedTypes.add(name);
-                        entityTypes.add(name);
                         entityTypesForFile.add(despace(javaType) + " " + protoClass + despace(name));
                         return name;
                     } else {
-                        entityTypes.add("dev_resteasy_grpc_arrays___ArrayHolder___WArray");
                         entityTypesForFile
                                 .add(despace(javaType) + " " + protoClass + "dev_resteasy_grpc_arrays___ArrayHolder___WArray");
                         return "dev_resteasy_grpc_arrays___ArrayHolder___WArray";
@@ -1586,7 +1607,6 @@ public class JavaToProtobufGenerator {
                 pendingTypes.add(rt);
                 String s = fqnifyClass(rt, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
                 String javabufType = protoClass + s;
-                entityTypes.add(s);
                 entityTypesForFile.add(despace(javaType) + " " + javabufType);
                 return s;
             }
@@ -1644,11 +1664,11 @@ public class JavaToProtobufGenerator {
                         rawType = type;
                     }
                 }
-                if (PRIMITIVE_WRAPPER_TYPES_IO.containsKey(rawType)) {
-                    return PRIMITIVE_WRAPPER_TYPES_IO.get(rawType);
+                if (JAVA_BUILTIN_TO_PROTOBOF_IO.containsKey(rawType)) {
+                    return JAVA_BUILTIN_TO_PROTOBOF_IO.get(rawType);
                 }
-                if (TYPE_MAP.containsKey(rawType)) {
-                    return TYPE_MAP.get(rawType);
+                if (JAVA_PRIMITIVE_TO_PROTOBUF_MAP.containsKey(rawType)) {
+                    return JAVA_PRIMITIVE_TO_PROTOBUF_MAP.get(rawType);
                 }
                 if ("jakarta.ws.rs.core.Response".equals(rawType) || "Response".equals(rawType)) {
                     return "google.protobuf.Any";
@@ -1661,12 +1681,12 @@ public class JavaToProtobufGenerator {
                         entityTypesForFile.add(
                                 "java.lang.Object[] dev.resteasy.grpc.arrays.Array_proto$dev_resteasy_grpc_arrays___Any___WArray");
                         return "dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Any___WArray";
-                    } else if (basicRepeatedTypes.containsKey(rt.asArrayType().getComponentType().describe())) {
-                        return basicRepeatedTypes.get(rt.asArrayType().getComponentType().describe());
+                    } else if (JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.containsKey(rt.asArrayType().getComponentType().describe())) {
+                        return JAVA_BUILTIN_TO_PROTOBUF_ARRAYS.get(rt.asArrayType().getComponentType().describe());
                     } else if (rt.asArrayType().getComponentType().arrayLevel() == 0) {
                         String name = rt.describe().substring(0, rt.describe().indexOf("["));
-                        if (WRAPPER_TO_JAVABUF_MAP.containsKey(name)) {
-                            name = WRAPPER_TO_JAVABUF_MAP.get(name);
+                        if (JAVA_WRAPPER_TO_WARRAY_MAP.containsKey(name)) {
+                            name = JAVA_WRAPPER_TO_WARRAY_MAP.get(name);
                         } else {
                             name = fqnifyClass(name,
                                     isInnerClass(
@@ -1846,8 +1866,8 @@ public class JavaToProtobufGenerator {
         if (rt.isTypeVariable() || rt.isWildcard() || "java.lang.Object".equals(rt.describe())) {
             return "google.protobuf.Any";
         }
-        if (PRIMITIVE_WRAPPER_TYPES_FIELD.containsKey(rt.describe())) {
-            return PRIMITIVE_WRAPPER_TYPES_FIELD.get(rt.describe());
+        if (JAVA_BUILTIN_TO_PROTOBUF_FIELD.containsKey(rt.describe())) {
+            return JAVA_BUILTIN_TO_PROTOBUF_FIELD.get(rt.describe());
         }
         if (classnameMap.containsKey(rt.describe())) {
             return classnameMap.get(rt.describe());
@@ -1979,8 +1999,8 @@ public class JavaToProtobufGenerator {
     }
 
     private static String wrapRepeated(String type) {
-        if (REPEAT_MAP.containsKey(type)) {
-            type = REPEAT_MAP.get(type);
+        if (PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.containsKey(type)) {
+            type = PROTUBUF_PRIMITIVE_TO_ARRAY_MAP.get(type);
         } else {
             type += "___WArray";
             repeatedTypes.add(type);
