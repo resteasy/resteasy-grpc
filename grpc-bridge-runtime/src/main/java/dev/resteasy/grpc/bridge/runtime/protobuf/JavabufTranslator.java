@@ -18,8 +18,6 @@
  */
 package dev.resteasy.grpc.bridge.runtime.protobuf;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Type;
 
 import jakarta.ws.rs.core.GenericType;
@@ -34,17 +32,13 @@ public interface JavabufTranslator {
 
     Object translateFromJavabuf(Message message);
 
-    Object parseFromJavabuf(Class<?> clazz, InputStream is) throws IOException;
-
     Message translateToJavabuf(Object o);
 
     Message translateToJavabuf(Object o, GenericType genericType);
 
-    Class translateToJavabufClass(Class<?> clazz);
-
-    Class translateToJavabufClass(String classname);
-
     Class translatefromJavabufClass(String classname);
+
+    Class translateToJavabufClass(Class<?> clazz);
 
     String getOuterClassname();
 
