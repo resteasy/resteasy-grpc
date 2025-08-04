@@ -333,7 +333,6 @@ public class JavabufTranslatorGenerator {
             + "         dev_resteasy_grpc_arrays___Any___WArray array = (dev_resteasy_grpc_arrays___Any___WArray) message;%n"
             + "         Object[] os = new Object[array.getWrapperFieldCount()];%n"
             + "         for (int i = 0; i < array.getWrapperFieldCount(); i++) {%n"
-            + "            dev_resteasy_grpc_arrays___Any___wrapper wrapper = array.getWrapperField(i);%n"
             + "            if (!array.getWrapperField(i).hasNoneField()) {%n"
             + "               Message m = null;%n"
             + "               try {%n"
@@ -901,7 +900,7 @@ public class JavabufTranslatorGenerator {
             + "      @Override%n"
             + "      public %2$s assignFromJavabuf(Message message) {%n"
             + "         HolderMap map = new HolderMap();%n"
-            + "         int i = 0;%n"
+            //            + "         int i = 0;%n"
             + "         for (AssignFromJavabuf assignFrom : assignList) {%n"
             + "            try {%n"
             + "               assignFrom.assign(message, map);%n"
@@ -1461,6 +1460,7 @@ public class JavabufTranslatorGenerator {
     private static void classHeader(String[] args, String translatorClass, Class<?>[] wrappedClasses, StringBuilder sb) {
         sb.append("package ").append(wrappedClasses[0].getPackage().getName()).append(";" + LS + LS);
         imports(wrappedClasses, sb, args);
+        sb.append("@SuppressWarnings({\"deprecation\", \"rawtypes\", \"unchecked\"})" + LS);
         sb.append("public class ")
                 .append(translatorClass)
                 .append(" implements JavabufTranslator {" + LS);
@@ -1832,13 +1832,11 @@ public class JavabufTranslatorGenerator {
                 .append("      return ttj.assignToJavabuf(o);" + LS)
                 .append("   }" + LS + LS)
 
-                .append("   @SuppressWarnings(\"rawtypes\")" + LS)
                 .append("   @Override" + LS)
                 .append("   public Class translatefromJavabufClass(String classname) {" + LS)
                 .append("      return fromJavabufClassMap.get(classname);" + LS)
                 .append("   }" + LS + LS)
 
-                .append("   @SuppressWarnings(\"rawtypes\")" + LS)
                 .append("   @Override" + LS)
                 .append("   public Class translateToJavabufClass(Class<?> clazz) {" + LS)
                 .append("      return toJavabufClassMap.get(clazz.getName());" + LS)
@@ -1883,7 +1881,6 @@ public class JavabufTranslatorGenerator {
         sb.append("   private static Set<Class<?>> WRAPPER_TYPES = new HashSet<Class<?>>();" + LS);
         sb.append(
                 "   private static Map<String, GenericType<?>> NORMALIZER = new HashMap<String, GenericType<?>>();" + LS + LS);
-        sb.append("   @SuppressWarnings(\"rawtypes\")" + LS);
         sb.append("   private static Map<String, Class> toJavabufClassMap = new HashMap<String, Class>();" + LS);
         sb.append("   private static Map<String, Class<?>> fromJavabufClassMap = new HashMap<String, Class<?>>();"
                 + LS);
