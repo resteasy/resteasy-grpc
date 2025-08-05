@@ -210,7 +210,7 @@ import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
  * message io_grpc_examples___CC3 {
  *    string s = 1;
  * }
- * 
+ *
  * message io_grpc_examples___CC4 {
  *    string s = 1;
  *    io_grpc_examples___CC5 cc5 = 2;
