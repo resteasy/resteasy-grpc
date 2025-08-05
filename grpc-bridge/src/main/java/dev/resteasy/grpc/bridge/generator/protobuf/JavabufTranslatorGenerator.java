@@ -89,18 +89,18 @@ import dev.resteasy.grpc.bridge.runtime.protobuf.TranslateToJavabuf;
  * option java_package = "example.grpc";
  * option java_outer_classname = "Example_proto";
  *
- * message example.grpc___CC3 {
+ * message example_grpc___CC3 {
  *   string s = 1;
  * }
  *
- * message example.grpc___CC2 {
- *   int32 j = 2;
- *   example.grpc___CC3 cC3___super = 3;
+ * message example_grpc___CC2 {
+ *   int32 j = 1;
+ *   string s = 2;
  * }
  * </pre>
  *
  * 3. Use the protobuf compiler to generate class {@code Example_proto} with the javabuf versions
- * {@code Example_proto.example.grpc___CC2} and {@code Example_proto.example.grpc___CC3} of
+ * {@code Example_proto.example_grpc___CC2} and {@code Example_proto_example.grpc___CC3} of
  * {@code CC2} and {@code CC3}, respectively.
  * <p/>
  *
@@ -118,9 +118,7 @@ import dev.resteasy.grpc.bridge.runtime.protobuf.TranslateToJavabuf;
  *     Message message = ExampleJavabufTranslator.translateToJavabuf(cc2);
  *
  *     // 3. Manually create a javabuf representation of the same CC2 and demonstrate they're the same.
- *     Example_proto.example.grpc___CC3 cc3Message = Example_proto.example.grpc___CC3.newBuilder().setS("abc").build();
- *     Example_proto.example.grpc___CC2 cc2Message = Example_proto.example.grpc___CC2.newBuilder().setJ(19)
- *             .setCC3Super(cc3Message).build();
+ *     Example_proto.example_grpc___CC2 cc2Message = Example_proto.example_grpc___CC2.newBuilder().setJ(19).setS("abc").build();
  *     Assert.assertEquals(message, cc2Message);
  *
  *     // 4. A. Translate the javabuf object created in step 2 back to its original java form.

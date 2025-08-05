@@ -204,16 +204,16 @@ import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
  *
  * message io_grpc_examples___CC2 {
  *    int32 j = 1;
- *    io_grpc_examples___CC3 cC3___super = 2;
- * }
- *
- * message io_grpc_examples___CC4 {
- *    string s = 1;
- *    io_grpc_examples___CC5 cc5 = 2;
+ *    string s = 2;
  * }
  *
  * message io_grpc_examples___CC3 {
  *    string s = 1;
+ * }
+ * 
+ * message io_grpc_examples___CC4 {
+ *    string s = 1;
+ *    io_grpc_examples___CC5 cc5 = 2;
  * }
  *
  * message io_grpc_examples___CC5 {
@@ -249,8 +249,9 @@ import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
  * <ol>
  * <li>{@code CC1.m2()} is not a resource method, so it does not appear in CC1.proto.
  * <li>Protobuf syntax does not support inheritance, so {@code JavaToProtobufGenerator}
- * treats a superclass as a special field. For example, {@code CC2} is a subclass of {@code CC3},
- * so each instance of {@code CC2} has a field named {@code cC3___super} of {@code type io_grpc_examples___CC3}.
+ * merges the fields of the superclass into the subclass. For example, {@code CC2} is a subclass of {@code CC3},
+ * so each instance of {@code io_grpc_examples___CC2} has its own int32 field plus a string field it inherits
+ * from {@code type io_grpc_examples___CC3}.
  * <li>{@code GeneralEntityMessage} and {@code GeneralReturnMessage} are general purpose classes for conveying
  * entity parameters to the server and responses back to the client. They are defined to hold all possible entity
  * and return types plus a variety of additional fields. For more information, see the User Guide.

@@ -18,6 +18,10 @@
  */
 package dev.resteasy.grpc.bridge.runtime.protobuf;
 
+/**
+ * Used in <prefix>JavabufTranslator to hold a non public class without
+ * referencing it
+ */
 public interface ReturnJavaClass {
 
     Class<?> getJavaClass();
