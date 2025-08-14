@@ -147,17 +147,6 @@ public final class Utility {
         return name;
     }
 
-    private static final VarHandle MODIFIERS;
-
-    static {
-        try {
-            var lookup = MethodHandles.privateLookupIn(Field.class, MethodHandles.lookup());
-            MODIFIERS = lookup.findVarHandle(Field.class, "modifiers", int.class);
-        } catch (IllegalAccessException | NoSuchFieldException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
     public static void setField(Field field, Object object, Object value, JavabufTranslator translator) throws Exception {
         if (object instanceof HolderMap) {
             setObject(field, (HolderMap) object, value, translator);
@@ -190,7 +179,9 @@ public final class Utility {
             if (any.getSerializedSize() == 0) {
                 field.set(object, null);
             } else {
+                @SuppressWarnings("rawtypes")
                 Class clazz = extractClassFromAny(any, translator);
+                @SuppressWarnings("unchecked")
                 Message message = any.unpack(clazz);
                 Object javaObj = translator.translateFromJavabuf(message);
                 field.set(object, javaObj);
@@ -209,7 +200,9 @@ public final class Utility {
             if (any.getSerializedSize() == 0) {
                 return;
             } else {
+                @SuppressWarnings("rawtypes")
                 Class clazz = extractClassFromAny(any, translator);
+                @SuppressWarnings("unchecked")
                 Message message = any.unpack(clazz);
                 map.put(field.getName(), translator.translateFromJavabuf(message));
                 return;
@@ -246,7 +239,6 @@ public final class Utility {
 
     public static Field getField(Class<?> clazz, String name) {
         if (name.contains("___")) {
-            String n = name.substring(name.indexOf("___") + 3);
             try {
                 name = name.substring(0, name.indexOf("___"));
             } catch (NumberFormatException nfe) {
@@ -359,9 +351,11 @@ public final class Utility {
             return sb.toString();
         }
 
+        @SuppressWarnings("rawtypes")
         public static void toPrimitiveArray2(FieldDescriptor fd, Class componentType, Object array) {
         }
 
+        @SuppressWarnings("rawtypes")
         public static void toPrimitiveArray(Builder builder, FieldDescriptor fd, Class<?> componentType,
                 Object array) {
             if (byte.class.equals(componentType)) {

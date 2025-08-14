@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.jboss.logging.Logger;
 
+import dev.resteasy.grpc.bridge.generator.i18n.Messages;
 import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
 
 /**
@@ -98,7 +99,7 @@ public class ServiceGrpcExtender {
     private void parse(String root, String pkg, final String dir) {
         final var file = Path.of(dir, root + ".proto");
         if (Files.notExists(file)) {
-            throw new RuntimeException(root + ".proto not found");
+            throw new RuntimeException(Messages.MESSAGES.notFound(root + ".proto"));
         }
         try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
             StringBuilder sbHeader = new StringBuilder();

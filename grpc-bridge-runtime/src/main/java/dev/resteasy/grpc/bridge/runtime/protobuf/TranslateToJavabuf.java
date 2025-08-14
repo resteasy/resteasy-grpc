@@ -46,9 +46,4 @@ public interface TranslateToJavabuf {
      * Copies the content of a Java class to a {@code com.google.protobuf.Message}
      */
     Message assignToJavabuf(Object obj);
-
-    /**
-     * Clears {@code com.google.protobuf.Message} builder
-     */
-    void clear();
 }

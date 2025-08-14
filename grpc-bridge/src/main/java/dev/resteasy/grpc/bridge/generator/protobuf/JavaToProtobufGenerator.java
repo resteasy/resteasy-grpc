@@ -93,6 +93,7 @@ import com.github.javaparser.utils.Log;
 import com.github.javaparser.utils.Pair;
 import com.github.javaparser.utils.SourceRoot;
 
+import dev.resteasy.grpc.bridge.generator.i18n.Messages;
 import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletRequestImpl;
 
 /**
@@ -735,7 +736,7 @@ public class JavaToProtobufGenerator {
         for (String filename : additionalClasses) {
             int n = filename.lastIndexOf(":");
             if (n < 0) {
-                throw new RuntimeException("bad syntax: " + filename);
+                throw new RuntimeException(Messages.MESSAGES.badSyntax(filename));
             }
             String dir = filename.substring(0, n).trim();
             nonGenericClasses.add(filename.substring(n + 1));
@@ -1488,7 +1489,6 @@ public class JavaToProtobufGenerator {
         return fqn;
     }
 
-    //    private static void visitField(ResolvedFieldDeclaration rfd , StringBuilder sb, Set<String> fieldNames) {
     private static void visitField(ResolvedReferenceType clazz, ResolvedType rt, String fieldName, StringBuilder sb,
             Set<String> fieldNames) {
         String type = null;
@@ -1533,7 +1533,6 @@ public class JavaToProtobufGenerator {
                 }
             }
         }
-        String name = rt.describe().toLowerCase();
         if (type != null) {
             sb.append("  ")
                     .append(type)
