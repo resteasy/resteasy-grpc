@@ -736,7 +736,7 @@ public class JavaToProtobufGenerator {
         for (String filename : additionalClasses) {
             int n = filename.lastIndexOf(":");
             if (n < 0) {
-                throw new RuntimeException(Messages.MESSAGES.badSyntax(filename));
+                throw Messages.MESSAGES.badSyntax(filename);
             }
             String dir = filename.substring(0, n).trim();
             nonGenericClasses.add(filename.substring(n + 1));
@@ -1470,7 +1470,6 @@ public class JavaToProtobufGenerator {
             }
             return type;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
