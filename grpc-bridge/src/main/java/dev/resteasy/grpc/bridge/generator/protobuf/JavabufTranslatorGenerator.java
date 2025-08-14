@@ -340,8 +340,7 @@ public class JavabufTranslatorGenerator {
             + "         dev_resteasy_grpc_arrays___Byte___Array.Builder arrayBuilder = dev_resteasy_grpc_arrays___Byte___Array.newBuilder();%n"
             + "         arrayBuilder.setByteField(ByteString.copyFrom(aa));%n"
             + "         return arrayBuilder.build();%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ArrayWrapperBuilderClassForCharArrays = "%n      @Override%n"
             + "      public Message assignToJavabuf(Object x) {%n"
@@ -354,8 +353,7 @@ public class JavabufTranslatorGenerator {
             + "            arrayBuilder.addCharField(String.valueOf(cs[i]));%n"
             + "         }%n"
             + "         return arrayBuilder.build();%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ArrayWrapperBuilderClass = "%n      @Override%n"
             + "      public Message assignToJavabuf(Object x) {%n"
@@ -374,8 +372,7 @@ public class JavabufTranslatorGenerator {
             + "            arrayBuilder.addWrapperField(elementBuilder);%n"
             + "         }%n"
             + "         return arrayBuilder.build();%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ArrayWrapperBuilderClassForByteWrappers = "%n      @Override%n"
             + "      public Message assignToJavabuf(Object x) {%n"
@@ -395,8 +392,7 @@ public class JavabufTranslatorGenerator {
             + "            arrayBuilder.addWrapperField(elementBuilder);%n"
             + "         }%n"
             + "         return arrayBuilder.build();%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ArrayWrapperBuilderClassForCharacterWrappers = "%n      @Override%n"
             + "      public Message assignToJavabuf(Object x) {%n"
@@ -415,8 +411,7 @@ public class JavabufTranslatorGenerator {
             + "            arrayBuilder.addWrapperField(elementBuilder);%n"
             + "         }%n"
             + "         return arrayBuilder.build();%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ARRAY_WRAPPER_BUILDER_FOR_ANY_WRAPPERS_TO_JAVABUF = "%n      @Override%n"
             + "      public Message assignToJavabuf(Object x) {%n"
@@ -435,8 +430,7 @@ public class JavabufTranslatorGenerator {
             + "            arrayBuilder.addWrapperField(elementBuilder);%n"
             + "         }%n"
             + "         return arrayBuilder.build();%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ARRAY_WRAPPER_BUILDER_FOR_ANY_WRAPPERS_FROM_JAVABUF = "   public static class dev_resteasy_grpc_arrays___Any___WArray_FromJavabuf implements TranslateFromJavabuf {%n"
             + "%n"
@@ -702,8 +696,7 @@ public class JavabufTranslatorGenerator {
             + "            builder.addRepeatedField(fd, %3$s);%n"
             + "         }%n"
             + "         return builder.build();%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ListOrSetFromJavabuf_fromClass = "%n"
             + "   public static class %1$s_FromJavabuf implements TranslateFromJavabuf {%n"
@@ -716,8 +709,7 @@ public class JavabufTranslatorGenerator {
             + "            collection.add(%4$s);%n"
             + "         }%n"
             + "         return collection;%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String ListOrSetFromJavabuf_fromInterface = "%n"
             + "   public static class %1$s_FromJavabuf implements TranslateFromJavabuf {%n"
@@ -735,8 +727,7 @@ public class JavabufTranslatorGenerator {
             + "         } catch (Exception e) {%n"
             + "            throw new RuntimeException(e);%n"
             + "         }%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     /*
      * %1: key type
@@ -761,8 +752,7 @@ public class JavabufTranslatorGenerator {
             + "              pairBuilder.clear();%n"
             + "           }%n"
             + "           return builder.build();%n"
-            + "       }%n"
-            ;
+            + "       }%n";
 
     /*
      * %1: javabuf class name
@@ -786,8 +776,7 @@ public class JavabufTranslatorGenerator {
             + "         } catch (Exception e) {%n"
             + "            throw new RuntimeException(e);%n"
             + "         }%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     /*
      * %1: key type
@@ -814,8 +803,7 @@ public class JavabufTranslatorGenerator {
             + "                }%n"
             + "           }%n"
             + "           return builder.build();%n"
-            + "       }%n"
-            ;
+            + "       }%n";
 
     /*
      * %1: javabuf class name
@@ -839,8 +827,7 @@ public class JavabufTranslatorGenerator {
             + "         } catch (Exception e) {%n"
             + "            throw new RuntimeException(e);%n"
             + "         }%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String RECORD_FROM_JAVABUF = "%n"
             + "   public static class %1$s_FromJavabuf implements TranslateFromJavabuf {%n"
@@ -868,8 +855,7 @@ public class JavabufTranslatorGenerator {
             + "            }%n"
             + "         }%n"
             + "         return new %2$s(%4$s);%n"
-            + "      }%n"
-            ;
+            + "      }%n";
 
     private static final String RAW_AGGREGATE_TO_JAVABUF = "   private static TranslateToJavabuf rawAggregateTranslationToJavabuf(Object o) {%n"
             + "      if (List.class.isAssignableFrom(o.getClass())) {%n"
@@ -1780,7 +1766,7 @@ public class JavabufTranslatorGenerator {
                 .append("      }" + LS)
                 .append("      return ttj.assignToJavabuf(o);" + LS)
                 .append("   }" + LS + LS)
-                
+
                 .append("   @Override" + LS)
                 .append("   public Class translatefromJavabufClass(String classname) {" + LS)
                 .append("      return fromJavabufClassMap.get(classname);" + LS)
@@ -2154,8 +2140,7 @@ public class JavabufTranslatorGenerator {
                     .append("         return builder.setValue(p")
                     .append(GET_METHODS.get(simpleJavaName))
                     .append(").build();" + LS)
-                    .append("      }" + LS)
-                    ;
+                    .append("      }" + LS);
         } else if (clazz.getName().endsWith("___Array") || clazz.getName().endsWith("___WArray")) {
             String javabufComponentClass = null;
             boolean isWrapper;
@@ -2283,8 +2268,7 @@ public class JavabufTranslatorGenerator {
                     .append("            }" + LS)
                     .append("         }" + LS)
                     .append("         return builder.build();" + LS)
-                    .append("      }" + LS)
-                    ;
+                    .append("      }" + LS);
         }
         sb.append("   }" + LS + LS);
     }

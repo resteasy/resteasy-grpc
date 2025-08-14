@@ -34,13 +34,13 @@ public interface Messages {
 
     @Message(id = BASE + 200, value = "Bad syntax: %s")
     String badSyntax(String code);
-    
+
     @Message(id = BASE + 100, value = "Don't recognize type: %s")
     String dontRecognizeType(String type);
-    
+
     @Message(id = BASE + 30, value = "Not found: %s")
     String notFound(String filename);
-    
+
     @Message(id = BASE + 0, value = "Not implemented: %s")
     String notImplemented(String method);
 }
