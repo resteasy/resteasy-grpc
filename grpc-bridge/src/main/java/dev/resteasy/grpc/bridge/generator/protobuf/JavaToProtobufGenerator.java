@@ -1151,6 +1151,9 @@ public class JavaToProtobufGenerator {
             if (clazz.getFullyQualifiedName().isPresent() && visited.contains(clazz.getFullyQualifiedName().get())) {
                 return;
             }
+            if (clazz.isInterface()) {
+                return;
+            }
             ResolvedReferenceTypeDeclaration rrtd = clazz.resolve();
             ReferenceTypeImpl rti = new ReferenceTypeImpl(rrtd);
             if (nonGenericClasses.contains(rti.erasure().describe())) {
