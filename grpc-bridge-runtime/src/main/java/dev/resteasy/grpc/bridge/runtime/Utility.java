@@ -41,7 +41,6 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.GeneratedMessage.Builder;
 import com.google.protobuf.Message;
 
-import dev.resteasy.grpc.bridge.runtime.i18n.Messages;
 import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 
 public final class Utility {
@@ -83,7 +82,7 @@ public final class Utility {
             c = WRAPPER_CLASSES.get(c);
         }
         if (c == null) {
-            throw Messages.MESSAGES.unableToProcessAsAny(any);
+            throw new RuntimeException("Unable to process Any: " + any);
         }
         return translator.translateToJavabufClass(c);
     }
@@ -225,7 +224,7 @@ public final class Utility {
 
     public static Object[] wrapArray(Object o) {
         if (!o.getClass().isArray()) {
-            throw Messages.MESSAGES.isNotAnArray(o);
+            throw new RuntimeException(o + " is not an array");
         }
         Class<?> clazz = o.getClass().getComponentType();
         if (!WRAPPER_CLASSES.containsKey(clazz)) {
@@ -267,7 +266,7 @@ public final class Utility {
                     return c.newInstance();
                 }
             }
-            throw Messages.MESSAGES.cantFind(clazz.getName() + "." + hidden);
+            throw new RuntimeException("can't find " + clazz.getName() + "." + hidden);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -388,7 +387,7 @@ public final class Utility {
                     builder.addRepeatedField(fd, ((Double) Array.get(array, i)).doubleValue());
                 }
             } else {
-                throw Messages.MESSAGES.dontRecognizeType(componentType);
+                throw new RuntimeException("don't recognize type: " + componentType);
             }
         }
 

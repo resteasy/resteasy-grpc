@@ -40,7 +40,6 @@ import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestConte
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import dev.resteasy.grpc.bridge.runtime.i18n.Messages;
 import dev.resteasy.grpc.bridge.runtime.servlet.AsyncMockServletOutputStream;
 import dev.resteasy.grpc.bridge.runtime.servlet.HttpServletResponseImpl;
 
@@ -58,11 +57,11 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter {
             MessageBodyWriter<?> writer = providerFactory.getMessageBodyWriter(SseEvent.class, null, null,
                     MediaType.WILDCARD_TYPE);
             if (writer == null || !isJavabufReaderWriter(writer)) {
-                throw Messages.MESSAGES.cantGetMessageBodyReaderWriter();
+                throw new RuntimeException("???");
             }
             HttpServletResponse response = ResteasyContext.getContextData(HttpServletResponse.class);
             if (!(response instanceof HttpServletResponseImpl)) {
-                throw Messages.MESSAGES.cantGetHttpServletResponseImpl();
+                throw new RuntimeException("???");
             }
             AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();
             SseEventOutputImpl sink = new SseEventOutputImpl(writer, amsos);

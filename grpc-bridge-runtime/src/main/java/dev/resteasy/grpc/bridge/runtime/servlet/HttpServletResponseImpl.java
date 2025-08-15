@@ -36,6 +36,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
@@ -248,22 +249,22 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String encodeURL(String url) {
-        throw Messages.MESSAGES.isNotImplemented("encodeURL()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("encodeURL()"));
     }
 
     @Override
     public String encodeRedirectURL(String url) {
-        throw Messages.MESSAGES.isNotImplemented("encodeRedirectURL()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("encodeRedirectURL()"));
     }
 
     @Override
     public String encodeUrl(String url) {
-        throw Messages.MESSAGES.isNotImplemented("encodeUrl()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("encodeUrl()"));
     }
 
     @Override
     public String encodeRedirectUrl(String url) {
-        throw Messages.MESSAGES.isNotImplemented("encodeRedirectUrl()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("encodeRedirectUrl()"));
     }
 
     @Override
@@ -278,7 +279,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void sendRedirect(String location) throws IOException {
-        throw Messages.MESSAGES.isNotImplemented("sendRedirect()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("sendRedirect()"));
     }
 
     @Override

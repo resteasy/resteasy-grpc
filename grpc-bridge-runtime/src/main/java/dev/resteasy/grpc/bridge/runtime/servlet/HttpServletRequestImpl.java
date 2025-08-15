@@ -55,6 +55,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
+import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
@@ -203,7 +204,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     @Override
     public ServletInputStream getInputStream() throws IOException {
         if (gotReader) {
-            throw Messages.MESSAGES.readerAlreadyReturned();
+            throw new IllegalStateException(Messages.MESSAGES.readerAlreadyReturned());
         }
         gotInputStream = true;
         readStarted = true;
@@ -260,7 +261,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     @Override
     public BufferedReader getReader() throws IOException {
         if (gotInputStream) {
-            throw Messages.MESSAGES.inputStreamAlreadyReturned();
+            throw new IllegalStateException(Messages.MESSAGES.inputStreamAlreadyReturned());
         }
         gotReader = true;
         readStarted = true;
@@ -312,7 +313,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public boolean isSecure() {
-        throw Messages.MESSAGES.isNotImplemented("isSecure()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isSecure()"));
     }
 
     @Override
@@ -350,17 +351,17 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getLocalName() {
-        throw Messages.MESSAGES.isNotImplemented("getLocalName()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getLocalName()"));
     }
 
     @Override
     public String getLocalAddr() {
-        throw Messages.MESSAGES.isNotImplemented("getLocalAddr()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getLocalAddr()"));
     }
 
     @Override
     public int getLocalPort() {
-        throw Messages.MESSAGES.isNotImplemented("getLocalPort()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getLocalPort()"));
     }
 
     @Override
@@ -421,7 +422,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getAuthType() {
-        throw Messages.MESSAGES.isNotImplemented("getAuthType()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getAuthType()"));
     }
 
     @Override
@@ -497,22 +498,22 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getRemoteUser() {
-        throw Messages.MESSAGES.isNotImplemented("getRemoteUser()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getRemoteUser()"));
     }
 
     @Override
     public boolean isUserInRole(String role) {
-        throw Messages.MESSAGES.isNotImplemented("isUserInRole()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isUserInRole()"));
     }
 
     @Override
     public Principal getUserPrincipal() {
-        throw Messages.MESSAGES.isNotImplemented("getUserPrincipal()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getUserPrincipal()"));
     }
 
     @Override
     public String getRequestedSessionId() {
-        throw Messages.MESSAGES.isNotImplemented("getRequestedSessionId()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getRequestedSessionId()"));
     }
 
     @Override
@@ -549,52 +550,52 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public HttpSession getSession(boolean create) {
-        throw Messages.MESSAGES.isNotImplemented("getSession()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getSession()"));
     }
 
     @Override
     public HttpSession getSession() {
-        throw Messages.MESSAGES.isNotImplemented("getSession()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getSession()"));
     }
 
     @Override
     public String changeSessionId() {
-        throw Messages.MESSAGES.isNotImplemented("changeSessionId()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("changeSessionId()"));
     }
 
     @Override
     public boolean isRequestedSessionIdValid() {
-        throw Messages.MESSAGES.isNotImplemented("isRequestedSessionIdValid()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdValid()"));
     }
 
     @Override
     public boolean isRequestedSessionIdFromCookie() {
-        throw Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromCookie()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromCookie()"));
     }
 
     @Override
     public boolean isRequestedSessionIdFromURL() {
-        throw Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromURL()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromURL()"));
     }
 
     @Override
     public boolean isRequestedSessionIdFromUrl() {
-        throw Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromUrl()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromUrl()"));
     }
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-        throw Messages.MESSAGES.isNotImplemented("authenticate()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("authenticate()"));
     }
 
     @Override
     public void login(String username, String password) throws ServletException {
-        throw Messages.MESSAGES.isNotImplemented("login()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("login()"));
     }
 
     @Override
     public void logout() throws ServletException {
-        throw Messages.MESSAGES.isNotImplemented("logout()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("logout()"));
     }
 
     @Override
@@ -609,12 +610,12 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public Part getPart(String name) throws IOException, ServletException {
-        throw Messages.MESSAGES.isNotImplemented("getPart()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getPart()"));
     }
 
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-        throw Messages.MESSAGES.isNotImplemented("upgrade()");
+        throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("upgrade()"));
     }
 
     public ServletResponse getServletResponse() {

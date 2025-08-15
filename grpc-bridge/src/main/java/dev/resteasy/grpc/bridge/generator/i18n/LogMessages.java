@@ -20,27 +20,12 @@ package dev.resteasy.grpc.bridge.generator.i18n;
 
 import java.lang.invoke.MethodHandles;
 
-import org.jboss.logging.annotations.Message;
-import org.jboss.logging.annotations.MessageBundle;
+import org.jboss.logging.BasicLogger;
+import org.jboss.logging.Logger;
+import org.jboss.logging.annotations.MessageLogger;
 
-/**
- *
- */
-@MessageBundle(projectCode = "RESTEASY-GRPC")
-public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
-
-    int BASE = 40000;
-
-    @Message(id = BASE + 200, value = "Bad syntax: %s")
-    String badSyntax(String code);
-
-    @Message(id = BASE + 100, value = "Don't recognize type: %s")
-    String dontRecognizeType(String type);
-
-    @Message(id = BASE + 30, value = "Not found: %s")
-    String notFound(String filename);
-
-    @Message(id = BASE + 0, value = "Not implemented: %s")
-    String notImplemented(String method);
+@MessageLogger(projectCode = "RESTEASY-GRPC")
+public interface LogMessages extends BasicLogger {
+    LogMessages LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
+            LogMessages.class.getPackage().getName());
 }
