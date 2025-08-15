@@ -30,17 +30,12 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages {
     Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
 
-    int BASE = 40000;
+    @Message(id = 100, value = "Bad syntax: %s")
+    RuntimeException badSyntax(String code);
 
-    @Message(id = BASE + 200, value = "Bad syntax: %s")
-    String badSyntax(String code);
+    @Message(id = 200, value = "Don't recognize type: %s")
+    RuntimeException dontRecognizeType(String type);
 
-    @Message(id = BASE + 100, value = "Don't recognize type: %s")
-    String dontRecognizeType(String type);
-
-    @Message(id = BASE + 30, value = "Not found: %s")
-    String notFound(String filename);
-
-    @Message(id = BASE + 0, value = "Not implemented: %s")
-    String notImplemented(String method);
+    @Message(id = 300, value = "Not found: %s")
+    RuntimeException notFound(String filename);
 }

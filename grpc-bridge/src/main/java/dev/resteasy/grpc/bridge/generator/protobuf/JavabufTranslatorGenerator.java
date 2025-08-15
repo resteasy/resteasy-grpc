@@ -915,7 +915,7 @@ public class JavabufTranslatorGenerator {
             + "               builder.addRepeatedField(fd, ((Double) Array.get(array, i)).doubleValue());%n"
             + "           }%n"
             + "       } else {%n"
-            + "         throw new RuntimeException(Messages.MESSAGES.dontRecognizeType(\"componentType\"));%n"
+            + "         throw Messages.MESSAGES.dontRecognizeType(\"componentType\");%n"
             + "       }%n"
             + "   }%n%n";
 
@@ -973,7 +973,7 @@ public class JavabufTranslatorGenerator {
             + "            Array.set(array, i, ((String) original).charAt(i));%n"
             + "         }%n"
             + "      } else {%n"
-            + "          throw new RuntimeException(Messages.MESSAGES.dontRecognizeType(clazz.getName()));%n"
+            + "          throw Messages.MESSAGES.dontRecognizeType(clazz.getName());%n"
             + "      }%n"
             + "      return array;%n"
             + "   }%n%n";
@@ -1262,7 +1262,6 @@ public class JavabufTranslatorGenerator {
             writeTranslatorClass(args, translatorClass, sb);
         } catch (Exception e) {
             logger.error(e);
-            e.printStackTrace();
         }
     }
 
@@ -1387,7 +1386,6 @@ public class JavabufTranslatorGenerator {
             return list;
         } catch (Exception ignore) {
             // Array_proto class is not available: ignore
-            ignore.printStackTrace();
             return list;
         }
     }
@@ -1727,7 +1725,7 @@ public class JavabufTranslatorGenerator {
                 .append("            tfj = rawAggregateTranslationFromJavabuf(s, message);" + LS)
                 .append("         }" + LS)
                 .append("         if (tfj == null) {" + LS)
-                .append("            throw new RuntimeException(Messages.MESSAGES.dontRecognizeType(message.getClass().getName()));"
+                .append("            throw Messages.MESSAGES.dontRecognizeType(message.getClass().getName());"
                         + LS)
                 .append("         }" + LS)
                 .append("         return tfj.assignFromJavabuf(message);" + LS)
@@ -1761,7 +1759,7 @@ public class JavabufTranslatorGenerator {
                 .append("         ttj = rawAggregateTranslationToJavabuf(o);" + LS)
                 .append("      }" + LS)
                 .append("      if (ttj == null) {" + LS)
-                .append("         throw new RuntimeException(Messages.MESSAGES.dontRecognizeType(o.getClass().getName()));"
+                .append("         throw Messages.MESSAGES.dontRecognizeType(o.getClass().getName());"
                         + LS)
                 .append("      }" + LS)
                 .append("      return ttj.assignToJavabuf(o);" + LS)
@@ -1875,7 +1873,7 @@ public class JavabufTranslatorGenerator {
                 .append("                        messageBuilder.setField(fd, message);" + LS)
                 .append("                     }" + LS)
                 .append("                  } else {" + LS)
-                .append("                     throw new RuntimeException(Messages.MESSAGES.dontRecognizeType(field.get(obj).getClass().getName()));"
+                .append("                     throw Messages.MESSAGES.dontRecognizeType(field.get(obj).getClass().getName());"
                         + LS)
                 .append("                  }" + LS)
                 .append("               } else if (field.get(obj) != null) {" + LS)
@@ -2481,7 +2479,6 @@ public class JavabufTranslatorGenerator {
             try {
                 cons = findConstructor(clazz, originalName);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
                 throw new RuntimeException(e);
             }
             if (cons == null) { // abstract class
@@ -2642,27 +2639,28 @@ public class JavabufTranslatorGenerator {
         if (PRIMITIVE_WRAPPER_TYPES.containsKey(s)) {
             return "java.lang." + s.substring(1);
         }
-        if (s.endsWith("___Array")) {
-            s = s.substring(0, s.length() - 8);
-        } else if (s.endsWith("___WArray")) {
-            s = s.substring(0, s.length() - 9);
+        String s1 = s;
+        if (s1.endsWith("___Array")) {
+            s1 = s1.substring(0, s1.length() - 8);
+        } else if (s1.endsWith("___WArray")) {
+            s1 = s1.substring(0, s1.length() - 9);
         }
-        int j = s.lastIndexOf("___");
+        int j = s1.lastIndexOf("___");
         if (j >= 0) {
-            String pkg = s.substring(0, j).replace('_', '.');
-            return pkg + "." + originalSimpleName(s);
+            String pkg = s1.substring(0, j).replace('_', '.');
+            return pkg + "." + originalSimpleName(s1);
         }
         if (j < 0) {
-            j = s.indexOf("_INNER_");
+            j = s1.indexOf("_INNER_");
         }
         if (j < 0) {
-            j = s.indexOf("_HIDDEN_");
+            j = s1.indexOf("_HIDDEN_");
         }
         if (j >= 0) {
-            String pkg = s.substring(0, j).replace('_', '.');
-            return pkg + "$" + originalSimpleName(s);
+            String pkg = s1.substring(0, j).replace('_', '.');
+            return pkg + "$" + originalSimpleName(s1);
         }
-        throw new RuntimeException(Messages.MESSAGES.dontRecognizeType(s));
+        throw Messages.MESSAGES.dontRecognizeType(s);
     }
 
     private static String originalInnerClassName(String s) {
@@ -2701,7 +2699,6 @@ public class JavabufTranslatorGenerator {
             }
             return con;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -2782,7 +2779,6 @@ public class JavabufTranslatorGenerator {
                     Class<?> clazz = Class.forName(classname);
                     return "getReturnNonPublicJavaClass(\"" + clazz.getName() + "\").getJavaClass()";
                 } catch (Exception e) {
-                    e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             }
@@ -2791,7 +2787,6 @@ public class JavabufTranslatorGenerator {
             }
             return javabufToJava(simpleName, originalSimpleName(simpleName), canonical) + ".class";
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

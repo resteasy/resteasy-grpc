@@ -21,6 +21,7 @@ package dev.resteasy.grpc.bridge.runtime.i18n;
 
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.ws.rs.NotSupportedException;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;
@@ -30,46 +31,85 @@ import org.jboss.logging.annotations.MessageBundle;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-    // int BASE = 21000;
 
-    @Message(id = 21000, value = "Async processing already started")
+    @SuppressWarnings("removal")
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+
+    @Message(id = 1000, value = "Async processing already started")
     IllegalStateException asyncAlreadyStarted();
 
-    @Message(id = 21505, value = "Async not started")
+    @Message(id = 1100, value = "Async not started")
     IllegalStateException asyncNotStarted();
 
-    @Message(id = 21510, value = "Async processing already started")
+    @Message(id = 1200, value = "Async processing already started")
     IllegalStateException asyncProcessingAlreadyStarted();
 
-    @Message(id = 21515, value = "Cannot call getWriter(), getOutputStream() already called")
+    @Message(id = 1300, value = "Can't find: %s")
+    RuntimeException cantFind(Object o);
+
+    @Message(id = 1400, value = "Can't get javabuf dev.resteasy.grpc.bridge.runtime.servlet.HttpServletResponseImpl")
+    RuntimeException cantGetHttpServletResponseImpl();
+
+    @Message(id = 1500, value = "Can't get javabuf MessageBodyReader/Writer")
+    RuntimeException cantGetMessageBodyReaderWriter();
+
+    @Message(id = 1600, value = "Don't recognize type: %s")
+    RuntimeException dontRecognizeType(Object o);
+
+    @Message(id = 1700, value = "gRPC server ready")
+    String gRPCServerReady();
+
+    @Message(id = 1800, value = "Cannot call getWriter(), getOutputStream() already called")
     IllegalStateException getOutputStreamAlreadyCalled();
 
-    @Message(id = 21520, value = "Cannot call getOutputStream(), getWriter() already called")
+    @Message(id = 1900, value = "Cannot call getOutputStream(), getWriter() already called")
     IllegalStateException getWriterAlreadyCalled();
 
-    @Message(id = 21525, value = "Cannot get ServletContext")
-    IllegalStateException cantGetServletContext();
-
-    @Message(id = 21530, value = "Header name was null")
-    NullPointerException headerNameWasNull();
-
-    @Message(id = 21535, value = "Header %s cannot be converted to a date")
+    @Message(id = 2000, value = "Header %s cannot be converted to a date")
     IllegalArgumentException headerCannotBeConvertedToDate(String header);
 
-    @Message(id = 21540, value = "InputStream already returned")
-    String inputStreamAlreadyReturned();
+    @Message(id = 2100, value = "Header name was null")
+    NullPointerException headerNameWasNull();
 
-    @Message(id = 21545, value = "Method %s is not implemented")
-    String isNotImplemented(String method);
+    @Message(id = 2200, value = "InputStream already returned")
+    IllegalStateException inputStreamAlreadyReturned();
 
-    @Message(id = 21550, value = "Reader already returned")
-    IllegalArgumentException readerAlreadyReturned();
+    @Message(id = 2300, value = "Is not an array: %s")
+    RuntimeException isNotAnArray(Object o);
 
-    @Message(id = 21555, value = "Request %s was not original or a wrapper")
+    @Message(id = 2400, value = "Method %s is not implemented")
+    NotSupportedException isNotImplemented(String method);
+
+    @Message(id = 2500, value = "Reader already returned")
+    IllegalStateException readerAlreadyReturned();
+
+    @Message(id = 2600, value = "ready")
+    String ready();
+
+    @Message(id = 2700, value = "Request %s was not original or a wrapper")
     IllegalArgumentException requestWasNotOriginalOrWrapper(ServletRequest request);
 
-    @Message(id = 21560, value = "Response %s was not original or a wrapper")
+    @Message(id = 2800, value = "Response %s was not original or a wrapper")
     IllegalArgumentException responseWasNotOriginalOrWrapper(ServletResponse response);
 
+    @Message(id = 2900, value = "*** server shut down")
+    String serverShutDown();
+
+    @Message(id = 3000, value = "Server started, listening on port %s")
+    String serverStarted(int i);
+
+    @Message(id = 3100, value = "*** shutting down gRPC server since JVM is shutting down")
+    String shuttingDownGrpcServer();
+
+    @Message(id = 3200, value = "started gRPC server on port %s")
+    String startedGrpcServer(int i);
+
+    @Message(id = 3300, value = "starting gRPC server on port %s")
+    String startingGrpcServer(int i);
+
+    @Message(id = 3400, value = "stopping gRPC server on port %s")
+    String stoppingGrpcServer(int i);
+
+    @Message(id = 3500, value = "Unable to process as Any: %s")
+    RuntimeException unableToProcessAsAny(Object o);
 }
