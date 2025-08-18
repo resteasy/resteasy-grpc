@@ -10,8 +10,54 @@
 
     <artifactId>grpc-bridge</artifactId>
     <packaging>jar</packaging>
-    <name>gRPC to Jakarta RESTful Services bridge</name>
-    <url>http://maven.apache.org</url>
+
+    <name>resteasy-grpc build time</name>    
+    <description>gRPC to Jakarta RESTful Services build time</description>
+    <url>https://resteasy.dev</url>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy-grpc/tree/main/grpc-bridge</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/resteasy/resteasy-grpc/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>ronsigal</id>
+            <name>Ron Sigal</name>
+            <email>rsigal@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

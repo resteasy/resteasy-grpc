@@ -11,6 +11,47 @@
     </parent>
     <artifactId>resteasy-grpc-testsuite</artifactId>
     <packaging>pom</packaging>
+    
+    <name>resteasy-grpc testsuite parent</name>    
+    <description>gRPC to Jakarta RESTful Services testsuite parent</description>
+    <url>https://resteasy.dev</url>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy-grpc/tree/main/testsuite/testsuite</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/resteasy/resteasy-grpc/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>ronsigal</id>
+            <name>Ron Sigal</name>
+            <email>rsigal@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+    
     <modules>
         <module>grpc-tests</module>
     </modules>
@@ -36,12 +77,12 @@
         <dependency>
             <groupId>org.jboss.logmanager</groupId>
             <artifactId>jboss-logmanager</artifactId>
-            <version>3.1.2.Final</version>
+            <version>${version.org.jboss.logmanager.jboss-logmanager}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.slf4j</groupId>
             <artifactId>slf4j-jboss-logmanager</artifactId>
-            <version>2.0.1.Final</version>
+            <version>${version.org.jboss.slf4j.slf4j-jboss-logmanager}</version>
         </dependency>
     </dependencies>
 
