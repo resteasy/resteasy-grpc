@@ -16,16 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.resteasy.grpc.bridge.generator.i18n;
+package dev.resteasy.grpc.example;
 
-import java.lang.invoke.MethodHandles;
-
-import org.jboss.logging.BasicLogger;
-import org.jboss.logging.Logger;
-import org.jboss.logging.annotations.MessageLogger;
-
-@MessageLogger(projectCode = "RESTEASY-GRPC")
-public interface LogMessages extends BasicLogger {
-    LogMessages LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
-            LogMessages.class.getPackage().getName());
+public class CC12 {
 }

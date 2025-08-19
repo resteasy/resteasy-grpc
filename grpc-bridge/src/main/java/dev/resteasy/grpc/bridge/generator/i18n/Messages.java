@@ -20,6 +20,7 @@ package dev.resteasy.grpc.bridge.generator.i18n;
 
 import java.lang.invoke.MethodHandles;
 
+import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;
 
 /**
@@ -28,4 +29,13 @@ import org.jboss.logging.annotations.MessageBundle;
 @MessageBundle(projectCode = "RESTEASY-GRPC")
 public interface Messages {
     Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
+
+    @Message(id = 100, value = "Bad syntax: %s")
+    RuntimeException badSyntax(String code);
+
+    @Message(id = 200, value = "Don't recognize type: %s")
+    RuntimeException dontRecognizeType(String type);
+
+    @Message(id = 300, value = "Not found: %s")
+    RuntimeException notFound(String filename);
 }

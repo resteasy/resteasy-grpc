@@ -4,14 +4,52 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-parent</artifactId>
-        <version>1.0.0.Alpha7-SNAPSHOT</version>
+        <version>1.0.0.Alpha7</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>grpc-bridge-runtime</artifactId>
     <packaging>jar</packaging>
-    <name>RESTEasy gRPC to JAX-RS bridge runtime</name>
-    <url>https://maven.apache.org</url>
 
+    <name>resteasy-grpc runtime</name>    
+    <description>gRPC to Jakarta RESTful Services runtime</description>
+    <url>https://resteasy.dev</url>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy-grpc/tree/main/grpc-bridge-runtime</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/resteasy/resteasy-grpc/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>ronsigal</id>
+            <name>Ron Sigal</name>
+            <email>rsigal@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -81,18 +119,18 @@
     </dependencies>
     
     <build>
-    <extensions>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.7.1</version>
-      </extension>
-    </extensions>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${version.os-maven-plugin}</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
+                <version>${version.protobuf-maven-plugin}</version>
                 <configuration>
                     <protocArtifact>com.google.protobuf:protoc:${version.com.google.protobuf}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
@@ -115,9 +153,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <!--sourcepath>**\/\*.java:${project.build.directory}/generated-sources/protobuf/java</sourcepath-->
                     <sourcepath>${project.build.sourceDirectory}:${project.build.directory}/generated-sources/protobuf/java</sourcepath>
-                    
                 </configuration>
                 <executions>
                     <execution>
@@ -129,7 +165,5 @@
                 </executions>
             </plugin>
         </plugins>
-
     </build>
-
 </project>

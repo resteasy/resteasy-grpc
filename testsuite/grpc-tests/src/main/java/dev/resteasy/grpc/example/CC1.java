@@ -776,4 +776,22 @@ public class CC1 {
     public TestArray ta(TestArray ta) {
         return ta;
     }
+
+    @GET
+    @Path("onlyReturnType")
+    public CC12 returnCC12() {
+        return new CC12();
+    }
+
+    @GET
+    @Path("same/1")
+    public int same(int i) {
+        return i;
+    }
+
+    @GET
+    @Path("same/2")
+    public double same(double d) {
+        return d;
+    }
 }

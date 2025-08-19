@@ -56,6 +56,7 @@ import dev.resteasy.grpc.bridge.runtime.protobuf.JavabufTranslator;
 import dev.resteasy.grpc.example.CC1;
 import dev.resteasy.grpc.example.CC10;
 import dev.resteasy.grpc.example.CC11;
+import dev.resteasy.grpc.example.CC12;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceFutureStub;
 import dev.resteasy.grpc.example.CC1ServiceGrpc.CC1ServiceStub;
@@ -231,6 +232,8 @@ abstract class AbstractGrpcToJakartaRESTTest {
         this.testRecordArrayPrimitive(stub);
         this.testRecordArrayCC3(stub);
         this.testRecordMap(stub);
+        this.testReturnValueOnly(stub);
+        this.testCollidingMethodNames(stub);
     }
 
     void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
@@ -2143,6 +2146,52 @@ abstract class AbstractGrpcToJakartaRESTTest {
             Assertions.assertTrue(r.cc2().equals(r2.cc2()));
             Assertions.assertTrue(r.i() == r2.i());
             Assertions.assertTrue(Arrays.deepEquals((CC3[]) r.t(), (CC3[]) r2.t()));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testReturnValueOnly(CC1ServiceBlockingStub stub) throws Exception {
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.returnCC12(gem);
+            Message result = (Message) response.getDevResteasyGrpcExampleCC12Field();
+            Object o = translator.translateFromJavabuf(result);
+            Assertions.assertTrue(o instanceof CC12);
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+    }
+
+    void testCollidingMethodNames(CC1ServiceBlockingStub stub) throws Exception {
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setURL("p/same/1").setGIntegerField(gInteger.newBuilder().setValue(7)).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.same(gem);
+            Message result = (Message) response.getGIntegerField();
+            Object o = translator.translateFromJavabuf(result);
+            Assertions.assertTrue(o.equals(7));
+        } catch (StatusRuntimeException e) {
+            try (StringWriter writer = new StringWriter()) {
+                e.printStackTrace(new PrintWriter(writer));
+                Assertions.fail(writer.toString());
+            }
+        }
+        try {
+            gem = builder.setURL("p/same/2").setGDoubleField(CC1_proto.gDouble.newBuilder().setValue(11.3)).build();
+            response = stub.same1(gem);
+            Message result = (Message) response.getGDoubleField();
+            Object o = translator.translateFromJavabuf(result);
+            Assertions.assertTrue(o.equals(11.3));
         } catch (StatusRuntimeException e) {
             try (StringWriter writer = new StringWriter()) {
                 e.printStackTrace(new PrintWriter(writer));

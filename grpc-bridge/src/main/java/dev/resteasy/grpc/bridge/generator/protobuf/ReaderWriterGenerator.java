@@ -50,7 +50,6 @@ public class ReaderWriterGenerator {
     private static Map<String, String> primitives = new HashMap<String, String>();
     private static Set<String> internalClasses = new HashSet<String>();
     private static boolean hasSSE;
-    private static Map<String, String> ENTITY_TRANSLATORS = new HashMap<String, String>();
     private static final Map<String, String> genericTypes = new HashMap<String, String>();
 
     private static String READER_WRITER_MAPS;
@@ -81,49 +80,6 @@ public class ReaderWriterGenerator {
         internalClasses.add("gHeader");
         internalClasses.add("gNewCookie");
         internalClasses.add("ServletInfo");
-    }
-
-    static {
-        ENTITY_TRANSLATORS.put("boolean",
-                "dev_resteasy_grpc_arrays___Boolean___Array.class.getMethod(\"parseFrom\", InputStream.class)");
-        ENTITY_TRANSLATORS.put("boolean[]",
-                "dev_resteasy_grpc_arrays___Boolean___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Boolean[]",
-                "new dev_resteasy_grpc_arrays___Boolean___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("byte[]",
-                "new dev_resteasy_grpc_arrays___Byte___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Byte[]",
-                "new dev_resteasy_grpc_arrays___Byte___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("short[]",
-                "new dev_resteasy_grpc_arrays___Short___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Short[]",
-                "new dev_resteasy_grpc_arrays___Short___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("int[]",
-                "new dev_resteasy_grpc_arrays___Integer___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Integer[]",
-                "new dev_resteasy_grpc_arrays___Integer___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("long[]",
-                "new dev_resteasy_grpc_arrays___Long___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Long[]",
-                "new dev_resteasy_grpc_arrays___Long___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("float[]",
-                "new dev_resteasy_grpc_arrays___Float___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Float[]",
-                "new dev_resteasy_grpc_arrays___Float___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("double[]",
-                "new dev_resteasy_grpc_arrays___Double___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Double[]",
-                "new dev_resteasy_grpc_arrays___Double___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("char[]",
-                "new dev_resteasy_grpc_arrays___Character___Array_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("Character[]",
-                "new dev_resteasy_grpc_arrays___Character___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("String[]",
-                "new dev_resteasy_grpc_arrays___String___WArray_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("dev_resteasy_grpc_arrays___ArrayHolder",
-                "new  dev_resteasy_grpc_arrays___ArrayHolder_ToJavabuf()");
-        ENTITY_TRANSLATORS.put("dev_resteasy_grpc_arrays___ArrayHolder[]",
-                "new  dev_resteasy_grpc_arrays___ArrayHolder___WArray_ToJavabuf()");
     }
 
     static {
@@ -266,7 +222,6 @@ public class ReaderWriterGenerator {
             StringBuilder sbBody = new StringBuilder();
             classHeader(args, readerWriterClass, wrappedClasses, sbHeader);
             classBody(args, wrappedClasses, sbBody);
-            getEntityTypeTable(args[3], sbBody);
             finishClass(sbBody);
             writeClass(wrappedClasses[0], args, sbHeader, sbBody);
         } catch (Exception e) {
@@ -549,13 +504,6 @@ public class ReaderWriterGenerator {
             javabufClassname = javabufClassname.substring(2, javabufClassname.length() - 1) + "___WArray";
         }
         return javabufClassname;
-    }
-
-    private static void getEntityTypeTable(String path, StringBuilder sb) throws IOException {
-        final var file = Path.of(path + "/target/entityTypes");
-        if (Files.notExists(file)) {
-            throw new RuntimeException(path + "/target/entityTypes not found");
-        }
     }
 
     static void getListsAndSets(String path) {

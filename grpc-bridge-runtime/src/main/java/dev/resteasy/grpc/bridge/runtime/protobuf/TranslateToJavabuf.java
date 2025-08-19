@@ -36,7 +36,8 @@ import com.google.protobuf.Message;
  *
  * <pre>
  * C c = new C();
- * Message message = OuterJavabufTranslator.translateToJavabuf(c); // {@code Uses a_b___CC_ToJavabuf}
+ * // Uses private method OuterJavabufTranslator.a_b___CC_ToJavabuf():
+ * Message message = OuterJavabufTranslator.translateToJavabuf(c);
  * </pre>
  */
 public interface TranslateToJavabuf {
@@ -45,9 +46,4 @@ public interface TranslateToJavabuf {
      * Copies the content of a Java class to a {@code com.google.protobuf.Message}
      */
     Message assignToJavabuf(Object obj);
-
-    /**
-     * Clears {@code com.google.protobuf.Message} builder
-     */
-    void clear();
 }

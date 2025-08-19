@@ -25,12 +25,52 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-parent</artifactId>
-        <version>1.0.0.Alpha7-SNAPSHOT</version>
+        <version>1.0.0.Alpha7</version>
     </parent>
 
     <artifactId>resteasy-grpc-test-bom</artifactId>
     <packaging>pom</packaging>
+    
+    <name>resteasy-grpc test bom</name>    
+    <description>gRPC to Jakarta RESTful Services test bom</description>
+    <url>https://resteasy.dev</url>
 
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy-grpc/tree/main/testsuite/grpc-test-bom</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/resteasy/resteasy-grpc/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>ronsigal</id>
+            <name>Ron Sigal</name>
+            <email>rsigal@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+    
     <properties>
         <version.org.jboss.arquillian>1.10.0.Final</version.org.jboss.arquillian>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>

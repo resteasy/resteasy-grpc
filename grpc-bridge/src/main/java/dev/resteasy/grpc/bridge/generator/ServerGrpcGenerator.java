@@ -48,7 +48,8 @@ class ServerGrpcGenerator {
             writer.writeLine("package ", packageName, ";");
 
             // Write the imports
-            writer.writeLine("import java.security.AccessController;")
+            writer.writeLine("import dev.resteasy.grpc.bridge.runtime.i18n.Messages;")
+                    .writeLine("import java.security.AccessController;")
                     .writeLine("import java.security.PrivilegedExceptionAction;")
                     .writeLine("import java.util.concurrent.TimeUnit;")
                     .writeLine("import java.util.logging.Logger;")
@@ -62,14 +63,6 @@ class ServerGrpcGenerator {
                     .writeLine("import jakarta.ws.rs.core.Context;")
                     .writeLine("import jakarta.ws.rs.core.Response;")
                     .writeLine("import java.util.concurrent.atomic.AtomicBoolean;");
-            // Import the service implementation
-            final String serviceImplName;
-            if (packageName.endsWith(".")) {
-                serviceImplName = packageName + prefix + "ServiceGrpcImpl";
-            } else {
-                serviceImplName = packageName + "." + prefix + "ServiceGrpcImpl";
-            }
-            writer.writeLine("import ", serviceImplName, ";");
 
             // Start the type
             writer.writeLine("@Path(\"grpcserver\")")
@@ -124,29 +117,28 @@ class ServerGrpcGenerator {
                     .writeLine(
                             "AccessController.doPrivileged((PrivilegedExceptionAction<Void>) () -> {server.start(); return null;});")
                     .endBlock()
-                    .writeLine("logger.info(\"started gRPC server on port \" + PORT);")
+                    .writeLine("logger.info(Messages.MESSAGES.startedGrpcServer(PORT));")
                     .writeLine("server.blockUntilShutdown();")
                     .endAndStart("} catch (Exception e) {")
-                    .writeLine("e.printStackTrace();")
                     .endBlock()
                     .endBlock()
                     .endBlock("}.start();")
-                    .writeLine("return \"Starting gRPC server on port \" + PORT;")
+                    .writeLine("return Messages.MESSAGES.startingGrpcServer(PORT);")
                     .endBlock()
                     .writeLine();
 
             writer.writeLine("@Path(\"ready\")")
                     .writeLine("@GET")
                     .startBlock("public String ready() {")
-                    .writeLine("logger.info(\"gRPC server ready\");")
-                    .writeLine("return \"ready\";")
+                    .writeLine("logger.info(Messages.MESSAGES.gRPCServerReady());")
+                    .writeLine("return Messages.MESSAGES.ready();")
                     .endBlock()
                     .writeLine();
 
             writer.writeLine("@Path(\"stop\")")
                     .writeLine("@GET")
                     .startBlock("public void stopGRPC() throws Exception {")
-                    .writeLine("logger.info(\"stopping gRPC server on port \" + PORT);")
+                    .writeLine("logger.info(Messages.MESSAGES.stoppingGrpcServer(PORT));")
                     .writeLine("stop();")
                     .endBlock()
                     .writeLine();
@@ -170,18 +162,17 @@ class ServerGrpcGenerator {
                     .writeLine("return server;")
                     .endBlock("});")
                     .endBlock()
-                    .writeLine("logger.info(\"Server started, listening on \" + PORT);")
+                    .writeLine("logger.info(Messages.MESSAGES.serverStarted(PORT));")
                     .startBlock("Runtime.getRuntime().addShutdownHook(new Thread() {")
                     .writeLine("@Override")
                     .startBlock("public void run() {")
                     .writeLine("// Use stderr here since the logger may have been reset by its JVM shutdown hook.")
-                    .writeLine("System.err.println(\"*** shutting down gRPC server since JVM is shutting down\");")
+                    .writeLine("System.err.println(Messages.MESSAGES.shuttingDownGrpcServer());")
                     .startBlock("try {")
                     .writeLine(prefix, "_Server.this.stop();")
                     .endAndStart("} catch (InterruptedException e) {")
-                    .writeLine("e.printStackTrace(System.err);")
                     .endBlock()
-                    .writeLine("System.err.println(\"*** server shut down\");")
+                    .writeLine("System.err.println(Messages.MESSAGES.serverShutDown());")
                     .endBlock()
                     .endBlock("});")
                     .endBlock()

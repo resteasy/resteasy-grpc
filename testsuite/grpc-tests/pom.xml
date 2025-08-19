@@ -6,13 +6,52 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-testsuite</artifactId>
-        <version>1.0.0.Alpha7-SNAPSHOT</version>
+        <version>1.0.0.Alpha7</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
     <artifactId>grpc-tests</artifactId>
-    <name>RESTEasy Main testsuite: gRPC tests</name>
     
+    <name>resteasy-grpc testsuite</name>    
+    <description>gRPC to Jakarta RESTful Services testsuite</description>
+    <url>https://resteasy.dev</url>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy-grpc/tree/main/testsuite/grpc-tests</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/resteasy/resteasy-grpc/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>ronsigal</id>
+            <name>Ron Sigal</name>
+            <email>rsigal@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@redhat.com</email>
+            <organization>JBoss by Red Hat</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <!-- Provisioning properties -->
@@ -25,7 +64,7 @@
         <!-- For grpc-bridge test -->
         <wildfly.grpc.test.feature.pack.groupId>org.wildfly.extras.grpc</wildfly.grpc.test.feature.pack.groupId>
         <wildfly.grpc.test.feature.pack.artifactId>wildfly-grpc-feature-pack</wildfly.grpc.test.feature.pack.artifactId>
-        <wildfly.grpc.test.feature.pack.version>0.1.11.Final</wildfly.grpc.test.feature.pack.version>
+        <wildfly.grpc.test.feature.pack.version>0.1.12.Final</wildfly.grpc.test.feature.pack.version>
 
         <!-- For compiling the test project -->
         <root.class>CC1</root.class>
@@ -167,7 +206,6 @@
             <artifactId>resteasy-json-binding-provider</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jboss.arquillian.junit5</groupId>
             <artifactId>arquillian-junit5-container</artifactId>
@@ -194,7 +232,7 @@
             <extension>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.7.1</version>
+                <version>${version.os-maven-plugin}</version>
             </extension>
         </extensions>
 
@@ -214,10 +252,10 @@
             </testResource>
         </testResources>
         <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-        </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <configuration>
@@ -271,7 +309,6 @@
                     </galleon-options>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -460,11 +497,10 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
+                <version>${version.protobuf-maven-plugin}</version>
                 <configuration>
                     <protocArtifact>com.google.protobuf:protoc:${version.com.google.protobuf}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
@@ -480,6 +516,18 @@
                         <goals>
                             <goal>compile</goal>
                             <goal>compile-custom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -32,6 +32,8 @@ import jakarta.servlet.ServletResponse;
 
 import org.jboss.resteasy.concurrent.ContextualExecutors;
 
+import dev.resteasy.grpc.bridge.runtime.i18n.Messages;
+
 public class AsyncContextImpl implements AsyncContext {
 
     private static ExecutorService executorService = ContextualExecutors.threadPool();
@@ -63,22 +65,22 @@ public class AsyncContextImpl implements AsyncContext {
 
     @Override
     public boolean hasOriginalRequestAndResponse() {
-        throw new RuntimeException("hasOriginalRequestAndResponse() not implemented");
+        throw Messages.MESSAGES.isNotImplemented("hasOriginalRequestAndResponse()");
     }
 
     @Override
     public void dispatch() {
-        throw new RuntimeException("dispatch() not implemented");
+        throw Messages.MESSAGES.isNotImplemented("dispatch()");
     }
 
     @Override
     public void dispatch(String path) {
-        throw new RuntimeException("dispatch() not implemented");
+        throw Messages.MESSAGES.isNotImplemented("dispatch()");
     }
 
     @Override
     public void dispatch(ServletContext context, String path) {
-        throw new RuntimeException("dispatch() not implemented");
+        throw Messages.MESSAGES.isNotImplemented("dispatch()");
     }
 
     @Override
@@ -101,12 +103,13 @@ public class AsyncContextImpl implements AsyncContext {
 
     @Override
     public void addListener(AsyncListener listener, ServletRequest servletRequest, ServletResponse servletResponse) {
-        throw new RuntimeException("addListener() not implemented");
+        throw Messages.MESSAGES.isNotImplemented("addListener()");
     }
 
     @Override
     public <T extends AsyncListener> T createListener(Class<T> clazz) throws ServletException {
-        throw new RuntimeException("createListener() not implemented");
+        throw Messages.MESSAGES.isNotImplemented("createListener()");
+
     }
 
     @Override
