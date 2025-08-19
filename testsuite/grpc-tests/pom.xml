@@ -232,7 +232,7 @@
             <extension>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.7.1</version>
+                <version>${version.os-maven-plugin}</version>
             </extension>
         </extensions>
 

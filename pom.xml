@@ -64,6 +64,11 @@
     </developers>
 
     <properties>
+        <!-- maven release properties-->
+        <nexus.repository.release>resteasy</nexus.repository.release>
+        <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
+        <nexus.staging.tag>resteasy-grpc-${project.version}</nexus.staging.tag>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
