@@ -1,17 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
         <version>50</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.resteasy.grpc</groupId>
     <artifactId>resteasy-grpc-parent</artifactId>
-    <version>1.0.0.Alpha7-SNAPSHOT</version>
+    <version>1.0.0.Alpha7</version>
     <packaging>pom</packaging>
 
     <name>resteasy-grpc parent</name>
@@ -31,7 +30,8 @@
         <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
         <url>https://github.com/resteasy/resteasy-grpc/tree/main/</url>
-    </scm>
+      <tag>v1.0.0.Alpha7</tag>
+  </scm>
 
     <issueManagement>
         <system>GitHub</system>

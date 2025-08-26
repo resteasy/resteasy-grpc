@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-testsuite</artifactId>
-        <version>1.0.0.Alpha7-SNAPSHOT</version>
+        <version>1.0.0.Alpha7</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -20,7 +18,8 @@
         <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
         <url>https://github.com/resteasy/resteasy-grpc/tree/main/testsuite/grpc-tests</url>
-    </scm>
+      <tag>v1.0.0.Alpha7</tag>
+  </scm>
 
     <issueManagement>
         <system>GitHub</system>
@@ -403,7 +402,7 @@
                         <configuration>
                             <mainClass>dev.resteasy.grpc.bridge.generator.protobuf.JavaToProtobufGenerator</mainClass>
                             <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                            <commandlineArgs>${project.basedir} dev.resteasy.grpc.example dev.resteasy.grpc.example ${root.class} -D&quot;--add-opens java.base/java.util=ALL-UNNAMED&quot;</commandlineArgs>
+                            <commandlineArgs>${project.basedir} dev.resteasy.grpc.example dev.resteasy.grpc.example ${root.class} -D"--add-opens java.base/java.util=ALL-UNNAMED"</commandlineArgs>
                             <systemProperties>
                                 <systemProperty>
                                     <key>exec.cleanupDaemonThreads</key>
