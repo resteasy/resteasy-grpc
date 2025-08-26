@@ -18,3 +18,7 @@ target/
 #Ignore Mac files
 .DS_Store
 nb-configuration.xml
+
+# Release files
+**/*.releaseBackup
+release.properties
