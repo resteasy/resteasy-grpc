@@ -127,6 +127,11 @@
         <pushChanges>false</pushChanges>
         <!-- Use the local directory when using perform -->
         <localCheckout>true</localCheckout>
+        <!-- Maven Central properties -->
+        <repo.sonatype.url>https://central.sonatype.com</repo.sonatype.url>
+        <sonatype.server.id>central</sonatype.server.id>
+        <autoPublish>true</autoPublish>
+        <waitUntil>published</waitUntil>
     </properties>
 
     <modules>
@@ -262,13 +267,6 @@
                     <name>release</name>
                 </property>
             </activation>
-            <properties>
-                <!-- Maven Central properties -->
-                <repo.sonatype.url>https://central.sonatype.com</repo.sonatype.url>
-                <sonatype.server.id>central</sonatype.server.id>
-                <autoPublish>true</autoPublish>
-                <waitUntil>published</waitUntil>
-            </properties>
 
             <distributionManagement>
                 <snapshotRepository>
@@ -355,7 +353,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>${sonatype.server.id}</publishingServerId>
-                            <autoPublush>${autoPublish}</autoPublush>
+                            <autoPublish>${autoPublish}</autoPublish>
                             <waitUntil>${waitUntil}</waitUntil>
                             <!-- Exclude tests from being deployed -->
                             <excludeArtifacts>

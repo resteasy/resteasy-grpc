@@ -6,6 +6,11 @@ fail() {
     exit 1
 }
 
+failNoHelp() {
+    printf "%s\n" "${1}"
+    exit 1
+}
+
 printArgHelp() {
     if [ -z "${1}" ]; then
         printf "    %-20s%s\n" "${2}" "${3}"
@@ -84,11 +89,18 @@ fi
 
 if [ ${FORCE} == false ]; then
     if  echo "${RELEASE_VERSION}" | grep -q "SNAPSHOT" ; then
-        fail "The release version appears to be a SNAPSHOT (${RELEASE_VERSION}). This is likely no valid and -f should be used if it is."
+        failNoHelp "The release version appears to be a SNAPSHOT (${RELEASE_VERSION}). This is likely no valid and -f should be used if it is."
     fi
     if  echo "${DEVEL_VERSION}" | grep -q -v "SNAPSHOT" ; then
-        fail "The development version does not appear to be a SNAPSHOT (${DEVEL_VERSION}). This is likely no valid and -f should be used if it is."
+        failNoHelp "The development version does not appear to be a SNAPSHOT (${DEVEL_VERSION}). This is likely no valid and -f should be used if it is."
     fi
+fi
+
+# Find the expected
+SERVER_ID=$(mvn help:evaluate -Dexpression=sonatype.server.id -q -DforceStdout "${MAVEN_ARGS[@]}")
+# Check the settings to ensure a server defined with that value
+if ! mvn help:effective-settings | grep -q "<id>${SERVER_ID}</id>"; then
+    failNoHelp "A server with the id of \"${SERVER_ID}\" was not found in your settings.xml file."
 fi
 
 printf "Performing release for version %s with the next version of %s\n" "${RELEASE_VERSION}" "${DEVEL_VERSION}"
@@ -106,7 +118,7 @@ if [ -d "${LOCAL_REPO}" ]; then
     # Delete any SNAPSHOT's
     find "${LOCAL_REPO}" -type d -name "*SNAPSHOT" -print0 | xargs -0 -I {} rm -rf ${VERBOSE} "{}"
     # Delete directories associated with this project
-    PROJECT_PATH="$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout)"
+    PROJECT_PATH="$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout "${MAVEN_ARGS[@]}")"
     PROJECT_PATH="${LOCAL_REPO}/${PROJECT_PATH//./\/}"
     rm -rf ${VERBOSE} "${PROJECT_PATH}"
 fi
@@ -116,3 +128,4 @@ if [ "-v" = "${VERBOSE}" ]; then
 fi
 
 mvn clean release:clean release:prepare release:perform -Dmaven.repo.local="${LOCAL_REPO}" -DdevelopmentVersion="${DEVEL_VERSION}" -DreleaseVersion="${RELEASE_VERSION}" -Dtag="${TAG_NAME}" "${MAVEN_ARGS[@]}"
+
