@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -i
 
 fail() {
     printf "%s\n\n" "${1}"
@@ -15,19 +15,33 @@ printArgHelp() {
 }
 
 printHelp() {
-    echo "Performs a release of the project. Two arguments are required, the releaseVersion and the development."
+    echo "Performs a release of the project. The release argument and value and the development argument and value are required parameters."
+    echo "Any addition arguments are passed to the Maven command."
+    echo ""
     printArgHelp "-d" "--development" "The next version for the development cycle."
     printArgHelp "-f" "--force" "Forces to allow a SNAPSHOT suffix in release version and not require one for the development version."
-    printArgHelp "-r" "--release" "The expected exit status. Defaults to 0."
+    printArgHelp "-h" "--help" "Displays this help."
+    printArgHelp "-r" "--release" "The version to be released. Also used for the tag."
     printArgHelp "" "--dry-run" "Executes the release in as a dry-run. Nothing will be updated or pushed."
-    echo "Usage: ${0##*/} --release 1.0.0 --development 1.0.1"
+    printArgHelp "-v" "--verbose" "Prints verbose output."
+    echo ""
+    echo "Usage: ${0##*/} --release 1.0.0 --development 1.0.1-SNAPSHOT"
 }
 
 DRY_RUN=false
 FORCE=false
 DEVEL_VERSION=""
 RELEASE_VERSION=""
-LOCAL_REPO="/tmp/resteasy-grpc/m2/repository"
+SCRIPT_PATH=$(realpath "${0}")
+SCRIPT_DIR=$(dirname "${SCRIPT_PATH}")
+LOCAL_REPO="/tmp/m2/repository/$(basename "${SCRIPT_DIR}")"
+VERBOSE=""
+
+MAVEN_ARGS=()
+
+if [ -z "${DAYS}" ]; then
+    DAYS="5"
+fi
 
 while [ "$#" -gt 0 ]
 do
@@ -42,12 +56,19 @@ do
         -f|--force)
             FORCE=true;
             ;;
+        -h|--help)
+            printHelp
+            exit 0
+            ;;
         -r|--release)
             RELEASE_VERSION="${2}"
             shift
             ;;
+        -v|--verbose)
+            VERBOSE="-v"
+            ;;
         *)
-            fail "Invalid argument ${1}"
+            MAVEN_ARGS+=("${1}")
             ;;
     esac
     shift
@@ -72,20 +93,26 @@ fi
 
 printf "Performing release for version %s with the next version of %s\n" "${RELEASE_VERSION}" "${DEVEL_VERSION}"
 
-MAVEN_ARGS=()
 TAG_NAME="v${RELEASE_VERSION}"
 
 if ${DRY_RUN}; then
     echo "This will be a dry run and nothing will be updated or pushed."
-    MAVEN_ARGS=("-DdryRun")
-else
-    MAVEN_ARGS=("-DpushChanges=true")
+    MAVEN_ARGS+=("-DdryRun" "-DpushChanges=false")
 fi
 
 if [ -d "${LOCAL_REPO}" ]; then
-    rm -rf "${LOCAL_REPO}"
+    # Delete any directories over a day old
+    find "${LOCAL_REPO}" -type d -mtime +"${DAYS}" -print0 | xargs -0 -I {} rm -rf ${VERBOSE} "{}"
+    # Delete any SNAPSHOT's
+    find "${LOCAL_REPO}" -type d -name "*SNAPSHOT" -print0 | xargs -0 -I {} rm -rf ${VERBOSE} "{}"
+    # Delete directories associated with this project
+    PROJECT_PATH="$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout)"
+    PROJECT_PATH="${LOCAL_REPO}/${PROJECT_PATH//./\/}"
+    rm -rf ${VERBOSE} "${PROJECT_PATH}"
+fi
+if [ "-v" = "${VERBOSE}" ]; then
+    printf "\n\nExecuting:\n  "
+    set -x
 fi
 
-mvn clean release:clean release:prepare release:perform -Dmaven.local.repo="${LOCAL_REPO}" -DdevelopmentVersion="${DEVEL_VERSION}" -DreleaseVersion="${RELEASE_VERSION}" -Dtag="${TAG_NAME}" "${MAVEN_ARGS[@]}"
-
-
+mvn clean release:clean release:prepare release:perform -Dmaven.repo.local="${LOCAL_REPO}" -DdevelopmentVersion="${DEVEL_VERSION}" -DreleaseVersion="${RELEASE_VERSION}" -Dtag="${TAG_NAME}" "${MAVEN_ARGS[@]}"
