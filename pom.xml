@@ -355,6 +355,7 @@
                             <publishingServerId>${sonatype.server.id}</publishingServerId>
                             <autoPublish>${autoPublish}</autoPublish>
                             <waitUntil>${waitUntil}</waitUntil>
+                            <deploymentName>resteasy-grpc-${project.version}</deploymentName>
                             <!-- Exclude tests from being deployed -->
                             <excludeArtifacts>
                                 <excludeArtifact>testsuite</excludeArtifact>
