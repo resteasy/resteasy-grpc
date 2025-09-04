@@ -3,7 +3,7 @@
     <parent>
         <groupId>dev.resteasy.grpc</groupId>
         <artifactId>resteasy-grpc-parent</artifactId>
-        <version>1.0.0.Alpha15</version>
+        <version>1.0.0.Alpha16-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>grpc-bridge-runtime</artifactId>
@@ -17,7 +17,7 @@
         <connection>scm:git:git://github.com/resteasy/resteasy-grpc.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy-grpc.git</developerConnection>
         <url>https://github.com/resteasy/resteasy-grpc/tree/main/grpc-bridge-runtime</url>
-      <tag>v1.0.0.Alpha15</tag>
+      <tag>v1.0.0.Alpha13</tag>
   </scm>
 
     <issueManagement>
