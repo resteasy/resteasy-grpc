@@ -10,7 +10,7 @@
 
     <groupId>dev.resteasy.grpc</groupId>
     <artifactId>resteasy-grpc-parent</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.0.Beta2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>resteasy-grpc parent</name>
