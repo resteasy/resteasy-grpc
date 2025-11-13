@@ -80,7 +80,7 @@
         <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
 
         <version.com.github.javaparser>3.27.1</version.com.github.javaparser>
-        <version.com.google.protobuf>4.31.1</version.com.google.protobuf>
+        <version.com.google.protobuf>4.33.1</version.com.google.protobuf>
         <version.io.grpc>1.73.0</version.io.grpc>
 
         <version.io.undertow>2.3.20.Final</version.io.undertow>
