@@ -74,7 +74,7 @@
         <version.org.jboss.arquillian>1.10.0.Final</version.org.jboss.arquillian>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
         <version.org.jboss.shrinkwrap.resolver>3.3.4</version.org.jboss.shrinkwrap.resolver>
-        <version.org.junit>6.0.1</version.org.junit>
+        <version.org.junit>6.0.2</version.org.junit>
         <version.org.wildfly.arquillian>5.1.0.Final</version.org.wildfly.arquillian>
     </properties>
 
